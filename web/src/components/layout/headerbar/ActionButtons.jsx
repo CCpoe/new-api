@@ -36,6 +36,7 @@ const ActionButtons = ({
   isLoading,
   isMobile,
   isSelfUseMode,
+  isHomeRoute,
   logout,
   navigate,
   t,
@@ -44,13 +45,17 @@ const ActionButtons = ({
     <div className='flex items-center gap-2 md:gap-3'>
       <NewYearButton isNewYear={isNewYear} />
 
-      <NotificationButton
-        unreadCount={unreadCount}
-        onNoticeOpen={onNoticeOpen}
-        t={t}
-      />
+      {!isHomeRoute && (
+        <NotificationButton
+          unreadCount={unreadCount}
+          onNoticeOpen={onNoticeOpen}
+          t={t}
+        />
+      )}
 
-      <ThemeToggle theme={theme} onThemeToggle={onThemeToggle} t={t} />
+      {!isHomeRoute && (
+        <ThemeToggle theme={theme} onThemeToggle={onThemeToggle} t={t} />
+      )}
 
       <LanguageSelector
         currentLang={currentLang}
@@ -63,6 +68,7 @@ const ActionButtons = ({
         isLoading={isLoading}
         isMobile={isMobile}
         isSelfUseMode={isSelfUseMode}
+        isHomeRoute={isHomeRoute}
         logout={logout}
         navigate={navigate}
         t={t}

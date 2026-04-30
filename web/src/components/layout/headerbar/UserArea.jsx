@@ -35,11 +35,13 @@ const UserArea = ({
   isLoading,
   isMobile,
   isSelfUseMode,
+  isHomeRoute,
   logout,
   navigate,
   t,
 }) => {
   const dropdownRef = useRef(null);
+
   if (isLoading) {
     return (
       <SkeletonWrapper
@@ -60,9 +62,7 @@ const UserArea = ({
           render={
             <Dropdown.Menu className='!bg-semi-color-bg-overlay !border-semi-color-border !shadow-lg !rounded-lg dark:!bg-gray-700 dark:!border-gray-600'>
               <Dropdown.Item
-                onClick={() => {
-                  navigate('/console/personal');
-                }}
+                onClick={() => navigate('/console/personal')}
                 className='!px-3 !py-1.5 !text-sm !text-semi-color-text-0 hover:!bg-semi-color-fill-1 dark:!text-gray-200 dark:hover:!bg-blue-500 dark:hover:!text-white'
               >
                 <div className='flex items-center gap-2'>
@@ -74,9 +74,7 @@ const UserArea = ({
                 </div>
               </Dropdown.Item>
               <Dropdown.Item
-                onClick={() => {
-                  navigate('/console/token');
-                }}
+                onClick={() => navigate('/console/token')}
                 className='!px-3 !py-1.5 !text-sm !text-semi-color-text-0 hover:!bg-semi-color-fill-1 dark:!text-gray-200 dark:hover:!bg-blue-500 dark:hover:!text-white'
               >
                 <div className='flex items-center gap-2'>
@@ -88,9 +86,7 @@ const UserArea = ({
                 </div>
               </Dropdown.Item>
               <Dropdown.Item
-                onClick={() => {
-                  navigate('/console/topup');
-                }}
+                onClick={() => navigate('/console/topup')}
                 className='!px-3 !py-1.5 !text-sm !text-semi-color-text-0 hover:!bg-semi-color-fill-1 dark:!text-gray-200 dark:hover:!bg-blue-500 dark:hover:!text-white'
               >
                 <div className='flex items-center gap-2'>
@@ -141,60 +137,58 @@ const UserArea = ({
         </Dropdown>
       </div>
     );
-  } else {
-    const showRegisterButton = !isSelfUseMode;
-
-    const commonSizingAndLayoutClass =
-      'flex items-center justify-center !py-[10px] !px-1.5';
-
-    const loginButtonSpecificStyling =
-      '!bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 transition-colors';
-    let loginButtonClasses = `${commonSizingAndLayoutClass} ${loginButtonSpecificStyling}`;
-
-    let registerButtonClasses = `${commonSizingAndLayoutClass}`;
-
-    const loginButtonTextSpanClass =
-      '!text-xs !text-semi-color-text-1 dark:!text-gray-300 !p-1.5';
-    const registerButtonTextSpanClass = '!text-xs !text-white !p-1.5';
-
-    if (showRegisterButton) {
-      if (isMobile) {
-        loginButtonClasses += ' !rounded-full';
-      } else {
-        loginButtonClasses += ' !rounded-l-full !rounded-r-none';
-      }
-      registerButtonClasses += ' !rounded-r-full !rounded-l-none';
-    } else {
-      loginButtonClasses += ' !rounded-full';
-    }
-
-    return (
-      <div className='flex items-center'>
-        <Link to='/login' className='flex'>
-          <Button
-            theme='borderless'
-            type='tertiary'
-            className={loginButtonClasses}
-          >
-            <span className={loginButtonTextSpanClass}>{t('登录')}</span>
-          </Button>
-        </Link>
-        {showRegisterButton && (
-          <div className='hidden md:block'>
-            <Link to='/register' className='flex -ml-px'>
-              <Button
-                theme='solid'
-                type='primary'
-                className={registerButtonClasses}
-              >
-                <span className={registerButtonTextSpanClass}>{t('注册')}</span>
-              </Button>
-            </Link>
-          </div>
-        )}
-      </div>
-    );
   }
+
+  const showRegisterButton = !isSelfUseMode;
+  const commonSizingAndLayoutClass =
+    'flex items-center justify-center !py-[10px] !px-1.5';
+  const loginButtonSpecificStyling =
+    '!bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 transition-colors';
+  const loginButtonTextSpanClass = isHomeRoute
+    ? '!text-sm !text-[#2563eb] !p-1.5'
+    : '!text-xs !text-semi-color-text-1 dark:!text-gray-300 !p-1.5';
+  const registerButtonTextSpanClass = '!text-xs !text-white !p-1.5';
+
+  let loginButtonClasses = `${commonSizingAndLayoutClass} ${loginButtonSpecificStyling}`;
+  let registerButtonClasses = commonSizingAndLayoutClass;
+
+  if (showRegisterButton) {
+    if (isMobile) {
+      loginButtonClasses += ' !rounded-full';
+    } else {
+      loginButtonClasses += ' !rounded-l-full !rounded-r-none';
+    }
+    registerButtonClasses += ' !rounded-r-full !rounded-l-none';
+  } else {
+    loginButtonClasses += ' !rounded-full';
+  }
+
+  return (
+    <div className='flex items-center'>
+      <Link to='/login' className='flex'>
+        <Button
+          theme='borderless'
+          type='tertiary'
+          className={loginButtonClasses}
+        >
+          <span className={loginButtonTextSpanClass}>{t('登录')}</span>
+        </Button>
+      </Link>
+      {showRegisterButton && (
+        <div className='hidden md:block'>
+          <Link to='/register' className='flex -ml-px'>
+            <Button
+              theme='solid'
+              type='primary'
+              className={registerButtonClasses}
+            >
+              <span className={registerButtonTextSpanClass}>{t('注册')}</span>
+            </Button>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default UserArea;

@@ -27,8 +27,16 @@ const Navigation = ({
   isLoading,
   userState,
   pricingRequireAuth,
+  isHomeRoute,
 }) => {
   const renderNavLinks = () => {
+    const homeLabels = {
+      home: null,
+      console: mainNavLinks.find((link) => link.itemKey === 'console')?.text || '模型',
+      pricing: mainNavLinks.find((link) => link.itemKey === 'pricing')?.text || '应用市场',
+      docs: mainNavLinks.find((link) => link.itemKey === 'docs')?.text || '文档',
+      about: '...',
+    };
     const baseClasses =
       'flex-shrink-0 flex items-center gap-1 font-semibold rounded-md transition-all duration-200 ease-in-out';
     const hoverClasses = 'hover:text-semi-color-primary';
@@ -37,7 +45,13 @@ const Navigation = ({
     const commonLinkClasses = `${baseClasses} ${spacingClasses} ${hoverClasses}`;
 
     return mainNavLinks.map((link) => {
-      const linkContent = <span>{link.text}</span>;
+      if (isHomeRoute && link.itemKey === 'home') {
+        return null;
+      }
+
+      const linkContent = (
+        <span>{isHomeRoute ? homeLabels[link.itemKey] || link.text : link.text}</span>
+      );
 
       if (link.isExternal) {
         return (
@@ -70,7 +84,13 @@ const Navigation = ({
   };
 
   return (
-    <nav className='flex flex-1 items-center gap-1 lg:gap-2 mx-2 md:mx-4 overflow-x-auto whitespace-nowrap scrollbar-hide'>
+    <nav
+      className={
+        isHomeRoute
+          ? 'aihubmix-main-nav flex flex-1 items-center gap-1 lg:gap-2 mx-2 md:mx-4 overflow-x-auto whitespace-nowrap scrollbar-hide'
+          : 'flex flex-1 items-center gap-1 lg:gap-2 mx-2 md:mx-4 overflow-x-auto whitespace-nowrap scrollbar-hide'
+      }
+    >
       <SkeletonWrapper
         loading={isLoading}
         type='navigation'

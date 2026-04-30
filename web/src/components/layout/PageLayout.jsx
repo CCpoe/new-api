@@ -63,6 +63,14 @@ const PageLayout = () => {
   ];
 
   const shouldHideFooter = cardProPages.includes(location.pathname);
+  const isHomeRoute = location.pathname === '/';
+
+  useEffect(() => {
+    document.body.classList.toggle('home-route', isHomeRoute);
+    return () => {
+      document.body.classList.remove('home-route');
+    };
+  }, [isHomeRoute]);
 
   const shouldInnerPadding =
     location.pathname.includes('/console') &&
@@ -150,7 +158,7 @@ const PageLayout = () => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        overflow: isMobile ? 'visible' : 'hidden',
+        overflow: isMobile || isHomeRoute ? 'visible' : 'hidden',
       }}
     >
       <Header
@@ -171,7 +179,7 @@ const PageLayout = () => {
       </Header>
       <Layout
         style={{
-          overflow: isMobile ? 'visible' : 'auto',
+          overflow: isMobile || isHomeRoute ? 'visible' : 'auto',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -211,7 +219,7 @@ const PageLayout = () => {
           <Content
             style={{
               flex: '1 0 auto',
-              overflowY: isMobile ? 'visible' : 'hidden',
+              overflowY: isMobile || isHomeRoute ? 'visible' : 'hidden',
               WebkitOverflowScrolling: 'touch',
               padding: shouldInnerPadding ? (isMobile ? '5px' : '24px') : '0',
               position: 'relative',
@@ -221,7 +229,7 @@ const PageLayout = () => {
               <App />
             </ErrorBoundary>
           </Content>
-          {!shouldHideFooter && (
+          {!shouldHideFooter && !isHomeRoute && (
             <Layout.Footer
               style={{
                 flex: '0 0 auto',

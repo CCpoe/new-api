@@ -36,11 +36,21 @@ body {
   body {
     overflow-y: hidden;
   }
+
+  body.home-route {
+    overflow-y: auto;
+  }
 }
 
 .app-layout {
   height: 100vh;
   height: 100dvh;
+}
+
+body.home-route .app-layout {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-sider {

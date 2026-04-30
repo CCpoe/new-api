@@ -51,6 +51,7 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
     handleThemeToggle,
     handleMobileMenuToggle,
     navigate,
+    location,
     t,
   } = useHeaderBar({ onMobileMenuToggle, drawerOpen });
 
@@ -63,9 +64,16 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
   } = useNotifications(statusState);
 
   const { mainNavLinks } = useNavigation(t, docsLink, headerNavModules);
+  const isHomeRoute = location.pathname === '/';
 
   return (
-    <header className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 bg-white/75 dark:bg-zinc-900/75 backdrop-blur-lg'>
+    <header
+      className={
+        isHomeRoute
+          ? 'aihubmix-site-header text-semi-color-text-0'
+          : 'text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 bg-white/75 dark:bg-zinc-900/75 backdrop-blur-lg'
+      }
+    >
       <NoticeModal
         visible={noticeVisible}
         onClose={handleNoticeClose}
@@ -74,8 +82,14 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
         unreadKeys={getUnreadKeys()}
       />
 
-      <div className='w-full px-2'>
-        <div className='flex items-center justify-between h-16'>
+      <div className={isHomeRoute ? 'w-full px-4' : 'w-full px-2'}>
+        <div
+          className={
+            isHomeRoute
+              ? 'aihubmix-header-shell flex items-center justify-between'
+              : 'flex items-center justify-between h-16'
+          }
+        >
           <div className='flex items-center'>
             <MobileMenuButton
               isConsoleRoute={isConsoleRoute}
@@ -91,10 +105,11 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
               isConsoleRoute={isConsoleRoute}
               logo={logo}
               logoLoaded={logoLoaded}
-              isLoading={isLoading}
+              isLoading={isHomeRoute ? false : isLoading}
               systemName={systemName}
               isSelfUseMode={isSelfUseMode}
               isDemoSiteMode={isDemoSiteMode}
+              isHomeRoute={isHomeRoute}
               t={t}
             />
           </div>
@@ -102,9 +117,10 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
           <Navigation
             mainNavLinks={mainNavLinks}
             isMobile={isMobile}
-            isLoading={isLoading}
+            isLoading={isHomeRoute ? false : isLoading}
             userState={userState}
             pricingRequireAuth={pricingRequireAuth}
+            isHomeRoute={isHomeRoute}
           />
 
           <ActionButtons
@@ -116,9 +132,10 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
             currentLang={currentLang}
             onLanguageChange={handleLanguageChange}
             userState={userState}
-            isLoading={isLoading}
+            isLoading={isHomeRoute ? false : isLoading}
             isMobile={isMobile}
             isSelfUseMode={isSelfUseMode}
+            isHomeRoute={isHomeRoute}
             logout={logout}
             navigate={navigate}
             t={t}
