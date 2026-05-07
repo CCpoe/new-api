@@ -13,6 +13,14 @@ This is an AI API gateway/proxy built with Go. It aggregates 40+ upstream AI pro
 - **Auth**: JWT, WebAuthn/Passkeys, OAuth (GitHub, Discord, OIDC, etc.)
 - **Frontend package manager**: Bun (preferred over npm/yarn/pnpm)
 
+## Git 远程仓库链路
+
+- `origin`: `https://github.com/CCpoe/new-api.git`
+- `upstream`: `https://github.com/QuantumNous/new-api.git`
+- 日常提交、推送默认使用 `origin`
+- 同步上游时，先执行 `git fetch upstream`，再将 `upstream/main` 合并到当前分支
+- 不要将日常开发提交直接推送到 `upstream`
+
 ## Architecture
 
 Layered architecture: Router -> Controller -> Service -> Model
