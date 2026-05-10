@@ -155,6 +155,17 @@ const BILLING_SECTIONS = [
           CreemTestMode: settings.CreemTestMode,
           CreemProducts: settings.CreemProducts,
         }}
+        alipayDefaultValues={{
+          AlipayEnabled: settings.AlipayEnabled ?? false,
+          AlipaySandbox: settings.AlipaySandbox ?? false,
+          AlipayAppId: settings.AlipayAppId ?? '',
+          AlipayPrivateKey: settings.AlipayPrivateKey ?? '',
+          AlipayPublicKey: settings.AlipayPublicKey ?? '',
+          AlipayNotifyUrl: settings.AlipayNotifyUrl ?? '',
+          AlipayReturnUrl: settings.AlipayReturnUrl ?? '',
+          AlipayUnitPrice: settings.AlipayUnitPrice ?? 7.3,
+          AlipayMinTopUp: settings.AlipayMinTopUp ?? 1,
+        }}
         waffoDefaultValues={{
           WaffoEnabled: settings.WaffoEnabled ?? false,
           WaffoApiKey: settings.WaffoApiKey ?? '',

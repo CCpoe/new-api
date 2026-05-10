@@ -3,6 +3,7 @@ package controller
 import (
 	"strings"
 
+	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 )
@@ -26,6 +27,24 @@ func isCreemTopUpEnabled() bool {
 	return strings.TrimSpace(setting.CreemApiKey) != "" &&
 		products != "" &&
 		products != "[]"
+}
+
+func isAlipayTopUpEnabled() bool {
+	if !setting.AlipayEnabled {
+		return false
+	}
+
+	return isAlipayWebhookConfigured()
+}
+
+func isAlipayWebhookConfigured() bool {
+	return strings.TrimSpace(setting.AlipayAppId) != "" &&
+		strings.TrimSpace(setting.AlipayPrivateKey) != "" &&
+		strings.TrimSpace(setting.AlipayPublicKey) != ""
+}
+
+func isAlipayWebhookEnabled() bool {
+	return isAlipayTopUpEnabled()
 }
 
 func isCreemWebhookConfigured() bool {
@@ -85,8 +104,26 @@ func isWaffoPancakeWebhookEnabled() bool {
 	return isWaffoPancakeTopUpEnabled()
 }
 
+func isEpayPayMethod(paymentType string) bool {
+	switch strings.TrimSpace(paymentType) {
+	case "", model.PaymentMethodStripe, model.PaymentMethodAlipay, model.PaymentMethodCreem, model.PaymentMethodWaffo, model.PaymentMethodWaffoPancake:
+		return false
+	default:
+		return true
+	}
+}
+
+func hasEpayPayMethod() bool {
+	for _, payMethod := range operation_setting.PayMethods {
+		if isEpayPayMethod(payMethod["type"]) {
+			return true
+		}
+	}
+	return false
+}
+
 func isEpayTopUpEnabled() bool {
-	return isEpayWebhookConfigured() && len(operation_setting.PayMethods) > 0
+	return isEpayWebhookConfigured() && hasEpayPayMethod()
 }
 
 func isEpayWebhookConfigured() bool {

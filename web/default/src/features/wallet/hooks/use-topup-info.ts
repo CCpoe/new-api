@@ -54,7 +54,8 @@ function parseJsonArray(data: unknown): unknown[] {
 
 function parsePaymentMethods(
   data: unknown,
-  stripeMinTopup: number
+  stripeMinTopup: number,
+  alipayMinTopup: number
 ): PaymentMethod[] {
   return parseJsonArray(data)
     .filter(
@@ -73,6 +74,8 @@ function parsePaymentMethods(
         min_topup:
           type === 'stripe' && normalizedMinTopup <= 0
             ? stripeMinTopup
+            : type === 'alipay_official' && normalizedMinTopup <= 0
+              ? alipayMinTopup
             : normalizedMinTopup,
       }
     })
@@ -182,7 +185,8 @@ export function useTopupInfo() {
         ...response.data,
         pay_methods: parsePaymentMethods(
           response.data.pay_methods,
-          response.data.stripe_min_topup
+          response.data.stripe_min_topup,
+          response.data.alipay_min_topup || 0
         ),
         amount_options: parseAmountOptions(response.data.amount_options),
         discount: parseDiscountMap(response.data.discount),

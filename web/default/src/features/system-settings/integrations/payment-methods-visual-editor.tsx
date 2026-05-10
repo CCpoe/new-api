@@ -48,6 +48,14 @@ type PaymentMethodsVisualEditorProps = {
 
 const PAYMENT_TEMPLATES = [
   {
+    name: 'Alipay Official',
+    template: {
+      color: '#1677FF',
+      name: 'Alipay Official',
+      type: 'alipay_official',
+    },
+  },
+  {
     name: 'Alipay',
     template: {
       color: 'rgba(var(--semi-blue-5), 1)',
