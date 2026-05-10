@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -25,54 +25,25 @@ import {
   Bell,
   Boxes,
   Bot,
-  Check,
-  ChevronRight,
   Copy,
-  Gift,
-  Package,
   Route,
 } from 'lucide-react';
+import { StatusContext } from '../../context/Status';
 import './home.css';
 import { getHomeCopy } from './homeCopy';
 
-
-const API_SAMPLE_CODE = `from openai import OpenAI
-
-client = OpenAI(
-    api_key = "sk-***",
-    base_url = "https://aihubmix.com/v1"
-)
-
-response = client.chat.completions.create(
-    model = "claude-sonnet-4-20250514",
-    messages = [{"role":"user","content":"Hi"}]
-)`;
-
-const CODE_LINES = [
-  [<><span className='code-token-keyword'>from</span> <span className='code-token-module'>openai</span> <span className='code-token-keyword'>import</span> <span className='code-token-class'>OpenAI</span></>],
-  [<></>],
-  [<><span className='code-token-var'>client</span> = <span className='code-token-class'>OpenAI</span>(</>],
-  [<>&nbsp;&nbsp;&nbsp;&nbsp;<span className='code-token-prop'>api_key</span> = <span className='code-token-string'>"sk-***"</span>,</>],
-  [<>&nbsp;&nbsp;&nbsp;&nbsp;<span className='code-token-prop'>base_url</span> = <span className='code-token-string'>"https://aihubmix.com/v1"</span></>],
-  [<>)</>],
-  [<></>],
-  [<><span className='code-token-var'>response</span> = <span className='code-token-var'>client</span>.<span className='code-token-prop'>chat</span>.<span className='code-token-prop'>completions</span>.<span className='code-token-fn'>create</span>(</>],
-  [<>&nbsp;&nbsp;&nbsp;&nbsp;<span className='code-token-prop'>model</span> = <span className='code-token-string'>"claude-sonnet-4-20250514"</span>,</>],
-  [<>&nbsp;&nbsp;&nbsp;&nbsp;<span className='code-token-prop'>messages</span> = [&#123;<span className='code-token-string'>"role"</span>:<span className='code-token-string'>"user"</span>,<span className='code-token-string'>"content"</span>:<span className='code-token-string'>"Hi"</span>&#125;]</>],
-  [<>)</>],
-];
-
-const ApiCodePanel = () => {
+const BaseUrlPanel = ({ serverAddress }) => {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef(null);
+  const baseUrl = serverAddress || window.location.origin;
 
   const handleCopy = async () => {
     try {
       if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(API_SAMPLE_CODE);
+        await navigator.clipboard.writeText(baseUrl);
       } else {
         const textarea = document.createElement('textarea');
-        textarea.value = API_SAMPLE_CODE;
+        textarea.value = baseUrl;
         textarea.setAttribute('readonly', '');
         textarea.style.position = 'fixed';
         textarea.style.opacity = '0';
@@ -93,21 +64,20 @@ const ApiCodePanel = () => {
   useEffect(() => () => window.clearTimeout(timerRef.current), []);
 
   return (
-    <div className='api-code-panel'>
-      <button className='api-code-copy' type='button' onClick={handleCopy} aria-label={'\u590d\u5236\u4ee3\u7801'}>
-        <Copy size={12} />
-        <span>{copied ? '\u5df2\u590d\u5236' : '\u590d\u5236'}</span>
-      </button>
-      <pre aria-label='OpenAI compatible API example'>
-        <code>
-          {CODE_LINES.map((line, index) => (
-            <span className='api-code-line' key={index}>
-              <span className='api-code-line-number'>{index + 1}</span>
-              <span className='api-code-line-content'>{line}</span>
-            </span>
-          ))}
-        </code>
-      </pre>
+    <div className='base-url-panel'>
+      <span className='base-url-label'>替换基础 URL 即可接入</span>
+      <div className='base-url-input' aria-label='Base URL preview'>
+        <span className='base-url-text'>{baseUrl}</span>
+        <button
+          className='base-url-copy'
+          type='button'
+          onClick={handleCopy}
+          aria-label='复制接入地址'
+          title={copied ? '已复制' : '复制接入地址'}
+        >
+          <Copy size={15} />
+        </button>
+      </div>
     </div>
   );
 };
@@ -271,7 +241,55 @@ const InteractiveWorldMap = () => {
 };
 const Home = () => {
   const { i18n } = useTranslation();
+  const [statusState] = useContext(StatusContext);
+  const moreSectionRef = useRef(null);
+  const [moreSectionVisible, setMoreSectionVisible] = useState(false);
   const copy = getHomeCopy(i18n.language);
+  const docsLink = statusState?.status?.docs_link || '';
+  const serverAddress = statusState?.status?.server_address || '';
+
+  const showDocsButton = useMemo(() => {
+    if (!docsLink) {
+      return false;
+    }
+
+    const headerNavModulesConfig = statusState?.status?.HeaderNavModules;
+    if (!headerNavModulesConfig) {
+      return true;
+    }
+
+    try {
+      const modules = JSON.parse(headerNavModulesConfig);
+      return modules.docs === true;
+    } catch (error) {
+      console.error('Failed to parse header navigation modules:', error);
+      return true;
+    }
+  }, [docsLink, statusState?.status?.HeaderNavModules]);
+
+  useEffect(() => {
+    const section = moreSectionRef.current;
+    if (!section || moreSectionVisible) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMoreSectionVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.28,
+        rootMargin: '0px 0px -12% 0px',
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [moreSectionVisible]);
 
   return (
     <main className='aihubmix-home'>
@@ -291,10 +309,17 @@ const Home = () => {
           <h1>{copy.heroTitle}</h1>
           <p>{copy.heroSubtitle}</p>
           <div className='aihubmix-hero-actions'>
-            <Link className='aihubmix-btn aihubmix-btn-ghost' to='/about'>
-              {copy.docs}
-            </Link>
-            <Link className='aihubmix-btn aihubmix-btn-primary' to='/console'>
+            {showDocsButton && (
+              <a
+                className='aihubmix-btn aihubmix-btn-ghost'
+                href={docsLink}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                {copy.docs}
+              </a>
+            )}
+            <Link className='aihubmix-btn aihubmix-btn-primary' to='/login'>
               {copy.primaryCta} <ArrowRight size={20} />
             </Link>
           </div>
@@ -310,7 +335,7 @@ const Home = () => {
 
           <article className='aihubmix-feature-card code-card'>
             <h3>{copy.featureApiTitle}</h3>
-            <ApiCodePanel />
+            <BaseUrlPanel serverAddress={serverAddress} />
           </article>
 
           <article className='aihubmix-feature-card routing-card'>
@@ -324,44 +349,24 @@ const Home = () => {
         </div>
       </section>
 
-      <section className='aihubmix-ecosystem'>
-        <h2>{copy.ecosystemTitle}</h2>
-        <p>{copy.ecosystemSubtitle}</p>
-        <div className='partner-grid'>
-          {copy.partners.map((partner, index) => (
-            <div className='partner-tile' key={partner}>
-              <span className={`partner-mark partner-mark-${index + 1}`}>
-                {index === 1 ? <Gift size={22} /> : <Package size={22} />}
-              </span>
-              <strong>{partner}</strong>
-            </div>
-          ))}
-          <div className='partner-tile partner-more'>...</div>
-          <Link className='partner-coupon' to='/register'>
-            <Check size={22} />
-            <span>{copy.discountLine1}<br />{copy.discountLine2}</span>
-          </Link>
-        </div>
-      </section>
-
-      <section className='aihubmix-more'>
+      <section
+        className={`aihubmix-more${moreSectionVisible ? ' aihubmix-more-visible' : ''}`}
+        ref={moreSectionRef}
+      >
         <div className='more-panel'>
           <Bot size={28} />
           <h2>{copy.morePanels[0].title}</h2>
           <p>{copy.morePanels[0].text}</p>
-          <Link to='/pricing'>{copy.morePanels[0].link} <ChevronRight size={18} /></Link>
         </div>
         <div className='more-panel'>
           <Route size={28} />
           <h2>{copy.morePanels[1].title}</h2>
           <p>{copy.morePanels[1].text}</p>
-          <Link to='/console/playground'>{copy.morePanels[1].link} <ChevronRight size={18} /></Link>
         </div>
         <div className='more-panel'>
           <Boxes size={28} />
           <h2>{copy.morePanels[2].title}</h2>
           <p>{copy.morePanels[2].text}</p>
-          <Link to='/about'>{copy.morePanels[2].link} <ChevronRight size={18} /></Link>
         </div>
       </section>
 
@@ -380,7 +385,3 @@ const Home = () => {
   );
 };
 export default Home;
-
-
-
-

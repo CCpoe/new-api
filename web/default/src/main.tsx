@@ -29,6 +29,7 @@ import i18next from 'i18next'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { getStatus } from '@/lib/api'
+import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 import '@/lib/dayjs'
 import { applyFaviconToDom } from '@/lib/dom-utils'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -124,9 +125,8 @@ const rootElement = document.getElementById('root')!
     try {
       const saved = localStorage.getItem('status')
       if (saved) {
-        const s = JSON.parse(saved)
-        if (s?.system_name) apply(s.system_name)
-        if (s?.logo) applyFaviconToDom(s.logo)
+        apply(DEFAULT_SYSTEM_NAME)
+        applyFaviconToDom(DEFAULT_LOGO)
       }
     } catch {
       /* empty */
@@ -134,15 +134,13 @@ const rootElement = document.getElementById('root')!
     // Background refresh
     getStatus()
       .then((s) => {
-        if (s?.system_name) {
-          apply(s.system_name as string)
-          try {
-            localStorage.setItem('status', JSON.stringify(s))
-          } catch {
-            /* empty */
-          }
+        apply(DEFAULT_SYSTEM_NAME)
+        try {
+          localStorage.setItem('status', JSON.stringify(s))
+        } catch {
+          /* empty */
         }
-        if (s?.logo) applyFaviconToDom(s.logo as string)
+        applyFaviconToDom(DEFAULT_LOGO)
       })
       .catch(() => {
         /* empty */

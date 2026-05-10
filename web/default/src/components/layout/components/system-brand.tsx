@@ -19,8 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { useStatus } from '@/hooks/use-status'
-import { useSystemConfig } from '@/hooks/use-system-config'
+import { DEFAULT_LOGO, DEFAULT_SYSTEM_NAME } from '@/lib/constants'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -46,13 +45,10 @@ type SystemBrandProps = {
  */
 export function SystemBrand(props: SystemBrandProps) {
   const { t } = useTranslation()
-  const { status } = useStatus()
-  const { logo } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = status?.system_name || props.defaultName || 'New API'
-  const version =
-    status?.version || props.defaultVersion || t('Unknown version')
+  const name = props.defaultName || DEFAULT_SYSTEM_NAME
+  const version = props.defaultVersion || t('Unknown version')
 
   if (variant === 'inline') {
     return (
@@ -66,7 +62,7 @@ export function SystemBrand(props: SystemBrandProps) {
       >
         <div className='flex size-5 items-center justify-center overflow-hidden rounded-md'>
           <img
-            src={logo}
+            src={DEFAULT_LOGO}
             alt={t('Logo')}
             className='size-full rounded-md object-cover'
           />
@@ -86,7 +82,7 @@ export function SystemBrand(props: SystemBrandProps) {
         >
           <div className='flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg'>
             <img
-              src={logo}
+              src={DEFAULT_LOGO}
               alt={t('Logo')}
               className='size-full rounded-lg object-cover'
             />

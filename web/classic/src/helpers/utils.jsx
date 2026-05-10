@@ -47,15 +47,11 @@ export function isRoot() {
 }
 
 export function getSystemName() {
-  let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'New API';
-  return system_name;
+  return 'KKCode';
 }
 
 export function getLogo() {
-  let logo = localStorage.getItem('logo');
-  if (!logo) return '/logo.png';
-  return logo;
+  return '/logo.png?v=kkcode';
 }
 
 export function getUserIdFromLocalStorage() {

@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useSetTheme, useTheme, useActualTheme } from '../../context/Theme';
-import { getLogo, getSystemName, API, showSuccess } from '../../helpers';
+import { getSystemName, API, showSuccess } from '../../helpers';
 import { normalizeLanguage } from '../../i18n/language';
 import { useIsMobile } from './useIsMobile';
 import { useSidebarCollapsed } from './useSidebarCollapsed';
@@ -44,7 +44,7 @@ export const useHeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
   const isLoading = useMinimumLoadingTime(loading, 200);
 
   const systemName = getSystemName();
-  const logo = getLogo();
+  const logo = '/logo.png?v=kkcode';
   const currentDate = new Date();
   const isNewYear = currentDate.getMonth() === 0 && currentDate.getDate() === 1;
 
@@ -228,7 +228,6 @@ export const useHeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
     location,
     isLoading,
     systemName,
-    logo,
     isNewYear,
     isSelfUseMode,
     docsLink,

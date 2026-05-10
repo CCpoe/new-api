@@ -37,7 +37,6 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
     currentLang,
     isLoading,
     systemName,
-    logo,
     isNewYear,
     isSelfUseMode,
     docsLink,
@@ -103,7 +102,6 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
             <HeaderLogo
               isMobile={isMobile}
               isConsoleRoute={isConsoleRoute}
-              logo={logo}
               logoLoaded={logoLoaded}
               isLoading={isHomeRoute ? false : isLoading}
               systemName={systemName}

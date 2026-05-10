@@ -99,12 +99,11 @@ export function Footer(props: FooterProps) {
   const { t } = useTranslation()
   const {
     systemName,
-    logo: systemLogo,
     footerHtml,
     demoSiteEnabled,
   } = useSystemConfig()
 
-  const displayLogo = systemLogo || props.logo || '/logo.png'
+  const displayLogo = props.logo || '/kkcode-logo.svg'
   const displayName = systemName || props.name || 'New API'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
@@ -203,14 +202,11 @@ export function Footer(props: FooterProps) {
               <img
                 src={displayLogo}
                 alt={displayName}
-                className='size-7 rounded-lg object-contain'
+                className='h-7 w-auto object-contain'
               />
-              <span className='text-sm font-semibold tracking-tight'>
-                {displayName}
-              </span>
             </Link>
             <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-xs leading-relaxed'>
-              {t('Powerful API Management Platform')}
+              One Interface, Router All Models.
             </p>
           </div>
 
@@ -237,10 +233,16 @@ export function Footer(props: FooterProps) {
 
         {/* Bottom section */}
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-3 border-t pt-6 sm:flex-row'>
-          <p className='text-muted-foreground/40 text-xs'>
-            &copy; {currentYear} {displayName}.{' '}
-            {props.copyright ?? t('footer.defaultCopyright')}
-          </p>
+          <div className='flex items-center gap-4'>
+            <img
+              src='/kkcode-logo.svg'
+              alt='Kcode'
+              className='h-6 w-auto object-contain'
+            />
+            <span className='text-muted-foreground/60 text-xs'>
+              One Interface, Router All Models.
+            </span>
+          </div>
           <ProjectAttribution currentYear={currentYear} />
         </div>
       </div>

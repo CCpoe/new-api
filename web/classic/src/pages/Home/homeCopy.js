@@ -23,7 +23,7 @@ const homeCopy = {
     morePanels: [
       {
         title: '主流模型，一站接入',
-        text: '兼容 OpenAI 风格接口，支持文本、视觉、语音、视频、嵌入、重排等常用能力。',
+        text: '兼容 OpenAI、Anthropic、Gemini 风格接口',
         link: '查看模型',
       },
       {
@@ -37,7 +37,7 @@ const homeCopy = {
         link: '了解生态',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: '公告',
   },
   'zh-TW': {
@@ -76,7 +76,7 @@ const homeCopy = {
         link: '了解生態',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: '公告',
   },
   en: {
@@ -115,7 +115,7 @@ const homeCopy = {
         link: 'Explore ecosystem',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: 'Notice',
   },
   fr: {
@@ -154,7 +154,7 @@ const homeCopy = {
         link: 'Explorer',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: 'Avis',
   },
   ja: {
@@ -193,7 +193,7 @@ const homeCopy = {
         link: 'エコシステムを見る',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: 'お知らせ',
   },
   ru: {
@@ -232,7 +232,7 @@ const homeCopy = {
         link: 'Подробнее',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: 'Объявления',
   },
   vi: {
@@ -271,7 +271,7 @@ const homeCopy = {
         link: 'Tim hieu them',
       },
     ],
-    footerTagline: 'One Interface, Router All LLMs.',
+    footerTagline: 'One Interface, Router All Models.',
     notice: 'Thong bao',
   },
 };

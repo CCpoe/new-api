@@ -25,7 +25,6 @@ import SkeletonWrapper from '../components/SkeletonWrapper';
 const HeaderLogo = ({
   isMobile,
   isConsoleRoute,
-  logo,
   logoLoaded,
   isLoading,
   systemName,
@@ -58,7 +57,7 @@ const HeaderLogo = ({
           <SkeletonWrapper loading={isLoading || !logoLoaded} type='image' />
         )}
         <img
-          src={isHomeRoute ? '/kkcode-logo.svg' : logo}
+          src={isHomeRoute ? '/kkcode-logo.svg' : '/logo.png?v=kkcode'}
           alt='logo'
           className={`absolute inset-0 w-full h-full transition-all duration-200 group-hover:scale-105 ${isHomeRoute ? 'object-contain' : 'rounded-full'} ${isHomeRoute || (!isLoading && logoLoaded) ? 'opacity-100' : 'opacity-0'}`}
         />
