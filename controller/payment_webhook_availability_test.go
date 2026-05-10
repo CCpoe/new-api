@@ -122,6 +122,22 @@ func TestFilterAvailablePayMethodsRequiresMatchingProvider(t *testing.T) {
 	require.Equal(t, "wxpay", filtered[1]["type"])
 }
 
+func TestAlipayRequestSignContentIncludesSignType(t *testing.T) {
+	params := map[string]string{
+		"app_id":    "2021000000000000",
+		"method":    alipayTradePagePay,
+		"sign_type": alipaySignTypeRSA2,
+		"timestamp": "2026-05-11 03:24:58",
+		"version":   "1.0",
+		"sign":      "ignored",
+	}
+
+	signContent := buildAlipaySignContent(params, false)
+
+	require.Contains(t, signContent, "sign_type=RSA2")
+	require.NotContains(t, signContent, "sign=ignored")
+}
+
 func TestAlipayNotifyLogFieldsOmitsSensitiveFields(t *testing.T) {
 	fields := alipayNotifyLogFields(map[string]string{
 		"app_id":        "2021000000000000",

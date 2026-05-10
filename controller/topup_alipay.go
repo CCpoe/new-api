@@ -311,7 +311,7 @@ func signAlipayParams(params map[string]string) (string, error) {
 		return "", err
 	}
 
-	signContent := buildAlipaySignContent(params, true)
+	signContent := buildAlipaySignContent(params, false)
 	digest := sha256.Sum256([]byte(signContent))
 	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, digest[:])
 	if err != nil {
