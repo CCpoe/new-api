@@ -21,13 +21,16 @@ import i18next from 'i18next'
 import { toast } from 'sonner'
 import {
   calculateAmount,
+  calculateAlipayAmount,
   calculateStripeAmount,
   calculateWaffoPancakeAmount,
   requestPayment,
+  requestAlipayPayment,
   requestStripePayment,
   isApiSuccess,
 } from '../api'
 import {
+  isAlipayOfficialPayment,
   isStripePayment,
   isWaffoPancakePayment,
   submitPaymentForm,
@@ -49,9 +52,12 @@ export function usePayment() {
         setCalculating(true)
 
         const isStripe = isStripePayment(paymentType)
+        const isAlipayOfficial = isAlipayOfficialPayment(paymentType)
         const isPancake = isWaffoPancakePayment(paymentType)
         const response = isStripe
           ? await calculateStripeAmount({ amount: topupAmount })
+          : isAlipayOfficial
+            ? await calculateAlipayAmount({ amount: topupAmount })
           : isPancake
             ? await calculateWaffoPancakeAmount({ amount: topupAmount })
             : await calculateAmount({ amount: topupAmount })
@@ -82,6 +88,7 @@ export function usePayment() {
         setProcessing(true)
 
         const isStripe = isStripePayment(paymentType)
+        const isAlipayOfficial = isAlipayOfficialPayment(paymentType)
         const amount = Math.floor(topupAmount)
 
         const response = isStripe
@@ -89,6 +96,11 @@ export function usePayment() {
               amount,
               payment_method: 'stripe',
             })
+          : isAlipayOfficial
+            ? await requestAlipayPayment({
+                amount,
+                payment_method: paymentType,
+              })
           : await requestPayment({
               amount,
               payment_method: paymentType,
@@ -106,8 +118,15 @@ export function usePayment() {
           return true
         }
 
+        // Handle official Alipay payment
+        if (isAlipayOfficial && response.data?.pay_link) {
+          window.open(response.data.pay_link as string, '_blank')
+          toast.success(i18next.t('Redirecting to payment page...'))
+          return true
+        }
+
         // Handle non-Stripe payment
-        if (!isStripe && response.data) {
+        if (!isStripe && !isAlipayOfficial && response.data) {
           const url = (response as unknown as { url?: string }).url
           if (url) {
             submitPaymentForm(url, response.data)

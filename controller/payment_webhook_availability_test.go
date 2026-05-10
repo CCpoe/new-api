@@ -3,6 +3,7 @@ package controller
 import (
 	"testing"
 
+	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/stretchr/testify/require"
@@ -50,6 +51,110 @@ func TestCreemWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 	setting.CreemProducts = "[]"
 	require.False(t, isCreemWebhookEnabled())
+}
+
+func TestAlipayWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+	originalEnabled := setting.AlipayEnabled
+	originalAppID := setting.AlipayAppId
+	originalPrivateKey := setting.AlipayPrivateKey
+	originalPublicKey := setting.AlipayPublicKey
+	t.Cleanup(func() {
+		setting.AlipayEnabled = originalEnabled
+		setting.AlipayAppId = originalAppID
+		setting.AlipayPrivateKey = originalPrivateKey
+		setting.AlipayPublicKey = originalPublicKey
+	})
+
+	setting.AlipayEnabled = true
+	setting.AlipayAppId = "app_123"
+	setting.AlipayPrivateKey = "private"
+	setting.AlipayPublicKey = ""
+	require.False(t, isAlipayWebhookEnabled())
+
+	setting.AlipayPublicKey = "public"
+	require.True(t, isAlipayWebhookEnabled())
+
+	setting.AlipayEnabled = false
+	require.False(t, isAlipayWebhookEnabled())
+}
+
+func TestEpayTopUpEnabledIgnoresOfficialGatewayMethods(t *testing.T) {
+	originalPayAddress := operation_setting.PayAddress
+	originalEpayID := operation_setting.EpayId
+	originalEpayKey := operation_setting.EpayKey
+	originalPayMethods := operation_setting.PayMethods
+	t.Cleanup(func() {
+		operation_setting.PayAddress = originalPayAddress
+		operation_setting.EpayId = originalEpayID
+		operation_setting.EpayKey = originalEpayKey
+		operation_setting.PayMethods = originalPayMethods
+	})
+
+	operation_setting.PayAddress = "https://pay.example.com"
+	operation_setting.EpayId = "merchant"
+	operation_setting.EpayKey = "secret"
+	operation_setting.PayMethods = []map[string]string{
+		{"name": "Alipay Official", "type": model.PaymentMethodAlipay},
+		{"name": "Stripe", "type": model.PaymentMethodStripe},
+	}
+
+	require.False(t, isEpayTopUpEnabled())
+
+	operation_setting.PayMethods = append(operation_setting.PayMethods, map[string]string{"name": "Alipay", "type": "alipay"})
+	require.True(t, isEpayTopUpEnabled())
+}
+
+func TestFilterAvailablePayMethodsRequiresMatchingProvider(t *testing.T) {
+	methods := []map[string]string{
+		{"name": "Alipay", "type": "alipay"},
+		{"name": "WeChat Pay", "type": "wxpay"},
+		{"name": "Alipay Official", "type": model.PaymentMethodAlipay},
+		{"name": "Stripe", "type": model.PaymentMethodStripe},
+	}
+
+	filtered := filterAvailablePayMethods(methods, false, false, true, false, false)
+	require.Len(t, filtered, 1)
+	require.Equal(t, model.PaymentMethodAlipay, filtered[0]["type"])
+
+	filtered = filterAvailablePayMethods(methods, true, false, false, false, false)
+	require.Len(t, filtered, 2)
+	require.Equal(t, "alipay", filtered[0]["type"])
+	require.Equal(t, "wxpay", filtered[1]["type"])
+}
+
+func TestAlipayRequestSignContentIncludesSignType(t *testing.T) {
+	params := map[string]string{
+		"app_id":    "2021000000000000",
+		"method":    alipayTradePagePay,
+		"sign_type": alipaySignTypeRSA2,
+		"timestamp": "2026-05-11 03:24:58",
+		"version":   "1.0",
+		"sign":      "ignored",
+	}
+
+	signContent := buildAlipaySignContent(params, false)
+
+	require.Contains(t, signContent, "sign_type=RSA2")
+	require.NotContains(t, signContent, "sign=ignored")
+}
+
+func TestAlipayNotifyLogFieldsOmitsSensitiveFields(t *testing.T) {
+	fields := alipayNotifyLogFields(map[string]string{
+		"app_id":        "2021000000000000",
+		"out_trade_no":  "ALI123",
+		"trade_no":      "202605112200123456",
+		"trade_status":  "TRADE_SUCCESS",
+		"total_amount":  "7.30",
+		"sign_type":     "RSA2",
+		"sign":          "signature",
+		"buyer_id":      "buyer-123",
+		"buyer_logon_id": "user@example.com",
+	})
+
+	require.Equal(t, "ALI123", fields["out_trade_no"])
+	require.NotContains(t, fields, "sign")
+	require.NotContains(t, fields, "buyer_id")
+	require.NotContains(t, fields, "buyer_logon_id")
 }
 
 func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {

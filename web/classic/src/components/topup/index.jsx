@@ -56,6 +56,7 @@ const TopUp = () => {
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
     statusState?.status?.enable_online_topup || false,
   );
+  const [enableAlipayTopUp, setEnableAlipayTopUp] = useState(false);
   const [priceRatio, setPriceRatio] = useState(statusState?.status?.price || 1);
 
   const [enableStripeTopUp, setEnableStripeTopUp] = useState(
@@ -136,6 +137,9 @@ const TopUp = () => {
     if (payment === 'stripe') {
       return getStripeAmount(value);
     }
+    if (payment === 'alipay_official') {
+      return getAlipayAmount(value);
+    }
     if (payment === 'waffo_pancake') {
       return getWaffoPancakeAmount(value);
     }
@@ -193,6 +197,11 @@ const TopUp = () => {
     if (payment === 'stripe') {
       if (!enableStripeTopUp) {
         showError(t('管理员未开启Stripe充值！'));
+        return;
+      }
+    } else if (payment === 'alipay_official') {
+      if (!enableAlipayTopUp) {
+        showError(t('管理员未开启 Alipay 充值！'));
         return;
       }
     } else if (payment === 'waffo_pancake') {
@@ -259,6 +268,10 @@ const TopUp = () => {
       if (amount === 0) {
         await getStripeAmount();
       }
+    } else if (payWay === 'alipay_official') {
+      if (amount === 0) {
+        await getAlipayAmount();
+      }
     } else {
       // 普通支付处理
       if (amount === 0) {
@@ -279,6 +292,11 @@ const TopUp = () => {
           amount: parseInt(topUpCount),
           payment_method: 'stripe',
         });
+      } else if (payWay === 'alipay_official') {
+        res = await API.post('/api/user/alipay/pay', {
+          amount: parseInt(topUpCount),
+          payment_method: 'alipay_official',
+        });
       } else {
         // 普通支付请求
         res = await API.post('/api/user/pay', {
@@ -290,8 +308,7 @@ const TopUp = () => {
       if (res !== undefined) {
         const { message, data } = res.data;
         if (message === 'success') {
-          if (payWay === 'stripe') {
-            // Stripe 支付回调处理
+          if (payWay === 'stripe' || payWay === 'alipay_official') {
             window.open(data.pay_link, '_blank');
           } else {
             // 普通支付表单提交
@@ -610,8 +627,18 @@ const TopUp = () => {
                 }
               }
 
+              if (
+                method.type === 'alipay_official' &&
+                (!method.min_topup || method.min_topup <= 0)
+              ) {
+                const alipayMin = Number(data.alipay_min_topup);
+                if (Number.isFinite(alipayMin)) {
+                  method.min_topup = alipayMin;
+                }
+              }
+
               if (!method.color) {
-                if (method.type === 'alipay') {
+                if (method.type === 'alipay' || method.type === 'alipay_official') {
                   method.color = 'rgba(var(--semi-blue-5), 1)';
                 } else if (method.type === 'wxpay') {
                   method.color = 'rgba(var(--semi-green-5), 1)';
@@ -632,6 +659,7 @@ const TopUp = () => {
 
           setPayMethods(payMethods);
           const enableStripeTopUp = data.enable_stripe_topup || false;
+          const enableAlipayTopUp = data.enable_alipay_topup || false;
           const enableOnlineTopUp = data.enable_online_topup || false;
           const enableCreemTopUp = data.enable_creem_topup || false;
           const enableWaffoTopUp = data.enable_waffo_topup || false;
@@ -641,6 +669,8 @@ const TopUp = () => {
             ? data.min_topup
             : enableStripeTopUp
               ? data.stripe_min_topup
+              : enableAlipayTopUp
+                ? data.alipay_min_topup
               : enableWaffoTopUp
                 ? data.waffo_min_topup
                 : enableWaffoPancakeTopUp
@@ -648,6 +678,7 @@ const TopUp = () => {
                 : 1;
           setEnableOnlineTopUp(enableOnlineTopUp);
           setEnableStripeTopUp(enableStripeTopUp);
+          setEnableAlipayTopUp(enableAlipayTopUp);
           setEnableCreemTopUp(enableCreemTopUp);
           setEnableWaffoTopUp(enableWaffoTopUp);
           setWaffoPayMethods(data.waffo_pay_methods || []);
@@ -826,6 +857,33 @@ const TopUp = () => {
     }
   };
 
+  const getAlipayAmount = async (value) => {
+    if (value === undefined) {
+      value = topUpCount;
+    }
+    setAmountLoading(true);
+    try {
+      const res = await API.post('/api/user/alipay/amount', {
+        amount: parseFloat(value),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          setAmount(parseFloat(data));
+        } else {
+          setAmount(0);
+          Toast.error({ content: '错误：' + data, id: 'getAmount' });
+        }
+      } else {
+        showError(res);
+      }
+    } catch (err) {
+      // amount fetch failed silently
+    } finally {
+      setAmountLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setOpen(false);
   };
@@ -943,6 +1001,7 @@ const TopUp = () => {
         <RechargeCard
           t={t}
           enableOnlineTopUp={enableOnlineTopUp}
+          enableAlipayTopUp={enableAlipayTopUp}
           enableStripeTopUp={enableStripeTopUp}
           enableCreemTopUp={enableCreemTopUp}
           creemProducts={creemProducts}

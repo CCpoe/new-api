@@ -23,6 +23,7 @@ import SettingsGeneralPayment from '../../pages/Setting/Payment/SettingsGeneralP
 import SettingsPaymentGateway from '../../pages/Setting/Payment/SettingsPaymentGateway';
 import SettingsPaymentGatewayStripe from '../../pages/Setting/Payment/SettingsPaymentGatewayStripe';
 import SettingsPaymentGatewayCreem from '../../pages/Setting/Payment/SettingsPaymentGatewayCreem';
+import SettingsPaymentGatewayAlipay from '../../pages/Setting/Payment/SettingsPaymentGatewayAlipay';
 import SettingsPaymentGatewayWaffo from '../../pages/Setting/Payment/SettingsPaymentGatewayWaffo';
 import SettingsPaymentGatewayWaffoPancake from '../../pages/Setting/Payment/SettingsPaymentGatewayWaffoPancake';
 import { API, showError, toBoolean } from '../../helpers';
@@ -49,6 +50,16 @@ const PaymentSetting = () => {
     StripeUnitPrice: 8.0,
     StripeMinTopUp: 1,
     StripePromotionCodesEnabled: false,
+
+    AlipayEnabled: false,
+    AlipaySandbox: false,
+    AlipayAppId: '',
+    AlipayPrivateKey: '',
+    AlipayPublicKey: '',
+    AlipayNotifyUrl: '',
+    AlipayReturnUrl: '',
+    AlipayUnitPrice: 7.3,
+    AlipayMinTopUp: 1,
 
     WaffoPancakeEnabled: false,
     WaffoPancakeSandbox: false,
@@ -108,10 +119,17 @@ const PaymentSetting = () => {
           case 'MinTopUp':
           case 'StripeUnitPrice':
           case 'StripeMinTopUp':
+          case 'AlipayUnitPrice':
+          case 'AlipayMinTopUp':
           case 'WaffoPancakeUnitPrice':
           case 'WaffoPancakeMinTopUp':
             newInputs[item.key] = parseFloat(item.value);
             break;
+          case 'AlipayAppId':
+          case 'AlipayPrivateKey':
+          case 'AlipayPublicKey':
+          case 'AlipayNotifyUrl':
+          case 'AlipayReturnUrl':
           case 'WaffoPancakeMerchantID':
           case 'WaffoPancakePrivateKey':
           case 'WaffoPancakeStoreID':
@@ -120,6 +138,7 @@ const PaymentSetting = () => {
           case 'WaffoPancakeCurrency':
             newInputs[item.key] = item.value;
             break;
+          case 'AlipaySandbox':
           case 'WaffoPancakeSandbox':
             newInputs[item.key] = toBoolean(item.value);
             break;
@@ -186,6 +205,16 @@ const PaymentSetting = () => {
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('Creem 设置')} itemKey='creem'>
               <SettingsPaymentGatewayCreem
+                options={inputs}
+                refresh={onRefresh}
+                hideSectionTitle
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={t('Alipay Official Settings')}
+              itemKey='alipay-official'
+            >
+              <SettingsPaymentGatewayAlipay
                 options={inputs}
                 refresh={onRefresh}
                 hideSectionTitle

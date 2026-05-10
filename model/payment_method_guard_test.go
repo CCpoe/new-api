@@ -102,6 +102,21 @@ func TestRechargeWaffoPancake_RejectsMismatchedPaymentMethod(t *testing.T) {
 	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, 101))
 }
 
+func TestRechargeAlipay_RejectsMismatchedPaymentProvider(t *testing.T) {
+	truncateTables(t)
+
+	insertUserForPaymentGuardTest(t, 111, 0)
+	insertTopUpForPaymentGuardTest(t, "alipay-guard", 111, PaymentProviderStripe)
+
+	err := RechargeAlipay("alipay-guard", "127.0.0.1")
+	require.Error(t, err)
+
+	topUp := GetTopUpByTradeNo("alipay-guard")
+	require.NotNil(t, topUp)
+	assert.Equal(t, common.TopUpStatusPending, topUp.Status)
+	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, 111))
+}
+
 func TestUpdatePendingTopUpStatus_RejectsMismatchedPaymentProvider(t *testing.T) {
 	testCases := []struct {
 		name                    string

@@ -38,6 +38,10 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
+import {
+  AlipaySettingsSection,
+  type AlipaySettingsValues,
+} from './alipay-settings-section'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
 import { CreemProductsVisualEditor } from './creem-products-visual-editor'
@@ -127,12 +131,14 @@ type PaymentFormValues = z.infer<typeof paymentSchema>
 
 type PaymentSettingsSectionProps = {
   defaultValues: PaymentFormValues
+  alipayDefaultValues: AlipaySettingsValues
   waffoDefaultValues: WaffoSettingsValues
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
 }
 
 export function PaymentSettingsSection({
   defaultValues,
+  alipayDefaultValues,
   waffoDefaultValues,
   waffoPancakeDefaultValues,
 }: PaymentSettingsSectionProps) {
@@ -1301,6 +1307,10 @@ export function PaymentSettingsSection({
           </Button>
         </form>
       </Form>
+
+      <Separator />
+
+      <AlipaySettingsSection defaultValues={alipayDefaultValues} />
 
       <Separator />
 
