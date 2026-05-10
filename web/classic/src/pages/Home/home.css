@@ -10,14 +10,13 @@
 .aihubmix-hero {
   position: relative;
   display: flex;
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: auto;
   box-sizing: border-box;
   flex-direction: column;
-  justify-content: center;
-  padding: 144px 0 72px;
+  justify-content: flex-start;
+  padding: 118px 0 40px;
   overflow: hidden;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 0;
 }
 
 .aihubmix-map-scene {
@@ -55,6 +54,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .aihubmix-map-source {
@@ -358,19 +358,22 @@
 
 .aihubmix-more {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  width: min(1120px, calc(100% - 48px));
-  min-height: 100vh;
-  min-height: 100svh;
+  grid-template-columns: repeat(3, 371px);
+  gap: 32px;
+  width: max-content;
+  max-width: calc(100% - 48px);
+  min-height: 0;
   box-sizing: border-box;
-  align-content: center;
+  justify-content: center;
   margin: 0 auto;
-  padding: 112px 0;
+  padding: 40px 0 56px;
   scroll-margin-top: 96px;
 }
 
 .more-panel {
+  width: 371px;
+  height: 223px;
+  box-sizing: border-box;
   padding: 30px;
   border: 1px solid #eef0f4;
   border-radius: 16px;
@@ -488,13 +491,13 @@
   }
 
   .aihubmix-more {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 371px);
   }
 }
 
 @media (max-width: 760px) {
   .aihubmix-hero {
-    padding-top: 132px;
+    padding: 116px 0 32px;
   }
 
   .aihubmix-hero-copy h1 {
@@ -511,6 +514,15 @@
 
   .aihubmix-more {
     grid-template-columns: 1fr;
+    width: min(330px, calc(100% - 48px));
+    max-width: none;
+    padding: 32px 0 44px;
+  }
+
+  .more-panel {
+    width: 100%;
+    height: auto;
+    min-height: 223px;
   }
 
   .aihubmix-footer {
