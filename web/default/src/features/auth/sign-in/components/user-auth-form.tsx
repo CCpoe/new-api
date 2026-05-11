@@ -85,7 +85,10 @@ export function UserAuthForm({
     isTurnstileEnabled,
     turnstileSiteKey,
     turnstileToken,
-    setTurnstileToken,
+    isTurnstileReady,
+    handleTurnstileVerify,
+    handleTurnstileExpire,
+    handleTurnstileError,
     validateTurnstile,
   } = useTurnstile()
   const { handleLoginSuccess, redirectTo2FA } = useAuthRedirect()
@@ -321,25 +324,31 @@ export function UserAuthForm({
           )}
         />
 
-        {/* Submit Button */}
-        <Button
-          type='submit'
-          className='mt-2 w-full justify-center gap-2'
-          disabled={isLoading || (requiresLegalConsent && !agreedToLegal)}
-        >
-          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
-          {t('Sign in')}
-        </Button>
-
         {/* Turnstile */}
         {isTurnstileEnabled && (
           <div className='mt-2'>
             <Turnstile
               siteKey={turnstileSiteKey}
-              onVerify={setTurnstileToken}
+              onVerify={handleTurnstileVerify}
+              onExpire={handleTurnstileExpire}
+              onError={handleTurnstileError}
             />
           </div>
         )}
+
+        {/* Submit Button */}
+        <Button
+          type='submit'
+          className='mt-2 w-full justify-center gap-2'
+          disabled={
+            isLoading ||
+            !isTurnstileReady ||
+            (requiresLegalConsent && !agreedToLegal)
+          }
+        >
+          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
+          {t('Sign in')}
+        </Button>
 
         <LegalConsent
           status={status}

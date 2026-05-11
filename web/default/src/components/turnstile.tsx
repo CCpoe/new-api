@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (C) 2023-2026 QuantumNous
 
 This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 
 declare global {
   interface Window {
@@ -30,6 +31,7 @@ interface TurnstileProps {
   siteKey: string
   onVerify: (token: string) => void
   onExpire?: () => void
+  onError?: () => void
   className?: string
 }
 
@@ -37,40 +39,92 @@ export function Turnstile({
   siteKey,
   onVerify,
   onExpire,
+  onError,
   className,
 }: TurnstileProps) {
   const ref = useRef<HTMLDivElement | null>(null)
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+    const animationFrame = window.requestAnimationFrame(() => {
+      if (!cancelled) setVisible(true)
+    })
+
     const render = () => {
-      if (!ref.current || !window.turnstile) return
+      if (!ref.current || !window.turnstile || cancelled) return
+
       try {
+        ref.current.innerHTML = ''
         window.turnstile.render(ref.current, {
           sitekey: siteKey,
-          callback: (token: string) => onVerify(token),
-          'error-callback': () => onExpire?.(),
-          'expired-callback': () => onExpire?.(),
+          callback: (token: string) => {
+            onVerify(token)
+          },
+          'error-callback': () => {
+            onError?.()
+            onExpire?.()
+          },
+          'expired-callback': () => {
+            onExpire?.()
+          },
         })
       } catch {
-        /* empty */
+        onError?.()
       }
     }
 
     if (window.turnstile) {
       render()
-      return
+      return () => {
+        cancelled = true
+        window.cancelAnimationFrame(animationFrame)
+      }
     }
+
     const scriptId = 'cf-turnstile'
-    if (document.getElementById(scriptId)) return
+    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null
+    if (existingScript) {
+      existingScript.addEventListener('load', render, { once: true })
+      return () => {
+        cancelled = true
+        window.cancelAnimationFrame(animationFrame)
+        existingScript.removeEventListener('load', render)
+      }
+    }
+
     const s = document.createElement('script')
     s.id = scriptId
-    s.src =
-      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
     s.async = true
     s.defer = true
     s.onload = () => render()
+    s.onerror = () => {
+      onError?.()
+    }
     document.head.appendChild(s)
-  }, [siteKey, onVerify, onExpire])
 
-  return <div ref={ref} className={className} />
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(animationFrame)
+    }
+  }, [siteKey, onVerify, onExpire, onError])
+
+  return (
+    <div
+      className={cn(
+        'overflow-hidden transition-[max-height,opacity,transform,margin] duration-300 ease-out motion-reduce:transition-none',
+        visible
+          ? 'mt-2 max-h-[90px] translate-y-0 opacity-100'
+          : 'mt-0 max-h-0 -translate-y-1 opacity-0',
+        className
+      )}
+    >
+      <div className='flex justify-center py-1'>
+        <div className='w-[300px] max-w-full overflow-hidden rounded bg-background'>
+          <div ref={ref} />
+        </div>
+      </div>
+    </div>
+  )
 }

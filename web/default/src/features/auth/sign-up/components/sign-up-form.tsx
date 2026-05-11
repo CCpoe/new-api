@@ -73,7 +73,10 @@ export function SignUpForm({
     isTurnstileEnabled,
     turnstileSiteKey,
     turnstileToken,
-    setTurnstileToken,
+    isTurnstileReady,
+    handleTurnstileVerify,
+    handleTurnstileExpire,
+    handleTurnstileError,
     validateTurnstile,
   } = useTurnstile()
   const { redirectToLogin, handleLoginSuccess } = useAuthRedirect()
@@ -135,6 +138,8 @@ export function SignUpForm({
       toast.error(legalConsentErrorMessage)
       return
     }
+
+    if (!validateTurnstile()) return
 
     // Validate email verification if required
     if (emailVerificationRequired) {
@@ -318,16 +323,19 @@ export function SignUpForm({
               </Button>
             </div>
 
-            {/* Turnstile */}
-            {isTurnstileEnabled && (
-              <div className='mt-2'>
-                <Turnstile
-                  siteKey={turnstileSiteKey}
-                  onVerify={setTurnstileToken}
-                />
-              </div>
-            )}
           </>
+        )}
+
+        {/* Turnstile */}
+        {isTurnstileEnabled && (
+          <div className='mt-2'>
+            <Turnstile
+              siteKey={turnstileSiteKey}
+              onVerify={handleTurnstileVerify}
+              onExpire={handleTurnstileExpire}
+              onError={handleTurnstileError}
+            />
+          </div>
         )}
 
         <LegalConsent
@@ -341,7 +349,11 @@ export function SignUpForm({
         <Button
           type='submit'
           className='mt-2 w-full justify-center gap-2'
-          disabled={isLoading || (requiresLegalConsent && !agreedToLegal)}
+          disabled={
+            isLoading ||
+            !isTurnstileReady ||
+            (requiresLegalConsent && !agreedToLegal)
+          }
         >
           {isLoading ? <Loader2 className='h-4 w-4 animate-spin' /> : null}
           {t('Create account')}

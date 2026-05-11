@@ -32,7 +32,7 @@ import {
   onDiscordOAuthClicked,
   onCustomOAuthClicked,
 } from '../../helpers';
-import Turnstile from 'react-turnstile';
+import TurnstileBox from './TurnstileBox';
 import {
   Button,
   Card,
@@ -101,6 +101,7 @@ const RegisterForm = () => {
     useState(false);
   const [wechatCodeSubmitLoading, setWechatCodeSubmitLoading] = useState(false);
   const [customOAuthLoading, setCustomOAuthLoading] = useState({});
+  const isTurnstileReady = !turnstileEnabled || Boolean(turnstileToken);
   const [disableButton, setDisableButton] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -183,10 +184,6 @@ const RegisterForm = () => {
   };
 
   const onSubmitWeChatVerificationCode = async () => {
-    if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
-      return;
-    }
     setWechatCodeSubmitLoading(true);
     try {
       const res = await API.get(
@@ -226,7 +223,7 @@ const RegisterForm = () => {
     }
     if (username && password) {
       if (turnstileEnabled && turnstileToken === '') {
-        showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+        showInfo('请先完成人机验证');
         return;
       }
       setRegisterLoading(true);
@@ -257,7 +254,7 @@ const RegisterForm = () => {
   const sendVerificationCode = async () => {
     if (inputs.email === '') return;
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo('请先完成人机验证');
       return;
     }
     setVerificationCodeLoading(true);
@@ -637,6 +634,13 @@ const RegisterForm = () => {
                   </>
                 )}
 
+                <TurnstileBox
+                  enabled={turnstileEnabled}
+                  siteKey={turnstileSiteKey}
+                  onVerify={setTurnstileToken}
+                  className='mt-2'
+                />
+
                 {(hasUserAgreement || hasPrivacyPolicy) && (
                   <div className='pt-4'>
                     <Checkbox
@@ -684,7 +688,8 @@ const RegisterForm = () => {
                     onClick={handleSubmit}
                     loading={registerLoading}
                     disabled={
-                      (hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms
+                      !isTurnstileReady ||
+                      ((hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms)
                     }
                   >
                     {t('注册')}
@@ -786,17 +791,6 @@ const RegisterForm = () => {
           ? renderEmailRegisterForm()
           : renderOAuthOptions()}
         {renderWeChatLoginModal()}
-
-        {turnstileEnabled && (
-          <div className='flex justify-center mt-6'>
-            <Turnstile
-              sitekey={turnstileSiteKey}
-              onVerify={(token) => {
-                setTurnstileToken(token);
-              }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

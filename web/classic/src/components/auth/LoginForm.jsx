@@ -40,7 +40,7 @@ import {
   buildAssertionResult,
   isPasskeySupported,
 } from '../../helpers';
-import Turnstile from 'react-turnstile';
+import TurnstileBox from './TurnstileBox';
 import {
   Button,
   Card,
@@ -112,6 +112,7 @@ const LoginForm = () => {
   const githubTimeoutRef = useRef(null);
   const githubButtonText = t(githubButtonTextKeyByState[githubButtonState]);
   const [customOAuthLoading, setCustomOAuthLoading] = useState({});
+  const isTurnstileReady = !turnstileEnabled || Boolean(turnstileToken);
 
   const logo = getLogo();
   const systemName = getSystemName();
@@ -183,10 +184,6 @@ const LoginForm = () => {
   };
 
   const onSubmitWeChatVerificationCode = async () => {
-    if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
-      return;
-    }
     setWechatCodeSubmitLoading(true);
     try {
       const res = await API.get(
@@ -221,7 +218,7 @@ const LoginForm = () => {
       return;
     }
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo('请先完成人机验证');
       return;
     }
     setSubmitted(true);
@@ -764,6 +761,13 @@ const LoginForm = () => {
                   prefix={<IconLock />}
                 />
 
+                <TurnstileBox
+                  enabled={turnstileEnabled}
+                  siteKey={turnstileSiteKey}
+                  onVerify={setTurnstileToken}
+                  className='mt-2'
+                />
+
                 {(hasUserAgreement || hasPrivacyPolicy) && (
                   <div className='pt-4'>
                     <Checkbox
@@ -811,7 +815,8 @@ const LoginForm = () => {
                     onClick={handleSubmit}
                     loading={loginLoading}
                     disabled={
-                      (hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms
+                      !isTurnstileReady ||
+                      ((hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms)
                     }
                   >
                     {t('继续')}
@@ -964,17 +969,6 @@ const LoginForm = () => {
           : renderOAuthOptions()}
         {renderWeChatLoginModal()}
         {render2FAModal()}
-
-        {turnstileEnabled && (
-          <div className='flex justify-center mt-6'>
-            <Turnstile
-              sitekey={turnstileSiteKey}
-              onVerify={(token) => {
-                setTurnstileToken(token);
-              }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

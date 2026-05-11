@@ -53,10 +53,7 @@ const LanguageSelector = ({ currentLang, onLanguageChange, t }) => {
               onClick={() => onLanguageChange(option.value)}
               className={`!px-3 !py-1.5 !text-sm !text-semi-color-text-0 dark:!text-gray-200 ${currentLang === option.value ? '!bg-semi-color-primary-light-default dark:!bg-blue-600 !font-semibold' : 'hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-600'}`}
             >
-              <span className='aihubmix-language-item'>
-                <span className='aihubmix-language-item-code'>{option.shortLabel}</span>
-                <span>{option.label}</span>
-              </span>
+              <span className='aihubmix-language-item'>{option.label}</span>
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>
