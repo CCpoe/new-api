@@ -19,7 +19,6 @@ For commercial licensing, please contact support@quantumnous.com
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   Bell,
@@ -319,9 +318,9 @@ const Home = () => {
                 {copy.docs}
               </a>
             )}
-            <Link className='aihubmix-btn aihubmix-btn-primary' to='/login'>
+            <a className='aihubmix-btn aihubmix-btn-primary' href='/login'>
               {copy.primaryCta} <ArrowRight size={20} />
-            </Link>
+            </a>
           </div>
         </div>
 

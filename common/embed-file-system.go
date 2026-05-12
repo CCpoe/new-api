@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-contrib/static"
 )
@@ -54,6 +55,9 @@ func (t *themeAwareFileSystem) Exists(prefix string, path string) bool {
 	if GetTheme() == "classic" {
 		return t.classicFS.Exists(prefix, path)
 	}
+	if isClassicHomeAssetPath(path) && t.classicFS.Exists(prefix, path) {
+		return true
+	}
 	return t.defaultFS.Exists(prefix, path)
 }
 
@@ -61,9 +65,39 @@ func (t *themeAwareFileSystem) Open(name string) (http.File, error) {
 	if GetTheme() == "classic" {
 		return t.classicFS.Open(name)
 	}
+	if isClassicHomeAssetPath(name) {
+		if file, err := t.classicFS.Open(name); err == nil {
+			return file, nil
+		}
+	}
 	return t.defaultFS.Open(name)
 }
 
 func NewThemeAwareFS(defaultFS, classicFS static.ServeFileSystem) static.ServeFileSystem {
 	return &themeAwareFileSystem{defaultFS: defaultFS, classicFS: classicFS}
+}
+
+func isClassicHomeAssetPath(path string) bool {
+	if path == "" {
+		return false
+	}
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	if strings.HasPrefix(path, "/assets/") {
+		return true
+	}
+
+	switch path {
+	case "/aihubmix-card-concurrency-1.png",
+		"/aihubmix-card-concurrency-2.png",
+		"/aihubmix-card-concurrency-3.png",
+		"/aihubmix-world-map.svg",
+		"/kkcode-coverage-map.png",
+		"/kkcode-logo.svg":
+		return true
+	default:
+		return false
+	}
 }

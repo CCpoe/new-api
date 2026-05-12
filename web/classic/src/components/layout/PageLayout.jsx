@@ -19,26 +19,24 @@ For commercial licensing, please contact support@quantumnous.com
 
 import HeaderBar from './headerbar';
 import { Layout } from '@douyinfe/semi-ui';
-import SiderBar from './SiderBar';
 import App from '../../App';
-import FooterBar from './Footer';
 import { ToastContainer } from 'react-toastify';
 import ErrorBoundary from '../common/ErrorBoundary';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useContext, useEffect, useState } from 'react';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
 import { useSidebarCollapsed } from '../../hooks/common/useSidebarCollapsed';
 import { useTranslation } from 'react-i18next';
-import {
-  API,
-  getSystemName,
-  showError,
-  setStatusData,
-} from '../../helpers';
+import { API } from '../../helpers/api';
+import { getSystemName, showError } from '../../helpers/utils';
+import { setStatusData } from '../../helpers/data';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
 import { normalizeLanguage } from '../../i18n/language';
 const { Sider, Content, Header } = Layout;
+
+const SiderBar = lazy(() => import('./SiderBar'));
+const FooterBar = lazy(() => import('./Footer'));
 
 const PageLayout = () => {
   const [userState, userDispatch] = useContext(UserContext);
@@ -193,11 +191,13 @@ const PageLayout = () => {
               width: 'var(--sidebar-current-width)',
             }}
           >
-            <SiderBar
-              onNavigate={() => {
-                if (isMobile) setDrawerOpen(false);
-              }}
-            />
+            <Suspense fallback={null}>
+              <SiderBar
+                onNavigate={() => {
+                  if (isMobile) setDrawerOpen(false);
+                }}
+              />
+            </Suspense>
           </Sider>
         )}
         <Layout
@@ -232,7 +232,9 @@ const PageLayout = () => {
                 width: '100%',
               }}
             >
-              <FooterBar />
+              <Suspense fallback={null}>
+                <FooterBar />
+              </Suspense>
             </Layout.Footer>
           )}
         </Layout>
