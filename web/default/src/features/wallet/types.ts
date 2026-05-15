@@ -43,6 +43,18 @@ export type AlipayPaymentResponse = ApiResponse<{
   pay_link: string
   order_id?: string
 }>
+export interface LakalaPaymentData {
+  qr_code?: string
+  pay_link?: string
+  code_image?: string
+  form_data?: string
+  redirect_url?: string
+  order_id?: string
+  lkl_order_id?: string
+  pay_mode?: string
+  trans_type?: string
+}
+export type LakalaPaymentResponse = ApiResponse<LakalaPaymentData>
 export type AffiliateCodeResponse = ApiResponse<string>
 export type AffiliateTransferResponse = ApiResponse
 export type CreemPaymentResponse = ApiResponse<{ checkout_url: string }>
@@ -125,6 +137,8 @@ export interface TopupInfo {
   enable_stripe_topup: boolean
   /** Whether official Alipay topup is enabled */
   enable_alipay_topup?: boolean
+  /** Whether Lakala topup is enabled */
+  enable_lakala_topup?: boolean
   /** Available payment methods */
   pay_methods: PaymentMethod[]
   /** Minimum topup amount for online topup */
@@ -133,6 +147,8 @@ export interface TopupInfo {
   stripe_min_topup: number
   /** Minimum topup amount for official Alipay */
   alipay_min_topup?: number
+  /** Minimum topup amount for Lakala */
+  lakala_min_topup?: number
   /** Preset amount options */
   amount_options: number[]
   /** Discount rates by amount */

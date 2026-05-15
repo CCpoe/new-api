@@ -42,6 +42,10 @@ import {
   AlipaySettingsSection,
   type AlipaySettingsValues,
 } from './alipay-settings-section'
+import {
+  LakalaSettingsSection,
+  type LakalaSettingsValues,
+} from './lakala-settings-section'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
 import { CreemProductsVisualEditor } from './creem-products-visual-editor'
@@ -132,6 +136,7 @@ type PaymentFormValues = z.infer<typeof paymentSchema>
 type PaymentSettingsSectionProps = {
   defaultValues: PaymentFormValues
   alipayDefaultValues: AlipaySettingsValues
+  lakalaDefaultValues: LakalaSettingsValues
   waffoDefaultValues: WaffoSettingsValues
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
 }
@@ -139,6 +144,7 @@ type PaymentSettingsSectionProps = {
 export function PaymentSettingsSection({
   defaultValues,
   alipayDefaultValues,
+  lakalaDefaultValues,
   waffoDefaultValues,
   waffoPancakeDefaultValues,
 }: PaymentSettingsSectionProps) {
@@ -1311,6 +1317,10 @@ export function PaymentSettingsSection({
       <Separator />
 
       <AlipaySettingsSection defaultValues={alipayDefaultValues} />
+
+      <Separator />
+
+      <LakalaSettingsSection defaultValues={lakalaDefaultValues} />
 
       <Separator />
 

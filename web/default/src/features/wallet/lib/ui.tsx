@@ -107,6 +107,13 @@ export function getPaymentIcon(
           style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.STRIPE] }}
         />
       )
+    case PAYMENT_TYPES.LAKALA:
+      return (
+        <CreditCard
+          className={className}
+          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.LAKALA] }}
+        />
+      )
     case PAYMENT_TYPES.CREEM:
       return (
         <Landmark

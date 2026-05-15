@@ -99,6 +99,21 @@ func InitOptionMap() {
 	common.OptionMap["AlipayReturnUrl"] = setting.AlipayReturnUrl
 	common.OptionMap["AlipayUnitPrice"] = strconv.FormatFloat(setting.AlipayUnitPrice, 'f', -1, 64)
 	common.OptionMap["AlipayMinTopUp"] = strconv.Itoa(setting.AlipayMinTopUp)
+	common.OptionMap["LakalaEnabled"] = strconv.FormatBool(setting.LakalaEnabled)
+	common.OptionMap["LakalaSandbox"] = strconv.FormatBool(setting.LakalaSandbox)
+	common.OptionMap["LakalaAppId"] = setting.LakalaAppId
+	common.OptionMap["LakalaSerialNo"] = setting.LakalaSerialNo
+	common.OptionMap["LakalaPrivateKey"] = setting.LakalaPrivateKey
+	common.OptionMap["LakalaPublicKey"] = setting.LakalaPublicKey
+	common.OptionMap["LakalaMerchantId"] = setting.LakalaMerchantId
+	common.OptionMap["LakalaTermNo"] = setting.LakalaTermNo
+	common.OptionMap["LakalaPayMode"] = setting.LakalaPayMode
+	common.OptionMap["LakalaTransType"] = setting.LakalaTransType
+	common.OptionMap["LakalaOrderSource"] = setting.LakalaOrderSource
+	common.OptionMap["LakalaNotifyUrl"] = setting.LakalaNotifyUrl
+	common.OptionMap["LakalaReturnUrl"] = setting.LakalaReturnUrl
+	common.OptionMap["LakalaUnitPrice"] = strconv.FormatFloat(setting.LakalaUnitPrice, 'f', -1, 64)
+	common.OptionMap["LakalaMinTopUp"] = strconv.Itoa(setting.LakalaMinTopUp)
 	common.OptionMap["WaffoEnabled"] = strconv.FormatBool(setting.WaffoEnabled)
 	common.OptionMap["WaffoApiKey"] = setting.WaffoApiKey
 	common.OptionMap["WaffoPrivateKey"] = setting.WaffoPrivateKey
@@ -416,6 +431,36 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.AlipayUnitPrice, _ = strconv.ParseFloat(value, 64)
 	case "AlipayMinTopUp":
 		setting.AlipayMinTopUp, _ = strconv.Atoi(value)
+	case "LakalaEnabled":
+		setting.LakalaEnabled = value == "true"
+	case "LakalaSandbox":
+		setting.LakalaSandbox = value == "true"
+	case "LakalaAppId":
+		setting.LakalaAppId = value
+	case "LakalaSerialNo":
+		setting.LakalaSerialNo = value
+	case "LakalaPrivateKey":
+		setting.LakalaPrivateKey = value
+	case "LakalaPublicKey":
+		setting.LakalaPublicKey = value
+	case "LakalaMerchantId":
+		setting.LakalaMerchantId = value
+	case "LakalaTermNo":
+		setting.LakalaTermNo = value
+	case "LakalaPayMode":
+		setting.LakalaPayMode = value
+	case "LakalaTransType":
+		setting.LakalaTransType = value
+	case "LakalaOrderSource":
+		setting.LakalaOrderSource = value
+	case "LakalaNotifyUrl":
+		setting.LakalaNotifyUrl = value
+	case "LakalaReturnUrl":
+		setting.LakalaReturnUrl = value
+	case "LakalaUnitPrice":
+		setting.LakalaUnitPrice, _ = strconv.ParseFloat(value, 64)
+	case "LakalaMinTopUp":
+		setting.LakalaMinTopUp, _ = strconv.Atoi(value)
 	case "WaffoEnabled":
 		setting.WaffoEnabled = value == "true"
 	case "WaffoApiKey":

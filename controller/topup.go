@@ -22,7 +22,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func filterAvailablePayMethods(payMethods []map[string]string, enableEpay, enableStripe, enableAlipay, enableWaffo, enableWaffoPancake bool) []map[string]string {
+func filterAvailablePayMethods(payMethods []map[string]string, enableEpay, enableStripe, enableAlipay, enableLakala, enableWaffo, enableWaffoPancake bool) []map[string]string {
 	return lo.Filter(payMethods, func(method map[string]string, _ int) bool {
 		switch method["type"] {
 		case model.PaymentMethodCreem:
@@ -31,6 +31,8 @@ func filterAvailablePayMethods(payMethods []map[string]string, enableEpay, enabl
 			return enableStripe
 		case model.PaymentMethodAlipay:
 			return enableAlipay
+		case model.PaymentMethodLakala:
+			return enableLakala
 		case model.PaymentMethodWaffo:
 			return enableWaffo
 		case model.PaymentMethodWaffoPancake:
@@ -45,11 +47,12 @@ func GetTopUpInfo(c *gin.Context) {
 	enableEpay := isEpayTopUpEnabled()
 	enableStripe := isStripeTopUpEnabled()
 	enableAlipay := isAlipayTopUpEnabled()
+	enableLakala := isLakalaTopUpEnabled()
 	enableWaffo := isWaffoTopUpEnabled()
 	enableWaffoPancake := isWaffoPancakeTopUpEnabled()
 
 	// 获取支付方式
-	payMethods := filterAvailablePayMethods(operation_setting.PayMethods, enableEpay, enableStripe, enableAlipay, enableWaffo, enableWaffoPancake)
+	payMethods := filterAvailablePayMethods(operation_setting.PayMethods, enableEpay, enableStripe, enableAlipay, enableLakala, enableWaffo, enableWaffoPancake)
 
 	// 如果启用了 Stripe 支付，添加到支付方法列表
 	if enableStripe {
@@ -132,9 +135,29 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	if enableLakala {
+		hasLakala := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodLakala {
+				hasLakala = true
+				break
+			}
+		}
+
+		if !hasLakala {
+			payMethods = append(payMethods, map[string]string{
+				"name":      "Lakala",
+				"type":      model.PaymentMethodLakala,
+				"color":     "#00A6A6",
+				"min_topup": strconv.Itoa(setting.LakalaMinTopUp),
+			})
+		}
+	}
+
 	data := gin.H{
 		"enable_online_topup":        enableEpay,
 		"enable_alipay_topup":        enableAlipay,
+		"enable_lakala_topup":        enableLakala,
 		"enable_stripe_topup":        enableStripe,
 		"enable_creem_topup":         isCreemTopUpEnabled(),
 		"enable_waffo_topup":         enableWaffo,
@@ -149,6 +172,7 @@ func GetTopUpInfo(c *gin.Context) {
 		"pay_methods":             payMethods,
 		"min_topup":               operation_setting.MinTopUp,
 		"alipay_min_topup":        setting.AlipayMinTopUp,
+		"lakala_min_topup":        setting.LakalaMinTopUp,
 		"stripe_min_topup":        setting.StripeMinTopUp,
 		"waffo_min_topup":         setting.WaffoMinTopUp,
 		"waffo_pancake_min_topup": setting.WaffoPancakeMinTopUp,

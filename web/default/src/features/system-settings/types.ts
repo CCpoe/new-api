@@ -234,6 +234,21 @@ export type BillingSettings = {
   AlipayReturnUrl: string
   AlipayUnitPrice: number
   AlipayMinTopUp: number
+  LakalaEnabled: boolean
+  LakalaSandbox: boolean
+  LakalaAppId: string
+  LakalaSerialNo: string
+  LakalaPrivateKey: string
+  LakalaPublicKey: string
+  LakalaMerchantId: string
+  LakalaTermNo: string
+  LakalaPayMode: string
+  LakalaTransType: string
+  LakalaOrderSource: string
+  LakalaNotifyUrl: string
+  LakalaReturnUrl: string
+  LakalaUnitPrice: number
+  LakalaMinTopUp: number
   WaffoEnabled: boolean
   WaffoApiKey: string
   WaffoPrivateKey: string

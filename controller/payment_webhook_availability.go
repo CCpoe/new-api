@@ -47,6 +47,27 @@ func isAlipayWebhookEnabled() bool {
 	return isAlipayTopUpEnabled()
 }
 
+func isLakalaTopUpEnabled() bool {
+	if !setting.LakalaEnabled {
+		return false
+	}
+
+	return isLakalaWebhookConfigured()
+}
+
+func isLakalaWebhookConfigured() bool {
+	return strings.TrimSpace(setting.LakalaAppId) != "" &&
+		strings.TrimSpace(setting.LakalaSerialNo) != "" &&
+		strings.TrimSpace(setting.LakalaPrivateKey) != "" &&
+		strings.TrimSpace(setting.LakalaPublicKey) != "" &&
+		strings.TrimSpace(setting.LakalaMerchantId) != "" &&
+		strings.TrimSpace(setting.LakalaTermNo) != ""
+}
+
+func isLakalaWebhookEnabled() bool {
+	return isLakalaTopUpEnabled()
+}
+
 func isCreemWebhookConfigured() bool {
 	return strings.TrimSpace(setting.CreemWebhookSecret) != ""
 }
@@ -106,7 +127,7 @@ func isWaffoPancakeWebhookEnabled() bool {
 
 func isEpayPayMethod(paymentType string) bool {
 	switch strings.TrimSpace(paymentType) {
-	case "", model.PaymentMethodStripe, model.PaymentMethodAlipay, model.PaymentMethodCreem, model.PaymentMethodWaffo, model.PaymentMethodWaffoPancake:
+	case "", model.PaymentMethodStripe, model.PaymentMethodAlipay, model.PaymentMethodLakala, model.PaymentMethodCreem, model.PaymentMethodWaffo, model.PaymentMethodWaffoPancake:
 		return false
 	default:
 		return true

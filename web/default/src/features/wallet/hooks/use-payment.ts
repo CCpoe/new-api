@@ -22,19 +22,23 @@ import { toast } from 'sonner'
 import {
   calculateAmount,
   calculateAlipayAmount,
+  calculateLakalaAmount,
   calculateStripeAmount,
   calculateWaffoPancakeAmount,
   requestPayment,
   requestAlipayPayment,
+  requestLakalaPayment,
   requestStripePayment,
   isApiSuccess,
 } from '../api'
 import {
   isAlipayOfficialPayment,
+  isLakalaPayment,
   isStripePayment,
   isWaffoPancakePayment,
   submitPaymentForm,
 } from '../lib'
+import type { LakalaPaymentData } from '../types'
 
 // ============================================================================
 // Payment Hook
@@ -44,6 +48,8 @@ export function usePayment() {
   const [amount, setAmount] = useState<number>(0)
   const [calculating, setCalculating] = useState(false)
   const [processing, setProcessing] = useState(false)
+  const [lakalaPaymentData, setLakalaPaymentData] =
+    useState<LakalaPaymentData | null>(null)
 
   // Calculate payment amount
   const calculatePaymentAmount = useCallback(
@@ -53,14 +59,23 @@ export function usePayment() {
 
         const isStripe = isStripePayment(paymentType)
         const isAlipayOfficial = isAlipayOfficialPayment(paymentType)
+        const isLakala = isLakalaPayment(paymentType)
         const isPancake = isWaffoPancakePayment(paymentType)
-        const response = isStripe
-          ? await calculateStripeAmount({ amount: topupAmount })
-          : isAlipayOfficial
-            ? await calculateAlipayAmount({ amount: topupAmount })
-          : isPancake
-            ? await calculateWaffoPancakeAmount({ amount: topupAmount })
-            : await calculateAmount({ amount: topupAmount })
+        const response = await (async () => {
+          if (isStripe) {
+            return calculateStripeAmount({ amount: topupAmount })
+          }
+          if (isAlipayOfficial) {
+            return calculateAlipayAmount({ amount: topupAmount })
+          }
+          if (isLakala) {
+            return calculateLakalaAmount({ amount: topupAmount })
+          }
+          if (isPancake) {
+            return calculateWaffoPancakeAmount({ amount: topupAmount })
+          }
+          return calculateAmount({ amount: topupAmount })
+        })()
 
         if (isApiSuccess(response) && response.data) {
           const calculatedAmount = parseFloat(response.data)
@@ -89,22 +104,34 @@ export function usePayment() {
 
         const isStripe = isStripePayment(paymentType)
         const isAlipayOfficial = isAlipayOfficialPayment(paymentType)
+        const isLakala = isLakalaPayment(paymentType)
         const amount = Math.floor(topupAmount)
+        setLakalaPaymentData(null)
 
-        const response = isStripe
-          ? await requestStripePayment({
+        const response = await (async () => {
+          if (isStripe) {
+            return requestStripePayment({
               amount,
               payment_method: 'stripe',
             })
-          : isAlipayOfficial
-            ? await requestAlipayPayment({
-                amount,
-                payment_method: paymentType,
-              })
-          : await requestPayment({
+          }
+          if (isAlipayOfficial) {
+            return requestAlipayPayment({
               amount,
               payment_method: paymentType,
             })
+          }
+          if (isLakala) {
+            return requestLakalaPayment({
+              amount,
+              payment_method: paymentType,
+            })
+          }
+          return requestPayment({
+            amount,
+            payment_method: paymentType,
+          })
+        })()
 
         if (!isApiSuccess(response)) {
           toast.error(response.message || i18next.t('Payment request failed'))
@@ -125,11 +152,18 @@ export function usePayment() {
           return true
         }
 
+        // Handle Lakala payment
+        if (isLakala && response.data) {
+          setLakalaPaymentData(response.data as LakalaPaymentData)
+          toast.success(i18next.t('Payment request created'))
+          return true
+        }
+
         // Handle non-Stripe payment
-        if (!isStripe && !isAlipayOfficial && response.data) {
+        if (!isStripe && !isAlipayOfficial && !isLakala && response.data) {
           const url = (response as unknown as { url?: string }).url
           if (url) {
-            submitPaymentForm(url, response.data)
+            submitPaymentForm(url, response.data as Record<string, unknown>)
             toast.success(i18next.t('Redirecting to payment page...'))
             return true
           }
@@ -152,6 +186,8 @@ export function usePayment() {
     processing,
     calculatePaymentAmount,
     processPayment,
+    lakalaPaymentData,
+    clearLakalaPaymentData: () => setLakalaPaymentData(null),
     setAmount,
   }
 }

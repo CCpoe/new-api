@@ -166,6 +166,23 @@ const BILLING_SECTIONS = [
           AlipayUnitPrice: settings.AlipayUnitPrice ?? 7.3,
           AlipayMinTopUp: settings.AlipayMinTopUp ?? 1,
         }}
+        lakalaDefaultValues={{
+          LakalaEnabled: settings.LakalaEnabled ?? false,
+          LakalaSandbox: settings.LakalaSandbox ?? false,
+          LakalaAppId: settings.LakalaAppId ?? '',
+          LakalaSerialNo: settings.LakalaSerialNo ?? '',
+          LakalaPrivateKey: settings.LakalaPrivateKey ?? '',
+          LakalaPublicKey: settings.LakalaPublicKey ?? '',
+          LakalaMerchantId: settings.LakalaMerchantId ?? '',
+          LakalaTermNo: settings.LakalaTermNo ?? '',
+          LakalaPayMode: settings.LakalaPayMode ?? 'ALIPAY',
+          LakalaTransType: settings.LakalaTransType ?? '41',
+          LakalaOrderSource: settings.LakalaOrderSource ?? '',
+          LakalaNotifyUrl: settings.LakalaNotifyUrl ?? '',
+          LakalaReturnUrl: settings.LakalaReturnUrl ?? '',
+          LakalaUnitPrice: settings.LakalaUnitPrice ?? 7.3,
+          LakalaMinTopUp: settings.LakalaMinTopUp ?? 1,
+        }}
         waffoDefaultValues={{
           WaffoEnabled: settings.WaffoEnabled ?? false,
           WaffoApiKey: settings.WaffoApiKey ?? '',

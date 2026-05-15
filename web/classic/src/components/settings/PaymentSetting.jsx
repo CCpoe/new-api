@@ -24,6 +24,7 @@ import SettingsPaymentGateway from '../../pages/Setting/Payment/SettingsPaymentG
 import SettingsPaymentGatewayStripe from '../../pages/Setting/Payment/SettingsPaymentGatewayStripe';
 import SettingsPaymentGatewayCreem from '../../pages/Setting/Payment/SettingsPaymentGatewayCreem';
 import SettingsPaymentGatewayAlipay from '../../pages/Setting/Payment/SettingsPaymentGatewayAlipay';
+import SettingsPaymentGatewayLakala from '../../pages/Setting/Payment/SettingsPaymentGatewayLakala';
 import SettingsPaymentGatewayWaffo from '../../pages/Setting/Payment/SettingsPaymentGatewayWaffo';
 import SettingsPaymentGatewayWaffoPancake from '../../pages/Setting/Payment/SettingsPaymentGatewayWaffoPancake';
 import { API, showError, toBoolean } from '../../helpers';
@@ -60,6 +61,22 @@ const PaymentSetting = () => {
     AlipayReturnUrl: '',
     AlipayUnitPrice: 7.3,
     AlipayMinTopUp: 1,
+
+    LakalaEnabled: false,
+    LakalaSandbox: false,
+    LakalaAppId: '',
+    LakalaSerialNo: '',
+    LakalaPrivateKey: '',
+    LakalaPublicKey: '',
+    LakalaMerchantId: '',
+    LakalaTermNo: '',
+    LakalaPayMode: 'ALIPAY',
+    LakalaTransType: '41',
+    LakalaOrderSource: '',
+    LakalaNotifyUrl: '',
+    LakalaReturnUrl: '',
+    LakalaUnitPrice: 7.3,
+    LakalaMinTopUp: 1,
 
     WaffoPancakeEnabled: false,
     WaffoPancakeSandbox: false,
@@ -121,6 +138,8 @@ const PaymentSetting = () => {
           case 'StripeMinTopUp':
           case 'AlipayUnitPrice':
           case 'AlipayMinTopUp':
+          case 'LakalaUnitPrice':
+          case 'LakalaMinTopUp':
           case 'WaffoPancakeUnitPrice':
           case 'WaffoPancakeMinTopUp':
             newInputs[item.key] = parseFloat(item.value);
@@ -130,6 +149,17 @@ const PaymentSetting = () => {
           case 'AlipayPublicKey':
           case 'AlipayNotifyUrl':
           case 'AlipayReturnUrl':
+          case 'LakalaAppId':
+          case 'LakalaSerialNo':
+          case 'LakalaPrivateKey':
+          case 'LakalaPublicKey':
+          case 'LakalaMerchantId':
+          case 'LakalaTermNo':
+          case 'LakalaPayMode':
+          case 'LakalaTransType':
+          case 'LakalaOrderSource':
+          case 'LakalaNotifyUrl':
+          case 'LakalaReturnUrl':
           case 'WaffoPancakeMerchantID':
           case 'WaffoPancakePrivateKey':
           case 'WaffoPancakeStoreID':
@@ -139,6 +169,7 @@ const PaymentSetting = () => {
             newInputs[item.key] = item.value;
             break;
           case 'AlipaySandbox':
+          case 'LakalaSandbox':
           case 'WaffoPancakeSandbox':
             newInputs[item.key] = toBoolean(item.value);
             break;
@@ -215,6 +246,13 @@ const PaymentSetting = () => {
               itemKey='alipay-official'
             >
               <SettingsPaymentGatewayAlipay
+                options={inputs}
+                refresh={onRefresh}
+                hideSectionTitle
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab={t('Lakala Gateway')} itemKey='lakala'>
+              <SettingsPaymentGatewayLakala
                 options={inputs}
                 refresh={onRefresh}
                 hideSectionTitle

@@ -25,6 +25,7 @@ import { SectionPageLayout } from '@/components/layout'
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
+import { LakalaQrDialog } from './components/dialogs/lakala-qr-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
@@ -43,6 +44,7 @@ import {
 import {
   getDefaultPaymentType,
   getMinTopupAmount,
+  isLakalaPayment,
   isWaffoPancakePayment,
 } from './lib'
 import type {
@@ -70,6 +72,7 @@ export function Wallet(props: WalletProps) {
   const [billingDialogOpen, setBillingDialogOpen] = useState(false)
   const [redemptionCode, setRedemptionCode] = useState('')
   const [creemDialogOpen, setCreemDialogOpen] = useState(false)
+  const [lakalaDialogOpen, setLakalaDialogOpen] = useState(false)
   const [selectedCreemProduct, setSelectedCreemProduct] =
     useState<CreemProduct | null>(null)
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
@@ -90,6 +93,8 @@ export function Wallet(props: WalletProps) {
     processing,
     calculatePaymentAmount,
     processPayment,
+    lakalaPaymentData,
+    clearLakalaPaymentData,
   } = usePayment()
   const {
     affiliateLink,
@@ -192,6 +197,10 @@ export function Wallet(props: WalletProps) {
 
     if (success) {
       setConfirmDialogOpen(false)
+      if (isLakalaPayment(selectedPaymentMethod.type)) {
+        setLakalaDialogOpen(true)
+        return
+      }
       await fetchUser()
     }
   }
@@ -357,6 +366,17 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <LakalaQrDialog
+        open={lakalaDialogOpen}
+        onOpenChange={(open) => {
+          setLakalaDialogOpen(open)
+          if (!open) {
+            clearLakalaPaymentData()
+          }
+        }}
+        paymentData={lakalaPaymentData}
       />
     </>
   )

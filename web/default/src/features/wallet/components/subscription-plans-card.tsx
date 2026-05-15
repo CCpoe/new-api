@@ -70,7 +70,8 @@ function getEpayMethods(payMethods: PaymentMethod[] = []): PaymentMethod[] {
       m?.type &&
       m.type !== 'stripe' &&
       m.type !== 'creem' &&
-      m.type !== 'alipay_official'
+      m.type !== 'alipay_official' &&
+      m.type !== 'lakala'
   )
 }
 

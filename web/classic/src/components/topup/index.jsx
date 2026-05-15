@@ -29,7 +29,8 @@ import {
   copy,
   getQuotaPerUnit,
 } from '../../helpers';
-import { Modal, Toast } from '@douyinfe/semi-ui';
+import { Button, Modal, Toast, Typography } from '@douyinfe/semi-ui';
+import { QRCodeSVG } from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
@@ -39,6 +40,8 @@ import InvitationCard from './InvitationCard';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
 import TopupHistoryModal from './modals/TopupHistoryModal';
+
+const { Text } = Typography;
 
 const TopUp = () => {
   const { t } = useTranslation();
@@ -57,6 +60,7 @@ const TopUp = () => {
     statusState?.status?.enable_online_topup || false,
   );
   const [enableAlipayTopUp, setEnableAlipayTopUp] = useState(false);
+  const [enableLakalaTopUp, setEnableLakalaTopUp] = useState(false);
   const [priceRatio, setPriceRatio] = useState(statusState?.status?.price || 1);
 
   const [enableStripeTopUp, setEnableStripeTopUp] = useState(
@@ -79,6 +83,8 @@ const TopUp = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const [lakalaOpen, setLakalaOpen] = useState(false);
+  const [lakalaPaymentData, setLakalaPaymentData] = useState(null);
   const [payWay, setPayWay] = useState('');
   const [amountLoading, setAmountLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -139,6 +145,9 @@ const TopUp = () => {
     }
     if (payment === 'alipay_official') {
       return getAlipayAmount(value);
+    }
+    if (payment === 'lakala') {
+      return getLakalaAmount(value);
     }
     if (payment === 'waffo_pancake') {
       return getWaffoPancakeAmount(value);
@@ -202,6 +211,11 @@ const TopUp = () => {
     } else if (payment === 'alipay_official') {
       if (!enableAlipayTopUp) {
         showError(t('管理员未开启 Alipay 充值！'));
+        return;
+      }
+    } else if (payment === 'lakala') {
+      if (!enableLakalaTopUp) {
+        showError(t('Admin has not enabled Lakala top-up.'));
         return;
       }
     } else if (payment === 'waffo_pancake') {
@@ -272,6 +286,10 @@ const TopUp = () => {
       if (amount === 0) {
         await getAlipayAmount();
       }
+    } else if (payWay === 'lakala') {
+      if (amount === 0) {
+        await getLakalaAmount();
+      }
     } else {
       // 普通支付处理
       if (amount === 0) {
@@ -279,8 +297,9 @@ const TopUp = () => {
       }
     }
 
-    if (topUpCount < minTopUp) {
-      showError('充值数量不能小于' + minTopUp);
+    const selectedMinTopUp = getPaymentMinTopUp(payWay);
+    if (topUpCount < selectedMinTopUp) {
+      showError(t('Top-up amount cannot be less than ') + selectedMinTopUp);
       return;
     }
     setConfirmLoading(true);
@@ -297,6 +316,11 @@ const TopUp = () => {
           amount: parseInt(topUpCount),
           payment_method: 'alipay_official',
         });
+      } else if (payWay === 'lakala') {
+        res = await API.post('/api/user/lakala/pay', {
+          amount: parseInt(topUpCount),
+          payment_method: 'lakala',
+        });
       } else {
         // 普通支付请求
         res = await API.post('/api/user/pay', {
@@ -310,6 +334,8 @@ const TopUp = () => {
         if (message === 'success') {
           if (payWay === 'stripe' || payWay === 'alipay_official') {
             window.open(data.pay_link, '_blank');
+          } else if (payWay === 'lakala') {
+            processLakalaCallback(data);
           } else {
             // 普通支付表单提交
             let params = data;
@@ -637,6 +663,16 @@ const TopUp = () => {
                 }
               }
 
+              if (
+                method.type === 'lakala' &&
+                (!method.min_topup || method.min_topup <= 0)
+              ) {
+                const lakalaMin = Number(data.lakala_min_topup);
+                if (Number.isFinite(lakalaMin)) {
+                  method.min_topup = lakalaMin;
+                }
+              }
+
               if (!method.color) {
                 if (method.type === 'alipay' || method.type === 'alipay_official') {
                   method.color = 'rgba(var(--semi-blue-5), 1)';
@@ -644,6 +680,8 @@ const TopUp = () => {
                   method.color = 'rgba(var(--semi-green-5), 1)';
                 } else if (method.type === 'stripe') {
                   method.color = 'rgba(var(--semi-purple-5), 1)';
+                } else if (method.type === 'lakala') {
+                  method.color = '#00A6A6';
                 } else {
                   method.color = 'rgba(var(--semi-primary-5), 1)';
                 }
@@ -660,25 +698,26 @@ const TopUp = () => {
           setPayMethods(payMethods);
           const enableStripeTopUp = data.enable_stripe_topup || false;
           const enableAlipayTopUp = data.enable_alipay_topup || false;
+          const enableLakalaTopUp = data.enable_lakala_topup || false;
           const enableOnlineTopUp = data.enable_online_topup || false;
           const enableCreemTopUp = data.enable_creem_topup || false;
           const enableWaffoTopUp = data.enable_waffo_topup || false;
           const enableWaffoPancakeTopUp =
             data.enable_waffo_pancake_topup || false;
-          const minTopUpValue = enableOnlineTopUp
-            ? data.min_topup
-            : enableStripeTopUp
-              ? data.stripe_min_topup
-              : enableAlipayTopUp
-                ? data.alipay_min_topup
-              : enableWaffoTopUp
-                ? data.waffo_min_topup
-                : enableWaffoPancakeTopUp
-                  ? data.waffo_pancake_min_topup
-                : 1;
+          const minTopUpCandidates = [
+            enableOnlineTopUp ? data.min_topup : 0,
+            enableStripeTopUp ? data.stripe_min_topup : 0,
+            enableAlipayTopUp ? data.alipay_min_topup : 0,
+            enableLakalaTopUp ? data.lakala_min_topup : 0,
+            enableWaffoTopUp ? data.waffo_min_topup : 0,
+            enableWaffoPancakeTopUp ? data.waffo_pancake_min_topup : 0,
+          ];
+          const minTopUpValue =
+            minTopUpCandidates.find((value) => Number(value) > 0) || 1;
           setEnableOnlineTopUp(enableOnlineTopUp);
           setEnableStripeTopUp(enableStripeTopUp);
           setEnableAlipayTopUp(enableAlipayTopUp);
+          setEnableLakalaTopUp(enableLakalaTopUp);
           setEnableCreemTopUp(enableCreemTopUp);
           setEnableWaffoTopUp(enableWaffoTopUp);
           setWaffoPayMethods(data.waffo_pay_methods || []);
@@ -703,7 +742,19 @@ const TopUp = () => {
           }
 
           // 初始化显示实付金额
-          getAmount(minTopUpValue);
+          const fallbackPaymentTypes = [
+            enableOnlineTopUp ? 'epay' : '',
+            enableStripeTopUp ? 'stripe' : '',
+            enableAlipayTopUp ? 'alipay_official' : '',
+            enableLakalaTopUp ? 'lakala' : '',
+            enableWaffoTopUp ? 'waffo:0' : '',
+            enableWaffoPancakeTopUp ? 'waffo_pancake' : '',
+          ];
+          const defaultPaymentType =
+            payMethods[0]?.type || fallbackPaymentTypes.find(Boolean) || '';
+          if (defaultPaymentType) {
+            requestAmountByPayment(defaultPaymentType, minTopUpValue);
+          }
         } catch (e) {
           setPayMethods([]);
         }
@@ -884,6 +935,33 @@ const TopUp = () => {
     }
   };
 
+  const getLakalaAmount = async (value) => {
+    if (value === undefined) {
+      value = topUpCount;
+    }
+    setAmountLoading(true);
+    try {
+      const res = await API.post('/api/user/lakala/amount', {
+        amount: parseFloat(value),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          setAmount(parseFloat(data));
+        } else {
+          setAmount(0);
+          Toast.error({ content: 'Error: ' + data, id: 'getAmount' });
+        }
+      } else {
+        showError(res);
+      }
+    } catch (err) {
+      // amount fetch failed silently
+    } finally {
+      setAmountLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setOpen(false);
   };
@@ -906,6 +984,46 @@ const TopUp = () => {
   };
 
   // 选择预设充值额度
+  const processLakalaCallback = (data) => {
+    setLakalaPaymentData(data || null);
+    setLakalaOpen(true);
+  };
+
+  const handleLakalaCancel = () => {
+    setLakalaOpen(false);
+    setLakalaPaymentData(null);
+  };
+
+  const openLakalaPaymentPage = () => {
+    const redirectUrl = lakalaPaymentData?.redirect_url || '';
+    const formData = lakalaPaymentData?.form_data || '';
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+      return;
+    }
+
+    if (formData) {
+      const paymentWindow = window.open('', '_blank');
+      if (!paymentWindow) return;
+      paymentWindow.document.open();
+      paymentWindow.document.write(
+        '<!doctype html><html><head><title>Lakala</title></head><body>' +
+          formData +
+          '<script>document.forms[0]?.submit()</script></body></html>',
+      );
+      paymentWindow.document.close();
+      return;
+    }
+
+    if (lakalaPaymentData?.pay_link && !lakalaPaymentData?.qr_code) {
+      window.open(lakalaPaymentData.pay_link, '_blank');
+      return;
+    }
+
+    showError(t('No payment page is available.'));
+  };
+
   const selectPresetAmount = (preset) => {
     setTopUpCount(preset.value);
     setSelectedPreset(preset.value);
@@ -969,6 +1087,57 @@ const TopUp = () => {
       />
 
       {/* Creem 充值确认模态框 */}
+      {/* Lakala payment modal */}
+      <Modal
+        title={t('Lakala Payment')}
+        visible={lakalaOpen}
+        onCancel={handleLakalaCancel}
+        footer={
+          <div className='flex justify-end gap-2'>
+            {(lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link) && (
+              <Button
+                onClick={() =>
+                  copy(lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link)
+                }
+              >
+                {t('Copy code')}
+              </Button>
+            )}
+            {(lakalaPaymentData?.redirect_url || lakalaPaymentData?.form_data) && (
+              <Button type='primary' onClick={openLakalaPaymentPage}>
+                {t('Open payment page')}
+              </Button>
+            )}
+            <Button onClick={handleLakalaCancel}>{t('Close')}</Button>
+          </div>
+        }
+        centered
+      >
+        <div className='flex flex-col items-center gap-4 py-2'>
+          {lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link ? (
+            <div className='rounded-lg border border-gray-200 bg-white p-4'>
+              <QRCodeSVG
+                value={lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link}
+                size={220}
+                level='M'
+                includeMargin
+              />
+            </div>
+          ) : (
+            <Text type='secondary'>{t('Continue to the Lakala payment page')}</Text>
+          )}
+          {lakalaPaymentData?.order_id && (
+            <Text copyable type='tertiary'>
+              {lakalaPaymentData.order_id}
+            </Text>
+          )}
+          <Text type='secondary'>
+            {t('Use Alipay or the selected Lakala channel to scan this code')}
+          </Text>
+        </div>
+      </Modal>
+
+      {/* Creem ??????? */}
       <Modal
         title={t('确定要充值 $')}
         visible={creemOpen}
@@ -1002,6 +1171,7 @@ const TopUp = () => {
           t={t}
           enableOnlineTopUp={enableOnlineTopUp}
           enableAlipayTopUp={enableAlipayTopUp}
+          enableLakalaTopUp={enableLakalaTopUp}
           enableStripeTopUp={enableStripeTopUp}
           enableCreemTopUp={enableCreemTopUp}
           creemProducts={creemProducts}

@@ -29,6 +29,7 @@ import type {
   PaymentResponse,
   StripePaymentResponse,
   AlipayPaymentResponse,
+  LakalaPaymentResponse,
   AffiliateCodeResponse,
   AffiliateTransferResponse,
   BillingHistoryResponse,
@@ -140,6 +141,30 @@ export async function calculateAlipayAmount(
   request: AmountRequest
 ): Promise<AmountResponse> {
   const res = await api.post('/api/user/alipay/amount', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Request Lakala payment
+ */
+export async function requestLakalaPayment(
+  request: PaymentRequest
+): Promise<LakalaPaymentResponse> {
+  const res = await api.post('/api/user/lakala/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Calculate payment amount for Lakala payment
+ */
+export async function calculateLakalaAmount(
+  request: AmountRequest
+): Promise<AmountResponse> {
+  const res = await api.post('/api/user/lakala/amount', request, {
     skipBusinessError: true,
   } as Record<string, unknown>)
   return res.data
