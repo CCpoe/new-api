@@ -155,6 +155,8 @@ export interface TopupInfo {
   discount: Record<number, number>
   /** Optional topup link for purchasing codes */
   topup_link?: string
+  /** Whether the referral rewards card should be shown */
+  invite_reward_enabled?: boolean
   /** Whether Creem topup is enabled */
   enable_creem_topup?: boolean
   /** Available Creem products */

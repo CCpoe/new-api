@@ -44,6 +44,7 @@ const quotaSchema = z.object({
   PreConsumedQuota: z.coerce.number().min(0),
   QuotaForInviter: z.coerce.number().min(0),
   QuotaForInvitee: z.coerce.number().min(0),
+  InviteRewardEnabled: z.boolean(),
   TopUpLink: z.string(),
   general_setting: z.object({
     docs_link: z.string(),
@@ -192,6 +193,32 @@ export function QuotaSettingsSection({
                   {t('Quota given to invited users')}
                 </FormDescription>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='InviteRewardEnabled'
+            render={({ field }) => (
+              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                <div className='space-y-0.5'>
+                  <FormLabel className='text-base'>
+                    {t('Show Referral Rewards')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t(
+                      'Display the referral rewards card on the user wallet page.'
+                    )}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={updateOption.isPending}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />

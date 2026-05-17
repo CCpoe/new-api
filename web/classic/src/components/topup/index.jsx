@@ -57,6 +57,7 @@ const TopUp = () => {
   );
   const [topUpLink, setTopUpLink] = useState('');
   const [lianDongShopUrl, setLianDongShopUrl] = useState('');
+  const [inviteRewardEnabled, setInviteRewardEnabled] = useState(false);
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
     statusState?.status?.enable_online_topup || false,
   );
@@ -732,6 +733,15 @@ const TopUp = () => {
           setTopUpCount(minTopUpValue);
           setTopUpLink(data.topup_link || '');
           setLianDongShopUrl(data.lian_dong_shop_url || '');
+          const nextInviteRewardEnabled = data.invite_reward_enabled !== false;
+          setInviteRewardEnabled(nextInviteRewardEnabled);
+          if (nextInviteRewardEnabled && !affFetchedRef.current) {
+            affFetchedRef.current = true;
+            getAffLink().then();
+          } else if (!nextInviteRewardEnabled) {
+            setAffLink('');
+            setOpenTransfer(false);
+          }
 
           // 设置 Creem 产品
           try {
@@ -830,12 +840,6 @@ const TopUp = () => {
     // 始终获取最新用户数据，确保余额等统计信息准确
     getUserQuota().then();
     setTransferAmount(getQuotaPerUnit());
-  }, []);
-
-  useEffect(() => {
-    if (affFetchedRef.current) return;
-    affFetchedRef.current = true;
-    getAffLink().then();
   }, []);
 
   // 在 statusState 可用时获取充值信息
@@ -1055,17 +1059,19 @@ const TopUp = () => {
   return (
     <div className='w-full max-w-7xl mx-auto relative min-h-screen lg:min-h-0 mt-[60px] px-2'>
       {/* 划转模态框 */}
-      <TransferModal
-        t={t}
-        openTransfer={openTransfer}
-        transfer={transfer}
-        handleTransferCancel={handleTransferCancel}
-        userState={userState}
-        renderQuota={renderQuota}
-        getQuotaPerUnit={getQuotaPerUnit}
-        transferAmount={transferAmount}
-        setTransferAmount={setTransferAmount}
-      />
+      {inviteRewardEnabled && (
+        <TransferModal
+          t={t}
+          openTransfer={openTransfer}
+          transfer={transfer}
+          handleTransferCancel={handleTransferCancel}
+          userState={userState}
+          renderQuota={renderQuota}
+          getQuotaPerUnit={getQuotaPerUnit}
+          transferAmount={transferAmount}
+          setTransferAmount={setTransferAmount}
+        />
+      )}
 
       {/* 充值确认模态框 */}
       <PaymentConfirmModal
@@ -1227,14 +1233,16 @@ const TopUp = () => {
           allSubscriptions={allSubscriptions}
           reloadSubscriptionSelf={getSubscriptionSelf}
         />
-        <InvitationCard
-          t={t}
-          userState={userState}
-          renderQuota={renderQuota}
-          setOpenTransfer={setOpenTransfer}
-          affLink={affLink}
-          handleAffLinkClick={handleAffLinkClick}
-        />
+        {inviteRewardEnabled && (
+          <InvitationCard
+            t={t}
+            userState={userState}
+            renderQuota={renderQuota}
+            setOpenTransfer={setOpenTransfer}
+            affLink={affLink}
+            handleAffLinkClick={handleAffLinkClick}
+          />
+        )}
       </div>
     </div>
   );

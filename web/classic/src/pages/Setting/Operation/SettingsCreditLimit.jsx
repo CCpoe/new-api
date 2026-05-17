@@ -36,6 +36,7 @@ export default function SettingsCreditLimit(props) {
     PreConsumedQuota: '',
     QuotaForInviter: '',
     QuotaForInvitee: '',
+    InviteRewardEnabled: true,
     'quota_setting.enable_free_model_pre_consume': true,
   });
   const refForm = useRef();
@@ -162,6 +163,21 @@ export default function SettingsCreditLimit(props) {
                     setInputs({
                       ...inputs,
                       QuotaForInvitee: String(value),
+                    })
+                  }
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Form.Switch
+                  label={t('显示邀请奖励卡片')}
+                  field={'InviteRewardEnabled'}
+                  extraText={t('关闭后用户侧钱包页面不展示邀请奖励卡片')}
+                  onChange={(value) =>
+                    setInputs({
+                      ...inputs,
+                      InviteRewardEnabled: value,
                     })
                   }
                 />
