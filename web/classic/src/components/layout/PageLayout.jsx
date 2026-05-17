@@ -18,7 +18,8 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import HeaderBar from './headerbar';
-import { Layout } from '@douyinfe/semi-ui';
+import '@douyinfe/semi-ui/dist/css/semi.css';
+import { Layout, LocaleProvider } from '@douyinfe/semi-ui';
 import App from '../../App';
 import { ToastContainer } from 'react-toastify';
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -33,6 +34,8 @@ import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
 import { normalizeLanguage } from '../../i18n/language';
+import zh_CN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN';
+import en_GB from '@douyinfe/semi-ui/lib/es/locale/source/en_GB';
 const { Sider, Content, Header } = Layout;
 
 const SiderBar = lazy(() => import('./SiderBar'));
@@ -46,6 +49,10 @@ const PageLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { i18n } = useTranslation();
   const location = useLocation();
+  const semiLocale = React.useMemo(
+    () => ({ zh: zh_CN, 'zh-CN': zh_CN, en: en_GB })[i18n.language] || zh_CN,
+    [i18n.language],
+  );
 
   const cardProPages = [
     '/console/channel',
@@ -147,100 +154,102 @@ const PageLayout = () => {
   }, [i18n, userState?.user?.setting]);
 
   return (
-    <Layout
-      className='app-layout'
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: isMobile || isHomeRoute ? 'visible' : 'hidden',
-      }}
-    >
-      <Header
-        style={{
-          padding: 0,
-          height: 'auto',
-          lineHeight: 'normal',
-          position: 'fixed',
-          width: '100%',
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <HeaderBar
-          onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
-          drawerOpen={drawerOpen}
-        />
-      </Header>
+    <LocaleProvider locale={semiLocale}>
       <Layout
+        className='app-layout'
         style={{
-          overflow: isMobile || isHomeRoute ? 'visible' : 'auto',
           display: 'flex',
           flexDirection: 'column',
+          overflow: isMobile || isHomeRoute ? 'visible' : 'hidden',
         }}
       >
-        {showSider && (
-          <Sider
-            className='app-sider'
-            style={{
-              position: 'fixed',
-              left: 0,
-              top: '64px',
-              zIndex: 99,
-              border: 'none',
-              paddingRight: '0',
-              width: 'var(--sidebar-current-width)',
-            }}
-          >
-            <Suspense fallback={null}>
-              <SiderBar
-                onNavigate={() => {
-                  if (isMobile) setDrawerOpen(false);
-                }}
-              />
-            </Suspense>
-          </Sider>
-        )}
+        <Header
+          style={{
+            padding: 0,
+            height: 'auto',
+            lineHeight: 'normal',
+            position: 'fixed',
+            width: '100%',
+            top: 0,
+            zIndex: 100,
+          }}
+        >
+          <HeaderBar
+            onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
+            drawerOpen={drawerOpen}
+          />
+        </Header>
         <Layout
           style={{
-            marginLeft: isMobile
-              ? '0'
-              : showSider
-                ? 'var(--sidebar-current-width)'
-                : '0',
-            flex: '1 1 auto',
+            overflow: isMobile || isHomeRoute ? 'visible' : 'auto',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <Content
-            style={{
-              flex: '1 0 auto',
-              overflowY: isMobile || isHomeRoute ? 'visible' : 'hidden',
-              WebkitOverflowScrolling: 'touch',
-              padding: shouldInnerPadding ? (isMobile ? '5px' : '24px') : '0',
-              position: 'relative',
-            }}
-          >
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
-          </Content>
-          {!shouldHideFooter && !isHomeRoute && (
-            <Layout.Footer
+          {showSider && (
+            <Sider
+              className='app-sider'
               style={{
-                flex: '0 0 auto',
-                width: '100%',
+                position: 'fixed',
+                left: 0,
+                top: '64px',
+                zIndex: 99,
+                border: 'none',
+                paddingRight: '0',
+                width: 'var(--sidebar-current-width)',
               }}
             >
               <Suspense fallback={null}>
-                <FooterBar />
+                <SiderBar
+                  onNavigate={() => {
+                    if (isMobile) setDrawerOpen(false);
+                  }}
+                />
               </Suspense>
-            </Layout.Footer>
+            </Sider>
           )}
+          <Layout
+            style={{
+              marginLeft: isMobile
+                ? '0'
+                : showSider
+                  ? 'var(--sidebar-current-width)'
+                  : '0',
+              flex: '1 1 auto',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Content
+              style={{
+                flex: '1 0 auto',
+                overflowY: isMobile || isHomeRoute ? 'visible' : 'hidden',
+                WebkitOverflowScrolling: 'touch',
+                padding: shouldInnerPadding ? (isMobile ? '5px' : '24px') : '0',
+                position: 'relative',
+              }}
+            >
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
+            </Content>
+            {!shouldHideFooter && !isHomeRoute && (
+              <Layout.Footer
+                style={{
+                  flex: '0 0 auto',
+                  width: '100%',
+                }}
+              >
+                <Suspense fallback={null}>
+                  <FooterBar />
+                </Suspense>
+              </Layout.Footer>
+            )}
+          </Layout>
         </Layout>
+        <ToastContainer />
       </Layout>
-      <ToastContainer />
-    </Layout>
+    </LocaleProvider>
   );
 };
 

@@ -19,15 +19,9 @@ For commercial licensing, please contact support@quantumnous.com
 
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ArrowRight,
-  Bell,
-  Boxes,
-  Bot,
-  Copy,
-  Route,
-} from 'lucide-react';
+import { ArrowRight, Bell, Boxes, Bot, Copy, Route } from 'lucide-react';
 import { StatusContext } from '../../context/Status';
+import { DEFAULT_DOCS_LINK } from '../../helpers/data';
 import './home.css';
 import { getHomeCopy } from './homeCopy';
 
@@ -101,7 +95,9 @@ const InteractiveWorldMap = () => {
       if (!image.complete || !width || !height) return;
 
       const sampleCanvas = document.createElement('canvas');
-      const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
+      const sampleCtx = sampleCanvas.getContext('2d', {
+        willReadFrequently: true,
+      });
       const sampleWidth = Math.max(260, Math.round(width / 2));
       const sampleHeight = Math.max(130, Math.round(height / 2));
       const step = width < 720 ? 6 : 5;
@@ -152,7 +148,11 @@ const InteractiveWorldMap = () => {
       const rect = scene.getBoundingClientRect();
       pointer.x = event.clientX - rect.left;
       pointer.y = event.clientY - rect.top;
-      pointer.active = pointer.x >= 0 && pointer.x <= rect.width && pointer.y >= 0 && pointer.y <= rect.height;
+      pointer.active =
+        pointer.x >= 0 &&
+        pointer.x <= rect.width &&
+        pointer.y >= 0 &&
+        pointer.y <= rect.height;
     };
 
     const handlePointerLeave = () => {
@@ -184,8 +184,10 @@ const InteractiveWorldMap = () => {
             const tangentY = normalX;
             const orbit = Math.sin(time * 0.004 + point.phase) * 6;
 
-            targetX += normalX * influence * 22 + tangentX * influence * (18 + orbit);
-            targetY += normalY * influence * 22 + tangentY * influence * (18 + orbit);
+            targetX +=
+              normalX * influence * 22 + tangentX * influence * (18 + orbit);
+            targetY +=
+              normalY * influence * 22 + tangentY * influence * (18 + orbit);
           }
         }
 
@@ -197,15 +199,23 @@ const InteractiveWorldMap = () => {
         const pointRadius = point.size + influence * 0.9;
 
         ctx.beginPath();
-        ctx.fillStyle = influence > 0.12
-          ? `rgba(37, 99, 235, ${alpha})`
-          : `rgba(100, 139, 184, ${alpha})`;
+        ctx.fillStyle =
+          influence > 0.12
+            ? `rgba(37, 99, 235, ${alpha})`
+            : `rgba(100, 139, 184, ${alpha})`;
         ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
         ctx.fill();
       }
 
       if (pointer.active) {
-        const gradient = ctx.createRadialGradient(pointer.x, pointer.y, 12, pointer.x, pointer.y, radius);
+        const gradient = ctx.createRadialGradient(
+          pointer.x,
+          pointer.y,
+          12,
+          pointer.x,
+          pointer.y,
+          radius,
+        );
         gradient.addColorStop(0, 'rgba(37, 99, 235, 0.16)');
         gradient.addColorStop(0.55, 'rgba(37, 99, 235, 0.06)');
         gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
@@ -225,7 +235,9 @@ const InteractiveWorldMap = () => {
     image.src = '/aihubmix-world-map.svg';
 
     window.addEventListener('resize', resize);
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, {
+      passive: true,
+    });
     window.addEventListener('pointerleave', handlePointerLeave);
 
     return () => {
@@ -236,7 +248,13 @@ const InteractiveWorldMap = () => {
     };
   }, []);
 
-  return <canvas className='aihubmix-map-canvas' ref={canvasRef} aria-hidden='true' />;
+  return (
+    <canvas
+      className='aihubmix-map-canvas'
+      ref={canvasRef}
+      aria-hidden='true'
+    />
+  );
 };
 const Home = () => {
   const { i18n } = useTranslation();
@@ -244,14 +262,10 @@ const Home = () => {
   const moreSectionRef = useRef(null);
   const [moreSectionVisible, setMoreSectionVisible] = useState(false);
   const copy = getHomeCopy(i18n.language);
-  const docsLink = statusState?.status?.docs_link || '';
+  const docsLink = statusState?.status?.docs_link || DEFAULT_DOCS_LINK;
   const serverAddress = statusState?.status?.server_address || '';
 
   const showDocsButton = useMemo(() => {
-    if (!docsLink) {
-      return false;
-    }
-
     const headerNavModulesConfig = statusState?.status?.HeaderNavModules;
     if (!headerNavModulesConfig) {
       return true;
@@ -294,7 +308,11 @@ const Home = () => {
     <main className='aihubmix-home'>
       <section className='aihubmix-hero' aria-label={copy.heroAria}>
         <div className='aihubmix-map-scene' aria-hidden='true'>
-          <img className='aihubmix-map-source' src='/aihubmix-world-map.svg' alt='' />
+          <img
+            className='aihubmix-map-source'
+            src='/aihubmix-world-map.svg'
+            alt=''
+          />
           <InteractiveWorldMap />
           <div className='aihubmix-map-sweep'></div>
           <span className='map-spark map-spark-1'></span>
@@ -328,7 +346,12 @@ const Home = () => {
           <article className='aihubmix-feature-card coverage-card'>
             <h3>{copy.featureCoverageTitle}</h3>
             <div className='coverage-asset coverage-image' aria-hidden='true'>
-              <img src='/kkcode-coverage-map.png' alt='' loading='lazy' decoding='async' />
+              <img
+                src='/kkcode-coverage-map.png'
+                alt=''
+                loading='lazy'
+                decoding='async'
+              />
             </div>
           </article>
 
@@ -340,9 +363,24 @@ const Home = () => {
           <article className='aihubmix-feature-card routing-card'>
             <h3>{copy.featureRoutingTitle}</h3>
             <div className='concurrency-carousel' aria-hidden='true'>
-              <img src='/aihubmix-card-concurrency-1.png' alt='' loading='lazy' decoding='async' />
-              <img src='/aihubmix-card-concurrency-2.png' alt='' loading='lazy' decoding='async' />
-              <img src='/aihubmix-card-concurrency-3.png' alt='' loading='lazy' decoding='async' />
+              <img
+                src='/aihubmix-card-concurrency-1.png'
+                alt=''
+                loading='lazy'
+                decoding='async'
+              />
+              <img
+                src='/aihubmix-card-concurrency-2.png'
+                alt=''
+                loading='lazy'
+                decoding='async'
+              />
+              <img
+                src='/aihubmix-card-concurrency-3.png'
+                alt=''
+                loading='lazy'
+                decoding='async'
+              />
             </div>
           </article>
         </div>
@@ -376,7 +414,11 @@ const Home = () => {
         <span>{copy.footerTagline}</span>
       </footer>
 
-      <button className='aihubmix-notice' type='button' aria-label={copy.notice}>
+      <button
+        className='aihubmix-notice'
+        type='button'
+        aria-label={copy.notice}
+      >
         <Bell size={21} />
         <span>{copy.notice}</span>
       </button>
