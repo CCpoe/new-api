@@ -706,14 +706,16 @@
   background: rgba(255, 255, 255, 0.82) !important;
 }
 
-.aihubmix-language-dropdown {
+.aihubmix-site-header .aihubmix-language-dropdown {
   position: relative;
   display: inline-flex;
   align-items: center;
   color: #303540;
 }
 
-.aihubmix-language-dropdown > .aihubmix-language-button {
+.aihubmix-site-header
+  .aihubmix-language-dropdown
+  > .aihubmix-language-button {
   border: 0;
   color: #303540;
   font-family: inherit;
@@ -721,7 +723,7 @@
   outline: none;
 }
 
-.aihubmix-language-menu {
+.aihubmix-site-header .aihubmix-language-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -734,7 +736,7 @@
   box-shadow: 0 8px 26px rgba(15, 23, 42, 0.14);
 }
 
-.aihubmix-language-menu-item {
+.aihubmix-site-header .aihubmix-language-menu-item {
   display: flex;
   width: 100%;
   align-items: center;
@@ -751,11 +753,11 @@
   cursor: pointer;
 }
 
-.aihubmix-language-menu-item:hover {
+.aihubmix-site-header .aihubmix-language-menu-item:hover {
   background: #f4f6f9;
 }
 
-.aihubmix-language-menu-item-active {
+.aihubmix-site-header .aihubmix-language-menu-item-active {
   background: #eaf2ff;
   color: #2563eb;
   font-weight: 700;

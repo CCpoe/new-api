@@ -44,6 +44,7 @@ const LanguageSelector = ({ currentLang, onLanguageChange, t }) => {
 
   return (
     <Dropdown
+      trigger='click'
       position='bottomRight'
       render={
         <Dropdown.Menu className='aihubmix-language-menu !bg-semi-color-bg-overlay !border-semi-color-border !shadow-lg !rounded-lg dark:!bg-gray-700 dark:!border-gray-600'>
