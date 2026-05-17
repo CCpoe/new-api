@@ -4183,6 +4183,12 @@
     "默认用户消息": "Xin chào",
     "默认补全倍率": "Tỷ lệ hoàn thành mặc định",
     "阶梯计费（表达式解析失败）": "Thanh toán theo bậc (không phân tích được biểu thức)",
-    "阶梯计费（未匹配到对应阶梯）": "Thanh toán theo bậc (không tìm thấy bậc phù hợp)"
+    "阶梯计费（未匹配到对应阶梯）": "Thanh toán theo bậc (không tìm thấy bậc phù hợp)",
+    "链动小铺店铺链接": "Liên kết cửa hàng Liandong",
+    "例如：https://your-shop.example.com": "Ví dụ: https://your-shop.example.com",
+    "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Hiển thị lối vào mua hàng Liandong Shop trên trang ví. Người dùng mua tại đó rồi nạp bằng mã đổi thưởng do cửa hàng phát hành.",
+    "充值地址": "Địa chỉ nạp tiền",
+    "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "Sau khi mua, hãy sao chép mã đổi thưởng do cửa hàng phát hành và đổi ở bên dưới.",
+    "打开充值地址": "Mở địa chỉ nạp tiền"
   }
 }

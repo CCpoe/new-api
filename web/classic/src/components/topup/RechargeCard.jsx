@@ -44,6 +44,8 @@ import {
   TrendingUp,
   Receipt,
   Sparkles,
+  ExternalLink,
+  Store,
 } from 'lucide-react';
 import { IconGift } from '@douyinfe/semi-icons';
 import { useMinimumLoadingTime } from '../../hooks/common/useMinimumLoadingTime';
@@ -84,6 +86,7 @@ const RechargeCard = ({
   isSubmitting,
   topUpLink,
   openTopUpLink,
+  lianDongShopUrl,
   userState,
   renderQuota,
   statusLoading,
@@ -224,6 +227,57 @@ const RechargeCard = ({
           </div>
         }
       >
+        {lianDongShopUrl && (
+          <div
+            className='mb-5 rounded-2xl border p-4 sm:p-5'
+            style={{
+              borderColor: 'rgba(var(--semi-blue-5), 0.28)',
+              background:
+                'linear-gradient(135deg, rgba(var(--semi-blue-0), 0.92), rgba(var(--semi-green-0), 0.76))',
+            }}
+          >
+            <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='min-w-0'>
+                <div className='flex items-center gap-2 text-base font-semibold text-semi-color-text-0'>
+                  <Store size={18} color='var(--semi-color-primary)' />
+                  <span>{t('充值地址')}</span>
+                </div>
+                <div className='mt-2 text-sm leading-6 text-semi-color-text-1'>
+                  {t(
+                    '购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。',
+                  )}
+                </div>
+                <div className='mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm'>
+                  <Text strong>{t('充值地址')}</Text>
+                  <a
+                    href={lianDongShopUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='min-w-0 break-all font-medium text-blue-600 hover:underline'
+                  >
+                    {lianDongShopUrl}
+                  </a>
+                </div>
+              </div>
+              <a
+                href={lianDongShopUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='shrink-0'
+              >
+                <Button
+                  theme='solid'
+                  type='primary'
+                  icon={<ExternalLink size={16} />}
+                  className='!rounded-xl'
+                >
+                  {t('打开充值地址')}
+                </Button>
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* 在线充值表单 */}
         {statusLoading ? (
           <div className='py-8 flex justify-center'>

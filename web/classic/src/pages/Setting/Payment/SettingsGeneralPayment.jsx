@@ -39,6 +39,7 @@ export default function SettingsGeneralPayment(props) {
     PayMethods: '',
     AmountOptions: '',
     AmountDiscount: '',
+    LianDongShopUrl: '',
   });
   const [originInputs, setOriginInputs] = useState({});
   const formApiRef = useRef(null);
@@ -52,6 +53,7 @@ export default function SettingsGeneralPayment(props) {
         PayMethods: props.options.PayMethods || '',
         AmountOptions: props.options.AmountOptions || '',
         AmountDiscount: props.options.AmountDiscount || '',
+        LianDongShopUrl: props.options.LianDongShopUrl || '',
       };
       setInputs(currentInputs);
       setOriginInputs({ ...currentInputs });
@@ -129,6 +131,12 @@ export default function SettingsGeneralPayment(props) {
         options.push({
           key: 'payment_setting.amount_discount',
           value: inputs.AmountDiscount,
+        });
+      }
+      if (originInputs.LianDongShopUrl !== inputs.LianDongShopUrl) {
+        options.push({
+          key: 'LianDongShopUrl',
+          value: removeTrailingSlash(inputs.LianDongShopUrl),
         });
       }
 
@@ -234,6 +242,19 @@ export default function SettingsGeneralPayment(props) {
                 autosize
                 extraText={t(
                   '设置不同充值金额对应的折扣，键为充值金额，值为折扣率，例如：{"100": 0.95, "200": 0.9, "500": 0.85}',
+                )}
+              />
+            </Col>
+          </Row>
+          <Row style={{ marginTop: 16 }}>
+            <Col span={24}>
+              <Form.Input
+                field='LianDongShopUrl'
+                label={t('链动小铺店铺链接')}
+                placeholder={t('例如：https://your-shop.example.com')}
+                style={{ width: '100%' }}
+                extraText={t(
+                  '用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。',
                 )}
               />
             </Col>

@@ -44,6 +44,7 @@ const PaymentSetting = () => {
     PayMethods: '',
     AmountOptions: '',
     AmountDiscount: '',
+    LianDongShopUrl: '',
 
     StripeApiSecret: '',
     StripeWebhookSecret: '',

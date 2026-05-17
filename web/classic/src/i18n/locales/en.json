@@ -3794,6 +3794,12 @@
     "见上方动态计费详情": "See dynamic pricing details above",
     "含时间条件": "Time rules",
     "含请求条件": "Request rules",
-    "（当前仅支持易支付接口，默认使用上方服务器地址作为回调地址！）": "(Currently only supports Epay interface, the default callback address is the server address above!)"
+    "（当前仅支持易支付接口，默认使用上方服务器地址作为回调地址！）": "(Currently only supports Epay interface, the default callback address is the server address above!)",
+    "链动小铺店铺链接": "Liandong Shop URL",
+    "例如：https://your-shop.example.com": "Example: https://your-shop.example.com",
+    "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Shows the Liandong Shop purchase entry on the wallet page. Users buy there and redeem the code issued by the shop.",
+    "充值地址": "Recharge URL",
+    "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "After purchase, copy the redemption code issued by the shop and redeem it below.",
+    "打开充值地址": "Open recharge URL"
   }
 }

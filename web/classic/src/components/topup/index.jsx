@@ -56,6 +56,7 @@ const TopUp = () => {
     statusState?.status?.min_topup || 1,
   );
   const [topUpLink, setTopUpLink] = useState('');
+  const [lianDongShopUrl, setLianDongShopUrl] = useState('');
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
     statusState?.status?.enable_online_topup || false,
   );
@@ -674,7 +675,10 @@ const TopUp = () => {
               }
 
               if (!method.color) {
-                if (method.type === 'alipay' || method.type === 'alipay_official') {
+                if (
+                  method.type === 'alipay' ||
+                  method.type === 'alipay_official'
+                ) {
                   method.color = 'rgba(var(--semi-blue-5), 1)';
                 } else if (method.type === 'wxpay') {
                   method.color = 'rgba(var(--semi-green-5), 1)';
@@ -727,6 +731,7 @@ const TopUp = () => {
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
           setTopUpLink(data.topup_link || '');
+          setLianDongShopUrl(data.lian_dong_shop_url || '');
 
           // 设置 Creem 产品
           try {
@@ -1097,13 +1102,16 @@ const TopUp = () => {
             {(lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link) && (
               <Button
                 onClick={() =>
-                  copy(lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link)
+                  copy(
+                    lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link,
+                  )
                 }
               >
                 {t('Copy code')}
               </Button>
             )}
-            {(lakalaPaymentData?.redirect_url || lakalaPaymentData?.form_data) && (
+            {(lakalaPaymentData?.redirect_url ||
+              lakalaPaymentData?.form_data) && (
               <Button type='primary' onClick={openLakalaPaymentPage}>
                 {t('Open payment page')}
               </Button>
@@ -1117,14 +1125,18 @@ const TopUp = () => {
           {lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link ? (
             <div className='rounded-lg border border-gray-200 bg-white p-4'>
               <QRCodeSVG
-                value={lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link}
+                value={
+                  lakalaPaymentData?.qr_code || lakalaPaymentData?.pay_link
+                }
                 size={220}
                 level='M'
                 includeMargin
               />
             </div>
           ) : (
-            <Text type='secondary'>{t('Continue to the Lakala payment page')}</Text>
+            <Text type='secondary'>
+              {t('Continue to the Lakala payment page')}
+            </Text>
           )}
           {lakalaPaymentData?.order_id && (
             <Text copyable type='tertiary'>
@@ -1201,6 +1213,7 @@ const TopUp = () => {
           isSubmitting={isSubmitting}
           topUpLink={topUpLink}
           openTopUpLink={openTopUpLink}
+          lianDongShopUrl={lianDongShopUrl}
           userState={userState}
           renderQuota={renderQuota}
           statusLoading={statusLoading}

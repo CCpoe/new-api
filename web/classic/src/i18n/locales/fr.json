@@ -3649,6 +3649,12 @@
     "默认用户消息": "Bonjour",
     "默认补全倍率": "Taux de complétion par défaut",
     "阶梯计费（表达式解析失败）": "Facturation par paliers (échec de l'analyse de l'expression)",
-    "阶梯计费（未匹配到对应阶梯）": "Facturation par paliers (aucun palier correspondant)"
+    "阶梯计费（未匹配到对应阶梯）": "Facturation par paliers (aucun palier correspondant)",
+    "链动小铺店铺链接": "Lien de la boutique Liandong",
+    "例如：https://your-shop.example.com": "Exemple : https://your-shop.example.com",
+    "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Affiche l’entrée d’achat Liandong Shop sur la page du portefeuille. Les utilisateurs achètent puis utilisent le code fourni par la boutique.",
+    "充值地址": "URL de recharge",
+    "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "Après l’achat, copiez le code fourni par la boutique et échangez-le ci-dessous.",
+    "打开充值地址": "Ouvrir l’URL de recharge"
   }
 }

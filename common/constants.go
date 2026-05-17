@@ -17,6 +17,7 @@ var SystemName = "New API"
 var Footer = ""
 var Logo = ""
 var TopUpLink = ""
+var LianDongShopUrl = ""
 
 var themeValue atomic.Value // stores string; safe for concurrent read/write
 

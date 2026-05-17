@@ -112,11 +112,11 @@ func TestFilterAvailablePayMethodsRequiresMatchingProvider(t *testing.T) {
 		{"name": "Stripe", "type": model.PaymentMethodStripe},
 	}
 
-	filtered := filterAvailablePayMethods(methods, false, false, true, false, false)
+	filtered := filterAvailablePayMethods(methods, false, false, true, false, false, false)
 	require.Len(t, filtered, 1)
 	require.Equal(t, model.PaymentMethodAlipay, filtered[0]["type"])
 
-	filtered = filterAvailablePayMethods(methods, true, false, false, false, false)
+	filtered = filterAvailablePayMethods(methods, true, false, false, false, false, false)
 	require.Len(t, filtered, 2)
 	require.Equal(t, "alipay", filtered[0]["type"])
 	require.Equal(t, "wxpay", filtered[1]["type"])
@@ -140,14 +140,14 @@ func TestAlipayRequestSignContentIncludesSignType(t *testing.T) {
 
 func TestAlipayNotifyLogFieldsOmitsSensitiveFields(t *testing.T) {
 	fields := alipayNotifyLogFields(map[string]string{
-		"app_id":        "2021000000000000",
-		"out_trade_no":  "ALI123",
-		"trade_no":      "202605112200123456",
-		"trade_status":  "TRADE_SUCCESS",
-		"total_amount":  "7.30",
-		"sign_type":     "RSA2",
-		"sign":          "signature",
-		"buyer_id":      "buyer-123",
+		"app_id":         "2021000000000000",
+		"out_trade_no":   "ALI123",
+		"trade_no":       "202605112200123456",
+		"trade_status":   "TRADE_SUCCESS",
+		"total_amount":   "7.30",
+		"sign_type":      "RSA2",
+		"sign":           "signature",
+		"buyer_id":       "buyer-123",
 		"buyer_logon_id": "user@example.com",
 	})
 
