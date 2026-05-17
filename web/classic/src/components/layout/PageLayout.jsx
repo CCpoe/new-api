@@ -19,6 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 
 import HeaderBar from './headerbar';
 import '@douyinfe/semi-ui/dist/css/semi.css';
+import './PageLayout.css';
 import { Layout, LocaleProvider } from '@douyinfe/semi-ui';
 import App from '../../App';
 import { ToastContainer } from 'react-toastify';

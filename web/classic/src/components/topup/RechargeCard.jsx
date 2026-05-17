@@ -629,7 +629,7 @@ const RechargeCard = ({
               )}
             </div>
           </Form>
-        ) : (
+        ) : lianDongShopUrl ? null : (
           <Banner
             type='info'
             description={t(
