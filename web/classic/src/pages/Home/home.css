@@ -3,8 +3,9 @@
   background: #fcfcfc;
   color: #1a1a1a;
   overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Microsoft YaHei', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Microsoft YaHei', sans-serif;
 }
 
 .aihubmix-hero {
@@ -73,7 +74,8 @@
 }
 
 .aihubmix-map-dots {
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       circle,
       rgba(107, 151, 194, 0.62) 0 1.05px,
       transparent 1.2px
@@ -91,10 +93,10 @@
     8px 8px;
   opacity: 0.56;
   mix-blend-mode: multiply;
-  mask-image: url('/aihubmix-world-map.svg');
+  mask-image: url('../../../public/aihubmix-world-map.svg');
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
-  -webkit-mask-image: url('/aihubmix-world-map.svg');
+  -webkit-mask-image: url('../../../public/aihubmix-world-map.svg');
   -webkit-mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   animation:
@@ -114,10 +116,10 @@
   );
   opacity: 0.45;
   transform: translateX(-72%);
-  mask-image: url('/aihubmix-world-map.svg');
+  mask-image: url('../../../public/aihubmix-world-map.svg');
   mask-size: 100% 100%;
   mask-repeat: no-repeat;
-  -webkit-mask-image: url('/aihubmix-world-map.svg');
+  -webkit-mask-image: url('../../../public/aihubmix-world-map.svg');
   -webkit-mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   animation: mapSweep 6.5s ease-in-out 1.2s infinite;
@@ -713,9 +715,7 @@
   color: #303540;
 }
 
-.aihubmix-site-header
-  .aihubmix-language-dropdown
-  > .aihubmix-language-button {
+.aihubmix-site-header .aihubmix-language-dropdown > .aihubmix-language-button {
   border: 0;
   color: #303540;
   font-family: inherit;

@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	//"os"
 	//"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -37,6 +38,26 @@ func SetTheme(t string) {
 	}
 }
 
+// ThemeAwarePath rewrites legacy /console/* paths to the default-theme
+// equivalents when the active theme is "default".  For "classic" (or any
+// other theme) the path is returned unchanged.  The function only touches
+// known prefixes so it is safe to call with arbitrary suffixes and query
+// strings.
+func ThemeAwarePath(suffix string) string {
+	if GetTheme() != "default" {
+		return suffix
+	}
+	switch {
+	case strings.HasPrefix(suffix, "/console/topup"):
+		return strings.Replace(suffix, "/console/topup", "/wallet", 1)
+	case strings.HasPrefix(suffix, "/console/log"):
+		return strings.Replace(suffix, "/console/log", "/usage-logs", 1)
+	case strings.HasPrefix(suffix, "/console/personal"):
+		return strings.Replace(suffix, "/console/personal", "/profile", 1)
+	}
+	return suffix
+}
+
 // var ChatLink = ""
 // var ChatLink2 = ""
 var QuotaPerUnit = 500 * 1000.0 // $0.002 / 1K tokens
@@ -54,6 +75,8 @@ var DefaultCollapseSidebar = false // default value of collapse sidebar
 
 var SessionSecret = uuid.New().String()
 var CryptoSecret = uuid.New().String()
+var SessionCookieSecure = false
+var SessionCookieTrustedURLs []string
 
 var OptionMap map[string]string
 var OptionMapRWMutex sync.RWMutex
@@ -100,6 +123,8 @@ var InsecureTLSConfig = &tls.Config{InsecureSkipVerify: true}
 var SMTPServer = ""
 var SMTPPort = 587
 var SMTPSSLEnabled = false
+var SMTPStartTLSEnabled = false
+var SMTPInsecureSkipVerify = false
 var SMTPForceAuthLogin = false
 var SMTPAccount = ""
 var SMTPFrom = ""
@@ -137,9 +162,20 @@ var RetryTimes = 0
 
 var IsMasterNode bool
 
-// NodeName 节点名称，从 NODE_NAME 环境变量读取；
-// 用于审计日志中标识节点身份，在容器/K8s 部署时比自动探测到的容器内网 IP 更具可读性。
+const (
+	NodeNameSourceManual   = "manual"
+	NodeNameSourceHostname = "hostname"
+)
+
+// NodeName 节点名称，优先从 NODE_NAME 环境变量读取，未配置时回退主机名。
+// 用于审计日志和后台任务中标识节点身份；多实例部署时建议显式配置稳定 NODE_NAME。
 var NodeName = ""
+
+// NodeNameSource records how NodeName was chosen so future instance-management
+// reporting can distinguish operator-configured names from automatic fallback.
+var NodeNameSource = NodeNameSourceHostname
+
+var NodeNameManuallyConfigured bool
 
 var requestInterval int
 var RequestInterval time.Duration
@@ -151,6 +187,7 @@ var BatchUpdateInterval int
 
 var RelayTimeout int // unit is second
 
+var RelayIdleConnTimeout int // unit is second
 var RelayMaxIdleConns int
 var RelayMaxIdleConnsPerHost int
 
@@ -160,7 +197,8 @@ var GeminiSafetySetting string
 var CohereSafetySetting string
 
 const (
-	RequestIdKey = "X-Oneapi-Request-Id"
+	RequestIdKey         = "X-Oneapi-Request-Id"
+	UpstreamRequestIdKey = "X-Upstream-Request-Id"
 )
 
 const (

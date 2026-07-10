@@ -331,7 +331,7 @@ function App() {
           element={
             <PrivateRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
-                <Midjourney />
+                <MjProxy />
               </Suspense>
             </PrivateRoute>
           }

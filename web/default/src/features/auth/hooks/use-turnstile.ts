@@ -16,9 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useCallback, useState } from 'react'
 import i18next from 'i18next'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+
 import { useStatus } from '@/hooks/use-status'
 
 type TurnstileStatus = 'idle' | 'verified' | 'expired' | 'error'
@@ -29,7 +30,8 @@ type TurnstileStatus = 'idle' | 'verified' | 'expired' | 'error'
 export function useTurnstile() {
   const { status } = useStatus()
   const [turnstileToken, setTurnstileToken] = useState('')
-  const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>('idle')
+  const [turnstileStatus, setTurnstileStatus] =
+    useState<TurnstileStatus>('idle')
 
   const isTurnstileEnabled = !!(
     status?.turnstile_check && status?.turnstile_site_key
@@ -60,9 +62,7 @@ export function useTurnstile() {
    */
   const validateTurnstile = (): boolean => {
     if (isTurnstileEnabled && !turnstileToken) {
-      toast.info(
-        i18next.t('Please complete the human verification first')
-      )
+      toast.info(i18next.t('Please complete the human verification first'))
       return false
     }
     return true

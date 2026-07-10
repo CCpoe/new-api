@@ -19,7 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { Check, Copy, ExternalLink, QrCode } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslation } from 'react-i18next'
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -29,6 +29,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
+
 import type { LakalaPaymentData } from '../../types'
 
 type LakalaQrDialogProps = {
@@ -40,7 +42,8 @@ type LakalaQrDialogProps = {
 export function LakalaQrDialog(props: LakalaQrDialogProps) {
   const { t } = useTranslation()
   const { copyToClipboard, copiedText } = useCopyToClipboard({ notify: true })
-  const qrValue = props.paymentData?.qr_code || props.paymentData?.pay_link || ''
+  const qrValue =
+    props.paymentData?.qr_code || props.paymentData?.pay_link || ''
   const orderId = props.paymentData?.order_id || ''
   const redirectUrl = props.paymentData?.redirect_url || ''
   const formData = props.paymentData?.form_data || ''
@@ -58,7 +61,11 @@ export function LakalaQrDialog(props: LakalaQrDialogProps) {
     if (!paymentWindow) return
 
     paymentWindow.document.open()
-    paymentWindow.document.write('<!doctype html><html><head><title>Lakala</title></head><body>' + formData + '<script>document.forms[0]?.submit()</script></body></html>')
+    paymentWindow.document.write(
+      '<!doctype html><html><head><title>Lakala</title></head><body>' +
+        formData +
+        '<script>document.forms[0]?.submit()</script></body></html>'
+    )
     paymentWindow.document.close()
   }
 

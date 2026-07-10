@@ -16,8 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { formatTimestampToDate } from '@/lib/format'
 import type { StatusBadgeProps } from '@/components/status-badge'
+import { formatTimestampToDate } from '@/lib/format'
+
 import type { TopupStatus } from '../types'
 
 // ============================================================================
@@ -69,8 +70,12 @@ export const PAYMENT_METHOD_NAMES: Record<string, string> = {
 /**
  * Get payment method display name
  */
-export function getPaymentMethodName(method: string): string {
-  return PAYMENT_METHOD_NAMES[method] || method
+export function getPaymentMethodName(
+  method: string,
+  t?: (key: string) => string
+): string {
+  const name = PAYMENT_METHOD_NAMES[method] || method
+  return t ? t(name) : name
 }
 
 /**

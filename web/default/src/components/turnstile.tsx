@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useRef, useState } from 'react'
+
 import { cn } from '@/lib/utils'
 
 declare global {
@@ -83,7 +84,9 @@ export function Turnstile({
     }
 
     const scriptId = 'cf-turnstile'
-    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null
+    const existingScript = document.getElementById(
+      scriptId
+    ) as HTMLScriptElement | null
     if (existingScript) {
       existingScript.addEventListener('load', render, { once: true })
       return () => {
@@ -95,7 +98,8 @@ export function Turnstile({
 
     const s = document.createElement('script')
     s.id = scriptId
-    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+    s.src =
+      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
     s.async = true
     s.defer = true
     s.onload = () => render()
@@ -121,7 +125,7 @@ export function Turnstile({
       )}
     >
       <div className='flex justify-center py-1'>
-        <div className='w-[300px] max-w-full overflow-hidden rounded bg-background'>
+        <div className='bg-background w-[300px] max-w-full overflow-hidden rounded'>
           <div ref={ref} />
         </div>
       </div>

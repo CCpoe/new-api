@@ -16,12 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useEffect } from 'react'
-import * as z from 'zod'
-import { type Resolver, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { BookOpen, TriangleAlert } from 'lucide-react'
+import { useEffect } from 'react'
+import { type Resolver, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import * as z from 'zod'
+
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,6 +38,7 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+
 import { useUpdateOption } from '../hooks/use-update-option'
 import { removeTrailingSlash } from './utils'
 
@@ -55,12 +57,12 @@ const lakalaSchema = z.object({
   LakalaNotifyUrl: z.string().refine((value) => {
     const trimmed = value.trim()
     if (!trimmed) return true
-    return /^https?:///.test(trimmed)
+    return /^https?:/ //.test(trimmed)
   }, 'Provide a valid URL starting with http:// or https://'),
   LakalaReturnUrl: z.string().refine((value) => {
     const trimmed = value.trim()
     if (!trimmed) return true
-    return /^https?:///.test(trimmed)
+    return /^https?:/ //.test(trimmed)
   }, 'Provide a valid URL starting with http:// or https://'),
   LakalaUnitPrice: z.coerce.number().min(0),
   LakalaMinTopUp: z.coerce.number().min(0),
@@ -152,7 +154,7 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
         <BookOpen className='h-4 w-4' />
         <AlertDescription>
           {t('Notify URL:')}{' '}
-          <code className='rounded bg-muted px-1 py-0.5 text-xs'>
+          <code className='bg-muted rounded px-1 py-0.5 text-xs'>
             {'<ServerAddress>/api/lakala/notify'}
           </code>
         </AlertDescription>
@@ -263,7 +265,9 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                   <FormControl>
                     <Input placeholder='822xxxxxxxxxxxx' {...field} />
                   </FormControl>
-                  <FormDescription>{t('Lakala merchant number')}</FormDescription>
+                  <FormDescription>
+                    {t('Lakala merchant number')}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -280,7 +284,9 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                   <FormControl>
                     <Input placeholder='29034705' {...field} />
                   </FormControl>
-                  <FormDescription>{t('Lakala terminal number')}</FormDescription>
+                  <FormDescription>
+                    {t('Lakala terminal number')}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -298,11 +304,21 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                       onChange={(event) => field.onChange(event.target.value)}
                       className='w-full'
                     >
-                      <NativeSelectOption value='ALIPAY'>Alipay</NativeSelectOption>
-                      <NativeSelectOption value='WECHAT'>WeChat</NativeSelectOption>
-                      <NativeSelectOption value='UQRCODEPAY'>UQRCODEPAY</NativeSelectOption>
-                      <NativeSelectOption value='DCPAY'>DCPAY</NativeSelectOption>
-                      <NativeSelectOption value='LKLACC'>LKLACC</NativeSelectOption>
+                      <NativeSelectOption value='ALIPAY'>
+                        Alipay
+                      </NativeSelectOption>
+                      <NativeSelectOption value='WECHAT'>
+                        WeChat
+                      </NativeSelectOption>
+                      <NativeSelectOption value='UQRCODEPAY'>
+                        UQRCODEPAY
+                      </NativeSelectOption>
+                      <NativeSelectOption value='DCPAY'>
+                        DCPAY
+                      </NativeSelectOption>
+                      <NativeSelectOption value='LKLACC'>
+                        LKLACC
+                      </NativeSelectOption>
                     </NativeSelect>
                   </FormControl>
                   <FormDescription>
@@ -325,9 +341,15 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                       onChange={(event) => field.onChange(event.target.value)}
                       className='w-full'
                     >
-                      <NativeSelectOption value='41'>41 NATIVE</NativeSelectOption>
-                      <NativeSelectOption value='51'>51 JSAPI</NativeSelectOption>
-                      <NativeSelectOption value='81'>81 Alipay H5</NativeSelectOption>
+                      <NativeSelectOption value='41'>
+                        41 NATIVE
+                      </NativeSelectOption>
+                      <NativeSelectOption value='51'>
+                        51 JSAPI
+                      </NativeSelectOption>
+                      <NativeSelectOption value='81'>
+                        81 Alipay H5
+                      </NativeSelectOption>
                     </NativeSelect>
                   </FormControl>
                   <FormDescription>
@@ -348,7 +370,9 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                     <Input placeholder='gateway' {...field} />
                   </FormControl>
                   <FormDescription>
-                    {t('Optional external order source used by Lakala notifications')}
+                    {t(
+                      'Optional external order source used by Lakala notifications'
+                    )}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -466,7 +490,9 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    {t('RSA2 application private key, leave blank unless updating')}
+                    {t(
+                      'RSA2 application private key, leave blank unless updating'
+                    )}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -487,7 +513,9 @@ export function LakalaSettingsSection(props: LakalaSettingsSectionProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    {t('Lakala public key or platform certificate used to verify responses and notifications')}
+                    {t(
+                      'Lakala public key or platform certificate used to verify responses and notifications'
+                    )}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
