@@ -10,6 +10,17 @@ const semiUiDir = path.resolve(
   path.dirname(require.resolve('@douyinfe/semi-ui')),
   '../..',
 )
+const vchartDir = path.dirname(require.resolve('@visactor/vchart/package.json'))
+const vrenderCoreDir = path.dirname(
+  require.resolve('@visactor/vrender-core/package.json', {
+    paths: [vchartDir],
+  }),
+)
+const vrenderKitsDir = path.dirname(
+  require.resolve('@visactor/vrender-kits/package.json', {
+    paths: [vchartDir],
+  }),
+)
 
 export default defineConfig(({ envMode }) => {
   const env = loadEnv({ mode: envMode, prefixes: ['VITE_'] })
@@ -47,10 +58,13 @@ export default defineConfig(({ envMode }) => {
           semiUiDir,
           'dist/css/semi.css',
         ),
+        '@visactor/vrender-core': vrenderCoreDir,
+        '@visactor/vrender-kits': vrenderKitsDir,
       },
     },
     html: {
       template: './index.html',
+      favicon: './public/logo.png',
     },
     server: {
       host: '0.0.0.0',

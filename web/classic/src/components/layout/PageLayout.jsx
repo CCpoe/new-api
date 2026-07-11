@@ -236,7 +236,7 @@ const PageLayout = () => {
                 minHeight: 0,
               }}
             >
-              <ErrorBoundary>
+              <ErrorBoundary key={location.pathname}>
                 <App />
               </ErrorBoundary>
             </Content>
