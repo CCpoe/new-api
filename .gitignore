@@ -14,6 +14,9 @@ web/classic/dist
 web/node_modules
 web/dist
 .env
+.env.production
+.deploy.lock
+backups/
 one-api
 new-api
 /__debug_bin*

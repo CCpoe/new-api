@@ -4,6 +4,12 @@
 !THIRD-PARTY-LICENSES.md
 .vscode
 .gitignore
+.env*
+.deploy.lock
+backups
+data
+logs
+*.db
 Makefile
 docs
 .eslintcache

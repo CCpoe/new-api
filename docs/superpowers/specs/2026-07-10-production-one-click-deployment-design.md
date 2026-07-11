@@ -58,7 +58,7 @@ are available.
 The host setup flow is:
 
 1. Require Bash, Git, curl, and standard GNU utilities.
-2. Detect `docker compose` first and fall back to `docker-compose`.
+2. Require Docker Compose v2 through `docker compose`.
 3. If Docker is absent, install Docker Engine and the Compose plugin through
    the official Docker APT repository when automatic installation is enabled.
 4. Verify that the Docker daemon is reachable before touching the deployment.
@@ -74,6 +74,7 @@ overrides.
 
 Before updating it should:
 
+- acquire an exclusive host lock for the complete deployment run;
 - verify that it is running inside the expected repository;
 - verify the current branch;
 - reject tracked or staged changes;
@@ -129,13 +130,17 @@ directory under `backups/` before the new application starts.
 The backup contains:
 
 - a PostgreSQL custom-format dump produced by `pg_dump` inside the existing
-  PostgreSQL container;
+  PostgreSQL container, or from a temporary container attached to an existing
+  data volume when the original container no longer exists;
 - the current Git commit;
 - the current container image identifier and Compose project metadata;
 - a protected copy of the production environment file;
 - copies of legacy SQLite database files when present.
 
 Backup directories and secret-bearing files use restrictive permissions.
+Before deployment continues, the dump is fully restored into an isolated
+temporary PostgreSQL container and the restored core table counts must match
+the source database.
 
 Database schema migration remains owned by the Go application. On master-node
 startup, `InitDB` runs the existing cross-database migration path and GORM
