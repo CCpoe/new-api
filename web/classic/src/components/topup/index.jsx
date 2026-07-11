@@ -37,6 +37,7 @@ import { StatusContext } from '../../context/Status';
 
 import RechargeCard from './RechargeCard';
 import InvitationCard from './InvitationCard';
+import ShopIframePanel from './ShopIframePanel';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
 import TopupHistoryModal from './modals/TopupHistoryModal';
@@ -1087,6 +1088,12 @@ const TopUp = () => {
     }));
   };
 
+  const hasShopPanel = Boolean(lianDongShopUrl);
+  const hasRightColumn = hasShopPanel || inviteRewardEnabled;
+  const mainGridClassName = hasShopPanel
+    ? 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,3fr)_minmax(0,7fr)]'
+    : `grid grid-cols-1 gap-6 ${hasRightColumn ? 'lg:grid-cols-2' : 'lg:grid-cols-[minmax(0,760px)]'}`;
+
   return (
     <div className='w-full max-w-7xl mx-auto relative min-h-screen lg:min-h-0 mt-[60px] px-2'>
       {/* 划转模态框 */}
@@ -1215,7 +1222,7 @@ const TopUp = () => {
       </Modal>
 
       {/* 主布局区域 */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+      <div className={mainGridClassName}>
         <RechargeCard
           t={t}
           enableOnlineTopUp={enableOnlineTopUp}
@@ -1265,18 +1272,25 @@ const TopUp = () => {
           reloadSubscriptionSelf={getSubscriptionSelf}
           enableRedemption={topupInfo.enable_redemption !== false}
         />
-        {inviteRewardEnabled && (
-          <InvitationCard
-            t={t}
-            userState={userState}
-            renderQuota={renderQuota}
-            setOpenTransfer={setOpenTransfer}
-            affLink={affLink}
-            handleAffLinkClick={handleAffLinkClick}
-            complianceConfirmed={
-              topupInfo.payment_compliance_confirmed !== false
-            }
-          />
+        {hasRightColumn && (
+          <div className='flex min-w-0 flex-col gap-6'>
+            {hasShopPanel && (
+              <ShopIframePanel t={t} shopUrl={lianDongShopUrl} />
+            )}
+            {inviteRewardEnabled && (
+              <InvitationCard
+                t={t}
+                userState={userState}
+                renderQuota={renderQuota}
+                setOpenTransfer={setOpenTransfer}
+                affLink={affLink}
+                handleAffLinkClick={handleAffLinkClick}
+                complianceConfirmed={
+                  topupInfo.payment_compliance_confirmed !== false
+                }
+              />
+            )}
+          </div>
         )}
       </div>
     </div>
