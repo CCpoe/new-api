@@ -14,8 +14,11 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/new-api/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -213,6 +216,59 @@ func decodeAPIResponse(t *testing.T, recorder *httptest.ResponseRecorder) tokenA
 		t.Fatalf("failed to decode api response: %v", err)
 	}
 	return response
+}
+
+func TestAddTokenUsesConfiguredDefaultGroup(t *testing.T) {
+	tests := []struct {
+		name                string
+		defaultUseAutoGroup bool
+		inputGroup          string
+		wantGroup           string
+	}{
+		{
+			name:                "auto enabled",
+			defaultUseAutoGroup: true,
+			wantGroup:           "auto",
+		},
+		{
+			name:                "auto disabled",
+			defaultUseAutoGroup: false,
+			wantGroup:           "",
+		},
+		{
+			name:                "explicit group preserved",
+			defaultUseAutoGroup: true,
+			inputGroup:          "route",
+			wantGroup:           "route",
+		},
+	}
+
+	originalDefault := setting.DefaultUseAutoGroup
+	t.Cleanup(func() {
+		setting.DefaultUseAutoGroup = originalDefault
+	})
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db := setupTokenControllerTestDB(t)
+			setting.DefaultUseAutoGroup = tt.defaultUseAutoGroup
+
+			ctx, recorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/", map[string]any{
+				"name":            "new token",
+				"expired_time":    -1,
+				"unlimited_quota": true,
+				"group":           tt.inputGroup,
+			}, 1)
+			AddToken(ctx)
+
+			response := decodeAPIResponse(t, recorder)
+			require.True(t, response.Success, response.Message)
+
+			var token model.Token
+			require.NoError(t, db.Where("user_id = ?", 1).First(&token).Error)
+			assert.Equal(t, tt.wantGroup, token.Group)
+		})
+	}
 }
 
 func getSQLiteColumnType(t *testing.T, db *gorm.DB, tableName string, columnName string) string {

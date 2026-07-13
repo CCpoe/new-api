@@ -69,6 +69,8 @@ const EditTokenModal = (props) => {
   const [groups, setGroups] = useState([]);
   const [showQuotaInput, setShowQuotaInput] = useState(false);
   const isEdit = props.editingToken.id !== undefined;
+  const defaultUseAutoGroup =
+    statusState?.status?.default_use_auto_group === true;
 
   const getInitValues = () => ({
     name: '',
@@ -79,7 +81,7 @@ const EditTokenModal = (props) => {
     model_limits_enabled: false,
     model_limits: [],
     allow_ips: '',
-    group: '',
+    group: defaultUseAutoGroup ? 'auto' : '',
     cross_group_retry: false,
     tokenCount: 1,
   });
@@ -148,9 +150,6 @@ const EditTokenModal = (props) => {
         }
       }
       setGroups(localGroupOptions);
-      // if (statusState?.status?.default_use_auto_group && formApiRef.current) {
-      //   formApiRef.current.setValue('group', 'auto');
-      // }
     } else {
       showError(t(message));
     }
@@ -189,7 +188,7 @@ const EditTokenModal = (props) => {
     }
     loadModels();
     loadGroups();
-  }, [props.editingToken.id]);
+  }, [props.editingToken.id, defaultUseAutoGroup]);
 
   useEffect(() => {
     if (props.visiable) {
@@ -201,7 +200,7 @@ const EditTokenModal = (props) => {
     } else {
       formApiRef.current?.reset();
     }
-  }, [props.visiable, props.editingToken.id]);
+  }, [props.visiable, props.editingToken.id, defaultUseAutoGroup]);
 
   const generateRandomSuffix = () => {
     const characters =
@@ -552,7 +551,10 @@ const EditTokenModal = (props) => {
                         ? `▾ ${t('收起原生额度输入')}`
                         : `▸ ${t('使用原生额度输入')}`}
                     </div>
-                    <div style={{ display: showQuotaInput ? 'block' : 'none' }} className='mt-2'>
+                    <div
+                      style={{ display: showQuotaInput ? 'block' : 'none' }}
+                      className='mt-2'
+                    >
                       <Form.InputNumber
                         field='remain_quota'
                         label={t('额度')}
