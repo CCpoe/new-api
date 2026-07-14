@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -186,10 +187,17 @@ func GetTopUpInfo(c *gin.Context) {
 		"amount_options":          operation_setting.GetPaymentSetting().AmountOptions,
 		"discount":                operation_setting.GetPaymentSetting().AmountDiscount,
 		"topup_link":              common.TopUpLink,
-		"lian_dong_shop_url":      common.LianDongShopUrl,
 		"invite_reward_enabled":   common.InviteRewardEnabled,
 	}
 	common.ApiSuccess(c, data)
+}
+
+func GetRechargeShop(c *gin.Context) {
+	shopUrl := strings.TrimSpace(common.LianDongShopUrl)
+	common.ApiSuccess(c, gin.H{
+		"enabled": shopUrl != "",
+		"url":     shopUrl,
+	})
 }
 
 type EpayRequest struct {

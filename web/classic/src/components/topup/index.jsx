@@ -37,7 +37,6 @@ import { StatusContext } from '../../context/Status';
 
 import RechargeCard from './RechargeCard';
 import InvitationCard from './InvitationCard';
-import ShopIframePanel from './ShopIframePanel';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
 import TopupHistoryModal from './modals/TopupHistoryModal';
@@ -74,7 +73,6 @@ const TopUp = () => {
     statusState?.status?.min_topup || 1,
   );
   const [topUpLink, setTopUpLink] = useState('');
-  const [lianDongShopUrl, setLianDongShopUrl] = useState('');
   const [inviteRewardEnabled, setInviteRewardEnabled] = useState(false);
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
     statusState?.status?.enable_online_topup || false,
@@ -756,7 +754,6 @@ const TopUp = () => {
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
           setTopUpLink(data.topup_link || '');
-          setLianDongShopUrl(data.lian_dong_shop_url || '');
           const nextInviteRewardEnabled = data.invite_reward_enabled !== false;
           setInviteRewardEnabled(nextInviteRewardEnabled);
           if (nextInviteRewardEnabled && !affFetchedRef.current) {
@@ -1088,11 +1085,7 @@ const TopUp = () => {
     }));
   };
 
-  const hasShopPanel = Boolean(lianDongShopUrl);
-  const hasRightColumn = hasShopPanel || inviteRewardEnabled;
-  const mainGridClassName = hasShopPanel
-    ? 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,3fr)_minmax(0,7fr)]'
-    : `grid grid-cols-1 gap-6 ${hasRightColumn ? 'lg:grid-cols-2' : 'lg:grid-cols-[minmax(0,760px)]'}`;
+  const mainGridClassName = `grid grid-cols-1 gap-6 ${inviteRewardEnabled ? 'lg:grid-cols-2' : 'lg:grid-cols-[minmax(0,760px)]'}`;
 
   return (
     <div className='w-full max-w-7xl mx-auto relative min-h-screen lg:min-h-0 mt-[60px] px-2'>
@@ -1257,7 +1250,6 @@ const TopUp = () => {
           isSubmitting={isSubmitting}
           topUpLink={topUpLink}
           openTopUpLink={openTopUpLink}
-          lianDongShopUrl={lianDongShopUrl}
           userState={userState}
           renderQuota={renderQuota}
           statusLoading={statusLoading}
@@ -1272,24 +1264,19 @@ const TopUp = () => {
           reloadSubscriptionSelf={getSubscriptionSelf}
           enableRedemption={topupInfo.enable_redemption !== false}
         />
-        {hasRightColumn && (
+        {inviteRewardEnabled && (
           <div className='flex min-w-0 flex-col gap-6'>
-            {hasShopPanel && (
-              <ShopIframePanel t={t} shopUrl={lianDongShopUrl} />
-            )}
-            {inviteRewardEnabled && (
-              <InvitationCard
-                t={t}
-                userState={userState}
-                renderQuota={renderQuota}
-                setOpenTransfer={setOpenTransfer}
-                affLink={affLink}
-                handleAffLinkClick={handleAffLinkClick}
-                complianceConfirmed={
-                  topupInfo.payment_compliance_confirmed !== false
-                }
-              />
-            )}
+            <InvitationCard
+              t={t}
+              userState={userState}
+              renderQuota={renderQuota}
+              setOpenTransfer={setOpenTransfer}
+              affLink={affLink}
+              handleAffLinkClick={handleAffLinkClick}
+              complianceConfirmed={
+                topupInfo.payment_compliance_confirmed !== false
+              }
+            />
           </div>
         )}
       </div>

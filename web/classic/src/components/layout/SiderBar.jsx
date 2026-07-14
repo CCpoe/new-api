@@ -25,6 +25,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useSidebarCollapsed } from '../../hooks/common/useSidebarCollapsed';
 import { useSidebar } from '../../hooks/common/useSidebar';
 import { useMinimumLoadingTime } from '../../hooks/common/useMinimumLoadingTime';
+import { useRechargeShop } from '../../hooks/recharge/useRechargeShop';
 import { isAdmin, isRoot, showError } from '../../helpers';
 import SkeletonWrapper from './components/SkeletonWrapper';
 
@@ -36,6 +37,7 @@ const routerMap = {
   token: '/console/token',
   redemption: '/console/redemption',
   topup: '/console/topup',
+  recharge: '/console/recharge',
   user: '/console/user',
   subscription: '/console/subscription',
   log: '/console/log',
@@ -59,8 +61,13 @@ const SiderBar = ({ onNavigate = () => {} }) => {
     hasSectionVisibleModules,
     loading: sidebarLoading,
   } = useSidebar();
+  const { enabled: rechargeShopEnabled, loading: rechargeShopLoading } =
+    useRechargeShop();
 
-  const showSkeleton = useMinimumLoadingTime(sidebarLoading, 200);
+  const showSkeleton = useMinimumLoadingTime(
+    sidebarLoading || rechargeShopLoading,
+    200,
+  );
 
   const [selectedKeys, setSelectedKeys] = useState(['home']);
   const [chatItems, setChatItems] = useState([]);
@@ -130,6 +137,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         to: '/topup',
       },
       {
+        text: t('充值'),
+        itemKey: 'recharge',
+        to: '/recharge',
+        available: rechargeShopEnabled,
+      },
+      {
         text: t('个人设置'),
         itemKey: 'personal',
         to: '/personal',
@@ -139,11 +152,11 @@ const SiderBar = ({ onNavigate = () => {} }) => {
     // 根据配置过滤项目
     const filteredItems = items.filter((item) => {
       const configVisible = isModuleVisible('personal', item.itemKey);
-      return configVisible;
+      return configVisible && item.available !== false;
     });
 
     return filteredItems;
-  }, [t, isModuleVisible]);
+  }, [t, isModuleVisible, rechargeShopEnabled]);
 
   const adminItems = useMemo(() => {
     const items = [

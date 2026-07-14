@@ -3954,6 +3954,8 @@
     "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Shows the Liandong Shop purchase entry on the wallet page. Users buy there and redeem the code issued by the shop.",
     "充值地址": "Recharge URL",
     "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "After purchase, copy the redemption code issued by the shop and redeem it below.",
-    "打开充值地址": "Open recharge URL"
+    "打开充值地址": "Open recharge URL",
+    "充值功能暂未开放": "Recharge is not available yet",
+    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Shows a standalone recharge page in the personal center. After purchasing, users recharge with the redemption code issued by the shop."
   }
 }

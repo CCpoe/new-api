@@ -3694,6 +3694,8 @@
     "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Affiche l’entrée d’achat Liandong Shop sur la page du portefeuille. Les utilisateurs achètent puis utilisent le code fourni par la boutique.",
     "充值地址": "URL de recharge",
     "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "Après l’achat, copiez le code fourni par la boutique et échangez-le ci-dessous.",
-    "打开充值地址": "Ouvrir l’URL de recharge"
+    "打开充值地址": "Ouvrir l’URL de recharge",
+    "充值功能暂未开放": "La recharge n’est pas encore disponible",
+    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Affiche une page de recharge dédiée dans l’espace personnel. Après l’achat, les utilisateurs rechargent leur solde avec le code fourni par la boutique."
   }
 }

@@ -46,6 +46,7 @@ const Channel = lazy(() => import('./pages/Channel'));
 const Token = lazy(() => import('./pages/Token'));
 const Redemption = lazy(() => import('./pages/Redemption'));
 const TopUp = lazy(() => import('./pages/TopUp'));
+const Recharge = lazy(() => import('./pages/Recharge'));
 const Log = lazy(() => import('./pages/Log'));
 const Chat = lazy(() => import('./pages/Chat'));
 const Chat2Link = lazy(() => import('./pages/Chat2Link'));
@@ -302,6 +303,16 @@ function App() {
             <PrivateRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
                 <TopUp />
+              </Suspense>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path='/console/recharge'
+          element={
+            <PrivateRoute>
+              <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+                <Recharge />
               </Suspense>
             </PrivateRoute>
           }

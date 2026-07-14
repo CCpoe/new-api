@@ -4228,6 +4228,8 @@
     "用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。": "Hiển thị lối vào mua hàng Liandong Shop trên trang ví. Người dùng mua tại đó rồi nạp bằng mã đổi thưởng do cửa hàng phát hành.",
     "充值地址": "Địa chỉ nạp tiền",
     "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "Sau khi mua, hãy sao chép mã đổi thưởng do cửa hàng phát hành và đổi ở bên dưới.",
-    "打开充值地址": "Mở địa chỉ nạp tiền"
+    "打开充值地址": "Mở địa chỉ nạp tiền",
+    "充值功能暂未开放": "Tính năng nạp tiền hiện chưa khả dụng",
+    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Hiển thị trang nạp tiền riêng trong trung tâm cá nhân. Sau khi mua, người dùng nạp tiền bằng mã đổi thưởng do cửa hàng cấp."
   }
 }

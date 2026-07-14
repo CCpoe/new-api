@@ -27,6 +27,7 @@ import {
   verifyJSON,
 } from '../../../helpers';
 import { useTranslation } from 'react-i18next';
+import { refreshRechargeShop } from '../../../hooks/recharge/useRechargeShop';
 
 export default function SettingsGeneralPayment(props) {
   const { t } = useTranslation();
@@ -102,6 +103,8 @@ export default function SettingsGeneralPayment(props) {
 
     setLoading(true);
     try {
+      const rechargeShopChanged =
+        originInputs.LianDongShopUrl !== inputs.LianDongShopUrl;
       const options = [
         {
           key: 'ServerAddress',
@@ -153,6 +156,9 @@ export default function SettingsGeneralPayment(props) {
       if (errorResults.length === 0) {
         showSuccess(t('更新成功'));
         setOriginInputs({ ...inputs });
+        if (rechargeShopChanged) {
+          await refreshRechargeShop();
+        }
         props.refresh && props.refresh();
       } else {
         errorResults.forEach((res) => {
@@ -254,7 +260,7 @@ export default function SettingsGeneralPayment(props) {
                 placeholder={t('例如：https://your-shop.example.com')}
                 style={{ width: '100%' }}
                 extraText={t(
-                  '用于在钱包管理页展示链动小铺购买入口，用户购买后使用店铺发放的兑换码充值。',
+                  '用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。',
                 )}
               />
             </Col>

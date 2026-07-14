@@ -44,7 +44,6 @@ import {
   TrendingUp,
   Receipt,
   Sparkles,
-  ExternalLink,
 } from 'lucide-react';
 import { IconGift } from '@douyinfe/semi-icons';
 import { useMinimumLoadingTime } from '../../hooks/common/useMinimumLoadingTime';
@@ -86,7 +85,6 @@ const RechargeCard = ({
   isSubmitting,
   topUpLink,
   openTopUpLink,
-  lianDongShopUrl,
   userState,
   renderQuota,
   statusLoading,
@@ -112,16 +110,6 @@ const RechargeCard = ({
   const shouldShowSubscription =
     !subscriptionLoading && subscriptionPlans.length > 0;
   const regularPayMethods = payMethods || [];
-  const hasOnlineTopUp =
-    enableOnlineTopUp ||
-    enableAlipayTopUp ||
-    enableLakalaTopUp ||
-    enableStripeTopUp ||
-    enableCreemTopUp ||
-    enableWaffoTopUp ||
-    enableWaffoPancakeTopUp;
-  const shouldShowTopUpMethodsCard =
-    statusLoading || hasOnlineTopUp || !lianDongShopUrl;
   const accountStats = [
     {
       key: 'quota',
@@ -187,8 +175,7 @@ const RechargeCard = ({
         </div>
       </Card>
       {/* 统计数据 */}
-      {shouldShowTopUpMethodsCard && (
-        <Card className='!rounded-xl w-full' bodyStyle={{ padding: 14 }}>
+      <Card className='!rounded-xl w-full' bodyStyle={{ padding: 14 }}>
           {/* 在线充值表单 */}
           {statusLoading ? (
             <div className='py-8 flex justify-center'>
@@ -549,7 +536,7 @@ const RechargeCard = ({
                 )}
               </div>
             </Form>
-          ) : lianDongShopUrl ? null : (
+          ) : (
             <Banner
               type='info'
               description={t(
@@ -559,8 +546,7 @@ const RechargeCard = ({
               closeIcon={null}
             />
           )}
-        </Card>
-      )}
+      </Card>
 
       {/* 兑换码充值 */}
       {enableRedemption ? (
@@ -572,24 +558,6 @@ const RechargeCard = ({
             </Text>
           }
         >
-          {lianDongShopUrl && (
-            <div className='mb-3 flex justify-end'>
-              <a
-                href={lianDongShopUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Button
-                  size='small'
-                  theme='borderless'
-                  type='primary'
-                  icon={<ExternalLink size={14} />}
-                >
-                  {t('打开充值地址')}
-                </Button>
-              </a>
-            </div>
-          )}
           <Form
             getFormApi={(api) => (redeemFormApiRef.current = api)}
             initValues={{ redemptionCode: redemptionCode }}
