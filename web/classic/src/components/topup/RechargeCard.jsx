@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Avatar,
   Typography,
@@ -83,8 +84,6 @@ const RechargeCard = ({
   setRedemptionCode,
   topUp,
   isSubmitting,
-  topUpLink,
-  openTopUpLink,
   userState,
   renderQuota,
   statusLoading,
@@ -110,6 +109,14 @@ const RechargeCard = ({
   const shouldShowSubscription =
     !subscriptionLoading && subscriptionPlans.length > 0;
   const regularPayMethods = payMethods || [];
+  const hasOnlineTopUp =
+    enableOnlineTopUp ||
+    enableAlipayTopUp ||
+    enableLakalaTopUp ||
+    enableStripeTopUp ||
+    enableCreemTopUp ||
+    enableWaffoTopUp ||
+    enableWaffoPancakeTopUp;
   const accountStats = [
     {
       key: 'quota',
@@ -175,19 +182,14 @@ const RechargeCard = ({
         </div>
       </Card>
       {/* 统计数据 */}
-      <Card className='!rounded-xl w-full' bodyStyle={{ padding: 14 }}>
+      {(statusLoading || hasOnlineTopUp) && (
+        <Card className='!rounded-xl w-full' bodyStyle={{ padding: 14 }}>
           {/* 在线充值表单 */}
           {statusLoading ? (
             <div className='py-8 flex justify-center'>
               <Spin size='large' />
             </div>
-          ) : enableOnlineTopUp ||
-            enableAlipayTopUp ||
-            enableLakalaTopUp ||
-            enableStripeTopUp ||
-            enableCreemTopUp ||
-            enableWaffoTopUp ||
-            enableWaffoPancakeTopUp ? (
+          ) : (
             <Form
               getFormApi={(api) => (onlineFormApiRef.current = api)}
               initValues={{ topUpCount: topUpCount }}
@@ -536,17 +538,9 @@ const RechargeCard = ({
                 )}
               </div>
             </Form>
-          ) : (
-            <Banner
-              type='info'
-              description={t(
-                '管理员未开启在线充值功能，请联系管理员开启或使用兑换码充值。',
-              )}
-              className='!rounded-xl'
-              closeIcon={null}
-            />
           )}
-      </Card>
+        </Card>
+      )}
 
       {/* 兑换码充值 */}
       {enableRedemption ? (
@@ -584,19 +578,15 @@ const RechargeCard = ({
               showClear
               style={{ width: '100%' }}
               extraText={
-                topUpLink && (
-                  <Text type='tertiary'>
-                    {t('在找兑换码？')}
-                    <Text
-                      type='secondary'
-                      underline
-                      className='cursor-pointer'
-                      onClick={openTopUpLink}
-                    >
-                      {t('购买兑换码')}
-                    </Text>
-                  </Text>
-                )
+                <Text type='tertiary'>
+                  {t('在找兑换码？')}{' '}
+                  <Link
+                    to='/console/recharge'
+                    className='text-semi-color-primary underline'
+                  >
+                    {t('购买兑换码')}
+                  </Link>
+                </Text>
               }
             />
           </Form>

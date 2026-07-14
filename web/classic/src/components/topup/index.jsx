@@ -72,7 +72,6 @@ const TopUp = () => {
   const [topUpCount, setTopUpCount] = useState(
     statusState?.status?.min_topup || 1,
   );
-  const [topUpLink, setTopUpLink] = useState('');
   const [inviteRewardEnabled, setInviteRewardEnabled] = useState(false);
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
     statusState?.status?.enable_online_topup || false,
@@ -212,14 +211,6 @@ const TopUp = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const openTopUpLink = () => {
-    if (!topUpLink) {
-      showError(t('超级管理员未设置充值链接！'));
-      return;
-    }
-    window.open(topUpLink, '_blank');
   };
 
   const preTopUp = async (payment) => {
@@ -753,7 +744,6 @@ const TopUp = () => {
           setWaffoPancakeMinTopUp(data.waffo_pancake_min_topup || 1);
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
-          setTopUpLink(data.topup_link || '');
           const nextInviteRewardEnabled = data.invite_reward_enabled !== false;
           setInviteRewardEnabled(nextInviteRewardEnabled);
           if (nextInviteRewardEnabled && !affFetchedRef.current) {
@@ -1248,8 +1238,6 @@ const TopUp = () => {
           setRedemptionCode={setRedemptionCode}
           topUp={topUp}
           isSubmitting={isSubmitting}
-          topUpLink={topUpLink}
-          openTopUpLink={openTopUpLink}
           userState={userState}
           renderQuota={renderQuota}
           statusLoading={statusLoading}
