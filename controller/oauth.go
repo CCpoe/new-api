@@ -25,9 +25,11 @@ func providerParams(name string) map[string]any {
 func GenerateOAuthCode(c *gin.Context) {
 	session := sessions.Default(c)
 	state := common.GetRandomString(12)
-	affCode := c.Query("aff")
+	affCode := strings.TrimSpace(c.Query("aff"))
 	if affCode != "" {
 		session.Set("aff", affCode)
+	} else {
+		session.Delete("aff")
 	}
 	session.Set("oauth_state", state)
 	err := session.Save()
@@ -132,6 +134,8 @@ func HandleOAuth(c *gin.Context) {
 	}
 
 	// 9. Setup login
+	session.Delete("aff")
+	session.Delete("oauth_state")
 	setupLogin(user, c)
 }
 
@@ -196,6 +200,11 @@ func handleOAuthBind(c *gin.Context, provider oauth.Provider) {
 			common.ApiError(c, err)
 			return
 		}
+	}
+	session.Delete("aff")
+	session.Delete("oauth_state")
+	if err := session.Save(); err != nil {
+		common.SysError("failed to clear OAuth transient session after binding: " + err.Error())
 	}
 
 	common.ApiSuccessI18n(c, i18n.MsgOAuthBindSuccess, gin.H{
@@ -308,7 +317,7 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 			return nil, err
 		}
 
-		// Perform post-transaction tasks (logs, sidebar config, inviter rewards)
+		// Perform post-transaction tasks (logs and sidebar config)
 		user.FinalizeOAuthUserCreation(inviterId)
 	} else {
 		// Built-in provider: create user and update provider ID in a transaction

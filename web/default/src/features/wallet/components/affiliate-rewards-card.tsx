@@ -137,10 +137,8 @@ export function AffiliateRewardsCard({
             [t('Maximum per referral'), formatQuota(maximumRewardQuota)],
           ].map(([label, value]) => (
             <div key={label} className='min-w-0 text-center'>
-              <div className='text-muted-foreground truncate text-xs'>
-                {label}
-              </div>
-              <div className='text-primary mt-0.5 truncate text-sm font-semibold tabular-nums'>
+              <div className='text-muted-foreground text-xs'>{label}</div>
+              <div className='text-primary mt-0.5 text-sm font-semibold break-words tabular-nums'>
                 {value}
               </div>
             </div>
