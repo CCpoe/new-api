@@ -47,6 +47,7 @@ import { useEmailVerification } from '@/features/auth/hooks/use-email-verificati
 import { useTurnstile } from '@/features/auth/hooks/use-turnstile'
 import {
   getAffiliateCode,
+  removeAffiliateCode,
   saveAffiliateCode,
 } from '@/features/auth/lib/storage'
 import { useStatus } from '@/hooks/use-status'
@@ -158,22 +159,24 @@ export function SignUpForm({
 
     setIsLoading(true)
     try {
+      const affiliateCode = getAffiliateCode().trim()
       const res = await register({
         username: data.username,
         password: data.password,
         email: data.email || undefined,
         verification_code: verificationCode || undefined,
-        aff_code: getAffiliateCode(),
+        aff_code: affiliateCode,
         turnstile: turnstileToken,
       })
 
       if (res?.success) {
+        removeAffiliateCode()
         toast.success(t('Account created! Please sign in'))
         redirectToLogin()
       } else {
         toast.error(res?.message || t('Failed to create account'))
       }
-    } catch (_error) {
+    } catch {
       // Errors are handled by global interceptor
     } finally {
       setIsLoading(false)
@@ -217,11 +220,20 @@ export function SignUpForm({
       } else {
         toast.error(res?.message || t('Login failed'))
       }
-    } catch (_error) {
+    } catch {
       toast.error(t('Login failed'))
     } finally {
       setIsWeChatSubmitting(false)
     }
+  }
+
+  let sendCodeButtonContent: React.ReactNode = t('Send code')
+  if (isActive) {
+    sendCodeButtonContent = t('Resend ({{seconds}}s)', {
+      seconds: secondsLeft,
+    })
+  } else if (isSendingCode) {
+    sendCodeButtonContent = <Loader2 className='h-4 w-4 animate-spin' />
   }
 
   return (
@@ -324,13 +336,7 @@ export function SignUpForm({
                 }
                 onClick={handleSendVerificationCode}
               >
-                {isActive ? (
-                  t('Resend ({{seconds}}s)', { seconds: secondsLeft })
-                ) : isSendingCode ? (
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                ) : (
-                  t('Send code')
-                )}
+                {sendCodeButtonContent}
               </Button>
             </div>
           </>

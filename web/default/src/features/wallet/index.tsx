@@ -337,6 +337,10 @@ export function Wallet(props: WalletProps) {
                   topupInfo?.payment_compliance_confirmed !== false
                 }
                 loading={affiliateLoading}
+                registrationRewardQuota={topupInfo?.quota_for_inviter ?? 0}
+                firstTopUpRewardQuota={
+                  topupInfo?.quota_for_inviter_first_topup ?? 0
+                }
               />
             )}
           </div>

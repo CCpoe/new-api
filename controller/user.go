@@ -237,8 +237,11 @@ func Register(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserExists)
 		return
 	}
-	affCode := user.AffCode // this code is the inviter's code, not the user's own code
-	inviterId, _ := model.GetUserIdByAffCode(affCode)
+	affCode := registrationAffiliateCode(c, user.AffCode) // this code is the inviter's code, not the user's own code
+	inviterId := 0
+	if affCode != "" {
+		inviterId, _ = model.GetUserIdByAffCode(affCode)
+	}
 	cleanUser := model.User{
 		Username:    user.Username,
 		Password:    user.Password,
@@ -298,6 +301,13 @@ func Register(c *gin.Context) {
 		"message": "",
 	})
 	return
+}
+
+func registrationAffiliateCode(c *gin.Context, bodyCode string) string {
+	if code := strings.TrimSpace(bodyCode); code != "" {
+		return code
+	}
+	return strings.TrimSpace(c.Query("aff"))
 }
 
 func GetAllUsers(c *gin.Context) {

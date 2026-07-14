@@ -3696,6 +3696,12 @@
     "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "Après l’achat, copiez le code fourni par la boutique et échangez-le ci-dessous.",
     "打开充值地址": "Ouvrir l’URL de recharge",
     "充值功能暂未开放": "La recharge n’est pas encore disponible",
-    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Affiche une page de recharge dédiée dans l’espace personnel. Après l’achat, les utilisateurs rechargent leur solde avec le code fourni par la boutique."
+    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Affiche une page de recharge dédiée dans l’espace personnel. Après l’achat, les utilisateurs rechargent leur solde avec le code fourni par la boutique.",
+    "注册成功奖励": "Récompense d'inscription",
+    "首次在线充值奖励": "Récompense du premier rechargement en ligne",
+    "每位好友最高奖励": "Maximum par parrainage",
+    "好友通过邀请链接注册成功后，您将获得注册奖励": "Vous recevez une récompense lorsqu'un ami s'inscrit via votre lien de parrainage",
+    "好友首次在线充值成功后，您将再获得首充奖励": "Vous recevez une autre récompense après son premier rechargement en ligne",
+    "邀请用户首充奖励额度": "Quota de récompense au premier rechargement du filleul"
   }
 }

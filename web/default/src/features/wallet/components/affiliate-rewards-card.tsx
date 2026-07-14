@@ -34,6 +34,8 @@ interface AffiliateRewardsCardProps {
   onTransfer: () => void
   complianceConfirmed?: boolean
   loading?: boolean
+  registrationRewardQuota?: number
+  firstTopUpRewardQuota?: number
 }
 
 export function AffiliateRewardsCard({
@@ -42,6 +44,8 @@ export function AffiliateRewardsCard({
   onTransfer,
   complianceConfirmed = true,
   loading,
+  registrationRewardQuota = 0,
+  firstTopUpRewardQuota = 0,
 }: AffiliateRewardsCardProps) {
   const { t } = useTranslation()
   if (loading) {
@@ -60,6 +64,7 @@ export function AffiliateRewardsCard({
   }
 
   const hasRewards = (user?.aff_quota ?? 0) > 0
+  const maximumRewardQuota = registrationRewardQuota + firstTopUpRewardQuota
 
   return (
     <Card data-card-hover='false' className='bg-muted/20 py-0'>
@@ -121,6 +126,25 @@ export function AffiliateRewardsCard({
               {t('Transfer to Balance')}
             </Button>
           )}
+        </div>
+        <div className='border-primary/15 bg-primary/5 grid grid-cols-1 gap-2 rounded-lg border p-2.5 sm:grid-cols-3 lg:col-span-3'>
+          {[
+            [t('Registration reward'), formatQuota(registrationRewardQuota)],
+            [
+              t('First online top-up reward'),
+              formatQuota(firstTopUpRewardQuota),
+            ],
+            [t('Maximum per referral'), formatQuota(maximumRewardQuota)],
+          ].map(([label, value]) => (
+            <div key={label} className='min-w-0 text-center'>
+              <div className='text-muted-foreground truncate text-xs'>
+                {label}
+              </div>
+              <div className='text-primary mt-0.5 truncate text-sm font-semibold tabular-nums'>
+                {value}
+              </div>
+            </div>
+          ))}
         </div>
         {!complianceConfirmed ? (
           <p className='text-muted-foreground text-xs lg:col-span-3'>

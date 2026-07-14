@@ -162,6 +162,10 @@ export interface TopupInfo {
   topup_link?: string
   /** Whether the referral rewards card should be shown */
   invite_reward_enabled?: boolean
+  /** Reward granted to an inviter after a referred registration */
+  quota_for_inviter?: number
+  /** Reward granted to an inviter after the invitee's first online top-up */
+  quota_for_inviter_first_topup?: number
   /** Whether Creem topup is enabled */
   enable_creem_topup?: boolean
   /** Available Creem products */

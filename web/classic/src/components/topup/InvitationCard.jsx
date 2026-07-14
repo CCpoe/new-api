@@ -39,7 +39,12 @@ const InvitationCard = ({
   affLink,
   handleAffLinkClick,
   complianceConfirmed = true,
+  registrationRewardQuota = 0,
+  firstTopUpRewardQuota = 0,
 }) => {
+  const maximumRewardQuota =
+    Number(registrationRewardQuota || 0) + Number(firstTopUpRewardQuota || 0);
+
   return (
     <Card className='!rounded-2xl shadow-sm border-0'>
       {/* 卡片头部 */}
@@ -53,6 +58,23 @@ const InvitationCard = ({
           </Typography.Text>
           <div className='text-xs'>{t('邀请好友获得额外奖励')}</div>
         </div>
+      </div>
+
+      <div className='mb-4 grid grid-cols-1 gap-2 rounded-lg border border-blue-100 bg-blue-50/70 p-3 sm:grid-cols-3 dark:border-blue-900 dark:bg-blue-950/30'>
+        {[
+          [t('注册成功奖励'), renderQuota(registrationRewardQuota || 0)],
+          [t('首次在线充值奖励'), renderQuota(firstTopUpRewardQuota || 0)],
+          [t('每位好友最高奖励'), renderQuota(maximumRewardQuota)],
+        ].map(([label, value]) => (
+          <div key={label} className='min-w-0 text-center'>
+            <div className='text-xs text-gray-500 dark:text-gray-400'>
+              {label}
+            </div>
+            <div className='mt-1 truncate text-base font-semibold text-blue-600'>
+              {value}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* 收益展示区域 */}
@@ -214,7 +236,14 @@ const InvitationCard = ({
             <div className='flex items-start gap-2'>
               <Badge dot type='success' />
               <Text type='tertiary' className='text-sm'>
-                {t('邀请好友注册，好友充值后您可获得相应奖励')}
+                {t('好友通过邀请链接注册成功后，您将获得注册奖励')}
+              </Text>
+            </div>
+
+            <div className='flex items-start gap-2'>
+              <Badge dot type='success' />
+              <Text type='tertiary' className='text-sm'>
+                {t('好友首次在线充值成功后，您将再获得首充奖励')}
               </Text>
             </div>
 
@@ -222,13 +251,6 @@ const InvitationCard = ({
               <Badge dot type='success' />
               <Text type='tertiary' className='text-sm'>
                 {t('通过划转功能将奖励额度转入到您的账户余额中')}
-              </Text>
-            </div>
-
-            <div className='flex items-start gap-2'>
-              <Badge dot type='success' />
-              <Text type='tertiary' className='text-sm'>
-                {t('邀请的好友越多，获得的奖励越多')}
               </Text>
             </div>
           </div>

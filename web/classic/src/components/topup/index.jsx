@@ -136,6 +136,8 @@ const TopUp = () => {
     discount: {},
     enable_redemption: true,
     payment_compliance_confirmed: true,
+    quota_for_inviter: 0,
+    quota_for_inviter_first_topup: 0,
   });
 
   const confirmPayMethods = [
@@ -636,6 +638,9 @@ const TopUp = () => {
         setTopupInfo({
           amount_options: data.amount_options || [],
           discount: data.discount || {},
+          quota_for_inviter: Number(data.quota_for_inviter) || 0,
+          quota_for_inviter_first_topup:
+            Number(data.quota_for_inviter_first_topup) || 0,
         });
 
         // 处理支付方式
@@ -1264,6 +1269,8 @@ const TopUp = () => {
               complianceConfirmed={
                 topupInfo.payment_compliance_confirmed !== false
               }
+              registrationRewardQuota={topupInfo.quota_for_inviter}
+              firstTopUpRewardQuota={topupInfo.quota_for_inviter_first_topup}
             />
           </div>
         )}

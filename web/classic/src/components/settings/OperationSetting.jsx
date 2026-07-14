@@ -35,6 +35,7 @@ const OperationSetting = () => {
     QuotaForNewUser: 0,
     PreConsumedQuota: 0,
     QuotaForInviter: 0,
+    QuotaForInviterFirstTopUp: 0,
     QuotaForInvitee: 0,
     InviteRewardEnabled: true,
     'quota_setting.enable_free_model_pre_consume': true,

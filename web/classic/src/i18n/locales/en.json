@@ -3956,6 +3956,12 @@
     "购买后请复制店铺发放的兑换码，在下方兑换码充值处兑换额度。": "After purchase, copy the redemption code issued by the shop and redeem it below.",
     "打开充值地址": "Open recharge URL",
     "充值功能暂未开放": "Recharge is not available yet",
-    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Shows a standalone recharge page in the personal center. After purchasing, users recharge with the redemption code issued by the shop."
+    "用于在个人中心展示独立充值页面，用户购买后使用店铺发放的兑换码充值。": "Shows a standalone recharge page in the personal center. After purchasing, users recharge with the redemption code issued by the shop.",
+    "注册成功奖励": "Registration reward",
+    "首次在线充值奖励": "First online top-up reward",
+    "每位好友最高奖励": "Maximum per referral",
+    "好友通过邀请链接注册成功后，您将获得注册奖励": "You earn a registration reward when a friend signs up through your referral link",
+    "好友首次在线充值成功后，您将再获得首充奖励": "You earn another reward after your friend's first online top-up",
+    "邀请用户首充奖励额度": "First top-up referral reward quota"
   }
 }

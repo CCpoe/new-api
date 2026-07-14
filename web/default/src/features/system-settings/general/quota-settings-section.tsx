@@ -54,6 +54,7 @@ const quotaSchema = z.object({
   QuotaForNewUser: z.coerce.number().min(0),
   PreConsumedQuota: z.coerce.number().min(0),
   QuotaForInviter: z.coerce.number().min(0),
+  QuotaForInviterFirstTopUp: z.coerce.number().min(0),
   QuotaForInvitee: z.coerce.number().min(0),
   InviteRewardEnabled: z.boolean(),
   TopUpLink: z.string(),
@@ -232,6 +233,35 @@ export function QuotaSettingsSection({
                     {t('Quota given to invited users ({{formattedQuota}})', {
                       formattedQuota: formatQuotaInputValue(field.value),
                     })}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='QuotaForInviterFirstTopUp'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('First Top-Up Referral Reward')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      value={field.value ?? ''}
+                      onChange={handleNumberChange(field.onChange)}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      "Quota given to inviters after an invitee's first online top-up ({{formattedQuota}})",
+                      {
+                        formattedQuota: formatQuotaInputValue(field.value),
+                      }
+                    )}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

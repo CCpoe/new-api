@@ -249,6 +249,7 @@ export type BillingSettings = {
   QuotaForNewUser: number
   PreConsumedQuota: number
   QuotaForInviter: number
+  QuotaForInviterFirstTopUp: number
   QuotaForInvitee: number
   InviteRewardEnabled: boolean
   TopUpLink: string

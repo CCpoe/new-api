@@ -111,14 +111,19 @@ const RegisterForm = () => {
   const [githubButtonDisabled, setGithubButtonDisabled] = useState(false);
   const githubTimeoutRef = useRef(null);
   const githubButtonText = t(githubButtonTextKeyByState[githubButtonState]);
+  const [affiliateCode] = useState(() => {
+    const queryCode = new URLSearchParams(window.location.search)
+      .get('aff')
+      ?.trim();
+    if (queryCode) {
+      localStorage.setItem('aff', queryCode);
+      return queryCode;
+    }
+    return localStorage.getItem('aff')?.trim() || '';
+  });
 
   const logo = getLogo();
   const systemName = getSystemName();
-
-  let affCode = new URLSearchParams(window.location.search).get('aff');
-  if (affCode) {
-    localStorage.setItem('aff', affCode);
-  }
 
   const status = useMemo(() => {
     if (statusState?.status) return statusState.status;
@@ -134,12 +139,12 @@ const RegisterForm = () => {
     (status.custom_oauth_providers || []).length > 0;
   const hasOAuthRegisterOptions = Boolean(
     status.github_oauth ||
-      status.discord_oauth ||
-      status.oidc_enabled ||
-      status.wechat_login ||
-      status.linuxdo_oauth ||
-      status.telegram_oauth ||
-      hasCustomOAuthProviders,
+    status.discord_oauth ||
+    status.oidc_enabled ||
+    status.wechat_login ||
+    status.linuxdo_oauth ||
+    status.telegram_oauth ||
+    hasCustomOAuthProviders,
   );
 
   const [showEmailVerification, setShowEmailVerification] = useState(false);
@@ -228,16 +233,17 @@ const RegisterForm = () => {
       }
       setRegisterLoading(true);
       try {
-        if (!affCode) {
-          affCode = localStorage.getItem('aff');
+        const params = new URLSearchParams({ turnstile: turnstileToken });
+        if (affiliateCode) {
+          params.set('aff', affiliateCode);
         }
-        inputs.aff_code = affCode;
-        const res = await API.post(
-          `/api/user/register?turnstile=${turnstileToken}`,
-          inputs,
-        );
+        const res = await API.post(`/api/user/register?${params.toString()}`, {
+          ...inputs,
+          aff_code: affiliateCode,
+        });
         const { success, message } = res.data;
         if (success) {
+          localStorage.removeItem('aff');
           navigate('/login');
           showSuccess('注册成功！');
         } else {
