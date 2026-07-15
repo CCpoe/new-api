@@ -67,6 +67,7 @@ const NotificationSettings = ({
     chat: {
       enabled: true,
       playground: true,
+      image_generation: true,
       chat: true,
     },
     console: {
@@ -157,7 +158,12 @@ const NotificationSettings = ({
 
   const resetSidebarModules = () => {
     const defaultConfig = {
-      chat: { enabled: true, playground: true, chat: true },
+      chat: {
+        enabled: true,
+        playground: true,
+        image_generation: true,
+        chat: true,
+      },
       console: {
         enabled: true,
         detail: true,
@@ -213,7 +219,7 @@ const NotificationSettings = ({
           } else {
             userConf = userRes.data.data.sidebar_modules;
           }
-          setSidebarModulesUser(userConf);
+          setSidebarModulesUser(mergeAdminConfig(userConf));
         }
       } catch (error) {
         console.error('加载边栏配置失败:', error);
@@ -259,6 +265,11 @@ const NotificationSettings = ({
           key: 'playground',
           title: t('操练场'),
           description: t('AI模型测试环境'),
+        },
+        {
+          key: 'image_generation',
+          title: t('生成图片'),
+          description: t('使用支持的模型生成和编辑图片'),
         },
         { key: 'chat', title: t('聊天'), description: t('聊天会话管理') },
       ],
@@ -485,7 +496,10 @@ const NotificationSettings = ({
                     checkedText={t('开')}
                     uncheckedText={t('关')}
                     onChange={(value) =>
-                      handleFormChange('upstreamModelUpdateNotifyEnabled', value)
+                      handleFormChange(
+                        'upstreamModelUpdateNotifyEnabled',
+                        value,
+                      )
                     }
                     extraText={t(
                       '仅管理员可用。开启后，当系统定时检测全部渠道发现上游模型变更或检测异常时，将按你选择的通知方式发送汇总通知；渠道或模型过多时会自动省略部分明细。',

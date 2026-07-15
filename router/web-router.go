@@ -19,20 +19,34 @@ type ThemeAssets struct {
 	DefaultIndexPage []byte
 	ClassicBuildFS   embed.FS
 	ClassicIndexPage []byte
+	ImageBuildFS     embed.FS
+	ImageIndexPage   []byte
 }
 
 func SetWebRouter(router *gin.Engine, assets ThemeAssets) {
 	defaultFS := common.EmbedFolder(assets.DefaultBuildFS, "web/default/dist")
 	classicFS := common.EmbedFolder(assets.ClassicBuildFS, "web/classic/dist")
+	imageFS := common.EmbedFolder(assets.ImageBuildFS, "web/image/dist")
 	themeFS := common.NewThemeAwareFS(defaultFS, classicFS)
 
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 	router.Use(middleware.GlobalWebRateLimit())
 	router.Use(middleware.Cache())
+	router.GET("/image", func(c *gin.Context) {
+		location := "/image/"
+		if c.Request.URL.RawQuery != "" {
+			location += "?" + c.Request.URL.RawQuery
+		}
+		c.Redirect(http.StatusPermanentRedirect, location)
+	})
+	router.GET("/image/", func(c *gin.Context) {
+		c.Data(http.StatusOK, "text/html; charset=utf-8", assets.ImageIndexPage)
+	})
+	router.Use(static.Serve("/image", imageFS))
 	router.Use(static.Serve("/", themeFS))
 	router.NoRoute(func(c *gin.Context) {
 		c.Set(middleware.RouteTagKey, "web")
-		if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") || strings.HasPrefix(c.Request.RequestURI, "/assets") {
+		if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") || strings.HasPrefix(c.Request.RequestURI, "/assets") || strings.HasPrefix(c.Request.RequestURI, "/image/") {
 			controller.RelayNotFound(c)
 			return
 		}

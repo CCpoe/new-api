@@ -73,6 +73,7 @@ export default function SettingsSidebarModulesUser() {
       defaultConfig.chat = {
         enabled: true,
         playground: isSidebarModuleAllowed('chat', 'playground'),
+        image_generation: isSidebarModuleAllowed('chat', 'image_generation'),
         chat: isSidebarModuleAllowed('chat', 'chat'),
       };
     }
@@ -230,6 +231,13 @@ export default function SettingsSidebarModulesUser() {
           } else {
             userConf = userRes.data.data.sidebar_modules;
           }
+          const defaultConfig = generateDefaultConfig();
+          userConf = Object.fromEntries(
+            Object.entries(defaultConfig).map(([sectionKey, sectionConfig]) => [
+              sectionKey,
+              { ...sectionConfig, ...(userConf[sectionKey] || {}) },
+            ]),
+          );
           console.log('从API加载的用户配置:', userConf);
 
           // 确保用户配置也经过权限过滤
@@ -300,6 +308,11 @@ export default function SettingsSidebarModulesUser() {
           key: 'playground',
           title: t('操练场'),
           description: t('AI模型测试环境'),
+        },
+        {
+          key: 'image_generation',
+          title: t('生成图片'),
+          description: t('使用支持的模型生成和编辑图片'),
         },
         { key: 'chat', title: t('聊天'), description: t('聊天会话管理') },
       ],

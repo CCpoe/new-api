@@ -30,6 +30,7 @@ import {
 } from '@douyinfe/semi-ui';
 import { API, showSuccess, showError } from '../../../helpers';
 import { StatusContext } from '../../../context/Status';
+import { mergeAdminConfig } from '../../../hooks/common/useSidebar';
 
 const { Text } = Typography;
 
@@ -43,6 +44,7 @@ export default function SettingsSidebarModulesAdmin(props) {
     chat: {
       enabled: true,
       playground: true,
+      image_generation: true,
       chat: true,
     },
     console: {
@@ -105,6 +107,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       chat: {
         enabled: true,
         playground: true,
+        image_generation: true,
         chat: true,
       },
       console: {
@@ -176,11 +179,16 @@ export default function SettingsSidebarModulesAdmin(props) {
     if (props.options && props.options.SidebarModulesAdmin) {
       try {
         const modules = JSON.parse(props.options.SidebarModulesAdmin);
-        setSidebarModulesAdmin(modules);
+        setSidebarModulesAdmin(mergeAdminConfig(modules));
       } catch (error) {
         // 使用默认配置
         const defaultModules = {
-          chat: { enabled: true, playground: true, chat: true },
+          chat: {
+            enabled: true,
+            playground: true,
+            image_generation: true,
+            chat: true,
+          },
           console: {
             enabled: true,
             detail: true,
@@ -222,6 +230,11 @@ export default function SettingsSidebarModulesAdmin(props) {
           key: 'playground',
           title: t('操练场'),
           description: t('AI模型测试环境'),
+        },
+        {
+          key: 'image_generation',
+          title: t('生成图片'),
+          description: t('使用支持的模型生成和编辑图片'),
         },
         { key: 'chat', title: t('聊天'), description: t('聊天会话管理') },
       ],

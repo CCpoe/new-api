@@ -65,6 +65,7 @@ const PageLayout = () => {
     '/console/task',
     '/console/models',
     '/console/recharge',
+    '/console/image-generation',
     '/pricing',
   ];
 
@@ -82,6 +83,7 @@ const PageLayout = () => {
     location.pathname.includes('/console') &&
     !location.pathname.startsWith('/console/chat') &&
     location.pathname !== '/console/playground' &&
+    location.pathname !== '/console/image-generation' &&
     location.pathname !== '/console/recharge';
 
   const isConsoleRoute = location.pathname.startsWith('/console');

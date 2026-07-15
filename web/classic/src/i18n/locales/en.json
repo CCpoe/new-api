@@ -3962,6 +3962,9 @@
     "每位好友最高奖励": "Maximum per referral",
     "好友通过邀请链接注册成功后，您将获得注册奖励": "You earn a registration reward when a friend signs up through your referral link",
     "好友首次在线充值成功后，您将再获得首充奖励": "You earn another reward after your friend's first online top-up",
-    "邀请用户首充奖励额度": "First top-up referral reward quota"
+    "邀请用户首充奖励额度": "First top-up referral reward quota",
+    "生成图片": "Generate Images",
+    "使用支持的模型生成和编辑图片": "Create and edit images with supported models",
+    "新窗口打开": "Open in new window"
   }
 }

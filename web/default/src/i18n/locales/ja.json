@@ -5251,6 +5251,8 @@
     "Zero retention": "データ保持なし",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V 4",
-    "Zoom": "ズーム"
+    "Zoom": "ズーム",
+    "Open in new window": "新しいウィンドウで開く",
+    "Create and edit images with supported models.": "対応モデルを使用して画像を生成・編集します。"
   }
 }

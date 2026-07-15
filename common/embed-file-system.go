@@ -16,8 +16,19 @@ type embedFileSystem struct {
 	http.FileSystem
 }
 
-func (e *embedFileSystem) Exists(prefix string, path string) bool {
-	_, err := e.Open(path)
+func (e *embedFileSystem) Exists(prefix string, requestPath string) bool {
+	if prefix != "" && prefix != "/" && requestPath != prefix && !strings.HasPrefix(requestPath, prefix+"/") {
+		return false
+	}
+
+	name := strings.TrimPrefix(requestPath, prefix)
+	if name == "" {
+		name = "/"
+	} else if !strings.HasPrefix(name, "/") {
+		name = "/" + name
+	}
+
+	_, err := e.Open(name)
 	if err != nil {
 		return false
 	}

@@ -10,9 +10,9 @@ func Cache() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
 		switch {
-		case path == "/":
+		case path == "/" || path == "/image" || path == "/image/" || path == "/image/index.html" || path == "/image/sw.js" || path == "/image/manifest.webmanifest":
 			c.Header("Cache-Control", "no-cache")
-		case strings.HasPrefix(path, "/assets/"):
+		case strings.HasPrefix(path, "/assets/") || strings.HasPrefix(path, "/image/assets/"):
 			c.Header("Cache-Control", "public, max-age=31536000, immutable")
 		default:
 			c.Header("Cache-Control", "public, max-age=604800") // one week

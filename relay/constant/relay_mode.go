@@ -55,8 +55,9 @@ const (
 )
 
 func Path2RelayMode(path string) int {
+	path = NormalizeRelayPath(path)
 	relayMode := RelayModeUnknown
-	if strings.HasPrefix(path, "/v1/chat/completions") || strings.HasPrefix(path, "/pg/chat/completions") {
+	if strings.HasPrefix(path, "/v1/chat/completions") {
 		relayMode = RelayModeChatCompletions
 	} else if strings.HasPrefix(path, "/v1/completions") {
 		relayMode = RelayModeCompletions
@@ -92,6 +93,15 @@ func Path2RelayMode(path string) int {
 		relayMode = Path2RelayModeMidjourney(path)
 	}
 	return relayMode
+}
+
+// NormalizeRelayPath maps session-authenticated playground requests to the
+// equivalent public API path used for relay mode and channel capability checks.
+func NormalizeRelayPath(path string) string {
+	if !strings.HasPrefix(path, "/pg/") {
+		return path
+	}
+	return "/v1/" + strings.TrimPrefix(path, "/pg/")
 }
 
 func Path2RelayModeMidjourney(path string) int {

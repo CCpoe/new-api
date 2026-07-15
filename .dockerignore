@@ -19,4 +19,6 @@ docs
 /web/default/dist
 /web/classic/node_modules
 /web/classic/dist
+/web/image/node_modules
+/web/image/dist
 !THIRD-PARTY-LICENSES.md

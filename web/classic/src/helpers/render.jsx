@@ -70,6 +70,7 @@ import {
   Key,
   BarChart3,
   Image as ImageIcon,
+  ImagePlus,
   CheckSquare,
   CreditCard,
   CircleDollarSign,
@@ -125,6 +126,8 @@ export function getLucideIcon(key, selected = false) {
       return <LayoutDashboard {...commonProps} color={iconColor} />;
     case 'playground':
       return <TerminalSquare {...commonProps} color={iconColor} />;
+    case 'image_generation':
+      return <ImagePlus {...commonProps} color={iconColor} />;
     case 'chat':
       return <MessageSquare {...commonProps} color={iconColor} />;
     case 'token':

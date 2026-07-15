@@ -3,7 +3,7 @@
 This file summarizes direct third-party dependencies used by distributed builds of this project.
 It is an engineering compliance artifact and should be kept with Docker images, standalone binaries, frontend bundles, and Electron installers.
 
-Scope: direct dependencies from `go.mod`, `web/default/package.json`, `web/classic/package.json`, and `electron/package.json`.
+Scope: direct dependencies from `go.mod`, `web/default/package.json`, `web/classic/package.json`, `web/image/package.json`, and `electron/package.json`.
 Transitive dependencies should be audited before a final external release.
 
 ## Dependency Inventory
@@ -65,6 +65,27 @@ Transitive dependencies should be audited before a final external release.
 | backend     | production  | Go        | `gorm.io/driver/postgres`                             | `v1.5.2`                             | MIT                                                |
 | backend     | production  | Go        | `gorm.io/gorm`                                        | `v1.25.2`                            | MIT                                                |
 | backend     | production  | Go        | `github.com/expr-lang/expr`                           | `v1.17.8`                            | MIT                                                |
+| web/image   | source      | source    | `CookSleep/gpt_image_playground`                      | `v0.7.0`                             | MIT                                                |
+| web/image   | production  | npm       | `@fal-ai/client`                                      | `1.10.1`                             | MIT                                                |
+| web/image   | production  | npm       | `@streamdown/math`                                    | `1.0.2`                              | Apache-2.0                                         |
+| web/image   | production  | npm       | `core-js`                                             | `3.49.0`                             | MIT                                                |
+| web/image   | production  | npm       | `fflate`                                              | `0.8.3`                              | MIT                                                |
+| web/image   | production  | npm       | `katex`                                               | `0.16.47`                            | MIT                                                |
+| web/image   | production  | npm       | `react`                                               | `19.2.7`                             | MIT                                                |
+| web/image   | production  | npm       | `react-dom`                                           | `19.2.7`                             | MIT                                                |
+| web/image   | production  | npm       | `react-markdown`                                      | `10.1.0`                             | MIT                                                |
+| web/image   | production  | npm       | `remark-gfm`                                          | `4.0.1`                              | MIT                                                |
+| web/image   | production  | npm       | `streamdown`                                          | `2.5.0`                              | Apache-2.0                                         |
+| web/image   | production  | npm       | `zustand`                                             | `5.0.14`                             | MIT                                                |
+| web/image   | development | npm       | `@types/react`                                        | `19.2.17`                            | MIT                                                |
+| web/image   | development | npm       | `@types/react-dom`                                    | `19.2.3`                             | MIT                                                |
+| web/image   | development | npm       | `@vitejs/plugin-react`                                | `4.7.0`                              | MIT                                                |
+| web/image   | development | npm       | `autoprefixer`                                        | `10.5.0`                             | MIT                                                |
+| web/image   | development | npm       | `postcss`                                             | `8.5.15`                             | MIT                                                |
+| web/image   | development | npm       | `tailwindcss`                                         | `3.4.19`                             | MIT                                                |
+| web/image   | development | npm       | `typescript`                                          | `5.9.3`                              | Apache-2.0                                         |
+| web/image   | development | npm       | `vite`                                                | `6.4.3`                              | MIT                                                |
+| web/image   | development | npm       | `vitest`                                              | `4.1.10`                             | MIT                                                |
 | web/default | production  | npm       | `@base-ui/react`                                      | `1.4.1`                              | MIT                                                |
 | web/default | production  | npm       | `@fontsource-variable/public-sans`                    | `5.2.7`                              | OFL-1.1                                            |
 | web/default | production  | npm       | `@hookform/resolvers`                                 | `5.2.2`                              | MIT                                                |
@@ -372,4 +393,3 @@ this software, either in source code form or as a compiled binary, for any
 purpose, commercial or non-commercial, and by any means.
 
 For more information, please refer to https://unlicense.org/
-

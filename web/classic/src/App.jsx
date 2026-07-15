@@ -56,6 +56,7 @@ const Task = lazy(() => import('./pages/Task'));
 const ModelPage = lazy(() => import('./pages/Model'));
 const ModelDeploymentPage = lazy(() => import('./pages/ModelDeployment'));
 const Playground = lazy(() => import('./pages/Playground'));
+const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const Subscription = lazy(() => import('./pages/Subscription'));
 const OAuth2Callback = lazy(() => import('./components/auth/OAuth2Callback'));
 const PersonalSetting = lazy(
@@ -177,6 +178,16 @@ function App() {
             <PrivateRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
                 <Playground />
+              </Suspense>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path='/console/image-generation'
+          element={
+            <PrivateRoute>
+              <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+                <ImageGeneration />
               </Suspense>
             </PrivateRoute>
           }
