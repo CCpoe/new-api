@@ -57,12 +57,12 @@ export const SIDEBAR_MODULES_DEFAULT: SidebarModulesAdminConfig = {
   chat: {
     enabled: true,
     playground: true,
-    image_generation: true,
     chat: true,
   },
   console: {
     enabled: true,
     detail: true,
+    image_generation: true,
     token: true,
     log: true,
     midjourney: true,

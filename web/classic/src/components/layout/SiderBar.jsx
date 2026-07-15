@@ -88,6 +88,11 @@ const SiderBar = ({ onNavigate = () => {} }) => {
             : 'tableHiddle',
       },
       {
+        text: t('生成图片'),
+        itemKey: 'image_generation',
+        to: '/image-generation',
+      },
+      {
         text: t('令牌管理'),
         itemKey: 'token',
         to: '/token',
@@ -220,11 +225,6 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('操练场'),
         itemKey: 'playground',
         to: '/playground',
-      },
-      {
-        text: t('生成图片'),
-        itemKey: 'image_generation',
-        to: '/image-generation',
       },
       {
         text: t('聊天'),

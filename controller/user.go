@@ -559,20 +559,20 @@ func generateDefaultSidebarConfig(userRole int) string {
 
 	// 聊天区域 - 所有用户都可以访问
 	defaultConfig["chat"] = map[string]interface{}{
-		"enabled":          true,
-		"playground":       true,
-		"image_generation": true,
-		"chat":             true,
+		"enabled":    true,
+		"playground": true,
+		"chat":       true,
 	}
 
 	// 控制台区域 - 所有用户都可以访问
 	defaultConfig["console"] = map[string]interface{}{
-		"enabled":    true,
-		"detail":     true,
-		"token":      true,
-		"log":        true,
-		"midjourney": true,
-		"task":       true,
+		"enabled":          true,
+		"detail":           true,
+		"image_generation": true,
+		"token":            true,
+		"log":              true,
+		"midjourney":       true,
+		"task":             true,
 	}
 
 	// 个人中心区域 - 所有用户都可以访问

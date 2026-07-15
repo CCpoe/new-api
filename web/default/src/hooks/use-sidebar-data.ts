@@ -61,11 +61,6 @@ export function useSidebarData(): SidebarData {
             icon: FlaskConical,
           },
           {
-            title: t('Image Generation'),
-            url: '/image-generation',
-            icon: ImagePlus,
-          },
-          {
             title: t('Chat'),
             icon: MessageSquare,
             type: 'chat-presets',
@@ -85,6 +80,11 @@ export function useSidebarData(): SidebarData {
             title: t('Dashboard'),
             url: '/dashboard/models',
             icon: LayoutDashboard,
+          },
+          {
+            title: t('Image Generation'),
+            url: '/image-generation',
+            icon: ImagePlus,
           },
           {
             title: t('API Keys'),

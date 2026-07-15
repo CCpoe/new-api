@@ -40,12 +40,12 @@ const DEFAULT_SIDEBAR_MODULES: SidebarModulesAdminConfig = {
   chat: {
     enabled: true,
     playground: true,
-    image_generation: true,
     chat: true,
   },
   console: {
     enabled: true,
     detail: true,
+    image_generation: true,
     token: true,
     log: true,
     midjourney: true,
@@ -97,7 +97,7 @@ const mergeWithDefaultSidebarModules = (
  */
 const URL_TO_CONFIG_MAP: Record<string, { section: string; module: string }> = {
   '/playground': { section: 'chat', module: 'playground' },
-  '/image-generation': { section: 'chat', module: 'image_generation' },
+  '/image-generation': { section: 'console', module: 'image_generation' },
   '/dashboard': { section: 'console', module: 'detail' },
   '/dashboard/overview': { section: 'console', module: 'detail' },
   '/dashboard/models': { section: 'console', module: 'detail' },

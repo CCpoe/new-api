@@ -44,12 +44,12 @@ export default function SettingsSidebarModulesAdmin(props) {
     chat: {
       enabled: true,
       playground: true,
-      image_generation: true,
       chat: true,
     },
     console: {
       enabled: true,
       detail: true,
+      image_generation: true,
       token: true,
       log: true,
       midjourney: true,
@@ -107,12 +107,12 @@ export default function SettingsSidebarModulesAdmin(props) {
       chat: {
         enabled: true,
         playground: true,
-        image_generation: true,
         chat: true,
       },
       console: {
         enabled: true,
         detail: true,
+        image_generation: true,
         token: true,
         log: true,
         midjourney: true,
@@ -186,12 +186,12 @@ export default function SettingsSidebarModulesAdmin(props) {
           chat: {
             enabled: true,
             playground: true,
-            image_generation: true,
             chat: true,
           },
           console: {
             enabled: true,
             detail: true,
+            image_generation: true,
             token: true,
             log: true,
             midjourney: true,
@@ -231,11 +231,6 @@ export default function SettingsSidebarModulesAdmin(props) {
           title: t('操练场'),
           description: t('AI模型测试环境'),
         },
-        {
-          key: 'image_generation',
-          title: t('生成图片'),
-          description: t('使用支持的模型生成和编辑图片'),
-        },
         { key: 'chat', title: t('聊天'), description: t('聊天会话管理') },
       ],
     },
@@ -245,6 +240,11 @@ export default function SettingsSidebarModulesAdmin(props) {
       description: t('数据管理和日志查看'),
       modules: [
         { key: 'detail', title: t('数据看板'), description: t('系统数据统计') },
+        {
+          key: 'image_generation',
+          title: t('生成图片'),
+          description: t('使用支持的模型生成和编辑图片'),
+        },
         { key: 'token', title: t('令牌管理'), description: t('API令牌管理') },
         { key: 'log', title: t('使用日志'), description: t('API使用记录') },
         {

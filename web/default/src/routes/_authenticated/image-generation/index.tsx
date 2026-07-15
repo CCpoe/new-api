@@ -24,7 +24,7 @@ import { isSidebarModuleEnabled } from '@/lib/nav-modules'
 
 export const Route = createFileRoute('/_authenticated/image-generation/')({
   beforeLoad: () => {
-    if (!isSidebarModuleEnabled('chat', 'image_generation')) {
+    if (!isSidebarModuleEnabled('console', 'image_generation')) {
       throw redirect({ to: '/dashboard' })
     }
   },

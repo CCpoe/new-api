@@ -29,12 +29,12 @@ export const DEFAULT_ADMIN_CONFIG = {
   chat: {
     enabled: true,
     playground: true,
-    image_generation: true,
     chat: true,
   },
   console: {
     enabled: true,
     detail: true,
+    image_generation: true,
     token: true,
     log: true,
     midjourney: true,
