@@ -767,6 +767,10 @@ export function normalizeApiProfile(
       typeof record.model === "string" && record.model.trim()
         ? record.model
         : defaults.model,
+    group:
+      typeof record.group === "string" && record.group.trim()
+        ? record.group.trim()
+        : defaults.group,
     timeout:
       typeof record.timeout === "number" && Number.isFinite(record.timeout)
         ? record.timeout

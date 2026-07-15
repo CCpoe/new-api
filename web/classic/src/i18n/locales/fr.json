@@ -3705,6 +3705,9 @@
     "邀请用户首充奖励额度": "Quota de récompense au premier rechargement du filleul",
     "生成图片": "Générer des images",
     "使用支持的模型生成和编辑图片": "Créer et modifier des images avec les modèles pris en charge",
-    "新窗口打开": "Ouvrir dans une nouvelle fenêtre"
+    "新窗口打开": "Ouvrir dans une nouvelle fenêtre",
+    "联系客服": "Contacter le service client",
+    "客服微信二维码": "Code QR WeChat du service client",
+    "请使用微信扫描二维码添加客服。": "Scannez le code QR avec WeChat pour ajouter le service client."
   }
 }

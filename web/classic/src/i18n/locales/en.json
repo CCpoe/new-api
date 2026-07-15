@@ -3965,6 +3965,9 @@
     "邀请用户首充奖励额度": "First top-up referral reward quota",
     "生成图片": "Generate Images",
     "使用支持的模型生成和编辑图片": "Create and edit images with supported models",
-    "新窗口打开": "Open in new window"
+    "新窗口打开": "Open in new window",
+    "联系客服": "Contact Customer Service",
+    "客服微信二维码": "Customer service WeChat QR code",
+    "请使用微信扫描二维码添加客服。": "Scan the QR code with WeChat to add customer service."
   }
 }

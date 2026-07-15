@@ -51,6 +51,7 @@ import { useMinimumLoadingTime } from '../../hooks/common/useMinimumLoadingTime'
 import { useActualTheme } from '../../context/Theme';
 import { getCurrencyConfig } from '../../helpers/render';
 import SubscriptionPlansCard from './SubscriptionPlansCard';
+import CustomerServiceModal from './modals/CustomerServiceModal';
 
 const { Text } = Typography;
 
@@ -605,7 +606,7 @@ const RechargeCard = ({
   return (
     <Card className='!rounded-2xl shadow-sm border-0 h-full'>
       {/* 卡片头部 */}
-      <div className='flex items-center justify-between mb-4'>
+      <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div className='flex items-center'>
           <Avatar size='small' color='blue' className='mr-3 shadow-md'>
             <CreditCard size={16} />
@@ -617,13 +618,18 @@ const RechargeCard = ({
             <div className='text-xs'>{t('多种充值方式，安全便捷')}</div>
           </div>
         </div>
-        <Button
-          icon={<Receipt size={16} />}
-          theme='solid'
-          onClick={onOpenHistory}
-        >
-          {t('账单')}
-        </Button>
+        <div className='flex w-full flex-col gap-2 sm:w-auto sm:flex-row'>
+          <CustomerServiceModal t={t} />
+          <Button
+            className='w-full sm:w-auto'
+            icon={<Receipt size={16} />}
+            theme='outline'
+            type='tertiary'
+            onClick={onOpenHistory}
+          >
+            {t('账单')}
+          </Button>
+        </div>
       </div>
 
       {shouldShowSubscription ? (

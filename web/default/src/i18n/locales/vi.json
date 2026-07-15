@@ -1069,6 +1069,7 @@
     "Console Content": "Nội dung bảng điều khiển",
     "Consume": "Tiêu thụ",
     "Consumed in the last 24 hours": "Đã tiêu thụ trong 24 giờ qua",
+    "Contact Customer Service": "Liên hệ hỗ trợ",
     "Container": "Thùng chứa",
     "Container name": "Tên container",
     "Containers": "Các thùng chứa",
@@ -1172,6 +1173,7 @@
     "Create account": "Tạo tài khoản",
     "Create an account": "Tạo tài khoản",
     "Create an API key to unlock the real request": "Tạo khóa API để mở yêu cầu thật",
+    "Create and edit images with supported models.": "Tạo và chỉnh sửa hình ảnh bằng các mô hình được hỗ trợ.",
     "Create and review invite or credit codes.": "Tạo và xem xét mã mời hoặc mã tín dụng.",
     "Create API Key": "Tạo Khóa API",
     "Create cache": "Tạo bộ nhớ đệm",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "Phần thanh bên tùy chỉnh",
     "Custom Time Range": "Khoảng thời gian tùy chỉnh",
     "Custom Zoom": "Thu phóng tùy chỉnh",
+    "Customer service WeChat QR code": "Mã QR WeChat của bộ phận hỗ trợ",
     "Customize sidebar display content": "Tùy chỉnh nội dung hiển thị thanh bên",
     "Daily": "Hàng ngày",
     "Daily Check-in": "Điểm danh hàng ngày",
@@ -3151,6 +3154,7 @@
     "Open in chat": "Mở trong trò chuyện",
     "Open in new tab": "Mở trong tab mới",
     "Open in New Tab": "Mở trong tab mới",
+    "Open in new window": "Mở trong cửa sổ mới",
     "Open menu": "Mở menu",
     "Open payment page": "M? trang thanh to?n",
     "Open release": "Phát hành mở",
@@ -4026,6 +4030,7 @@
     "Saving...": "Đang lưu...",
     "Scan QR Code": "Quét mã QR",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "Quét mã QR để theo dõi tài khoản chính thức, trả lời « 验证码 » để nhận mã xác minh.",
+    "Scan the QR code with WeChat to add customer service.": "Quét mã QR bằng WeChat để thêm bộ phận hỗ trợ.",
     "Scan the QR code with WeChat to bind your account": "Quét mã QR bằng WeChat để liên kết tài khoản của bạn",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "Quét mã QR này bằng ứng dụng xác thực của bạn (Google Authenticator, Microsoft Authenticator, v.v.)",
     "Scan to Pay": "Qu?t ?? thanh to?n",
@@ -5251,8 +5256,6 @@
     "Zero retention": "Không lưu dữ liệu",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom",
-    "Open in new window": "Mở trong cửa sổ mới",
-    "Create and edit images with supported models.": "Tạo và chỉnh sửa hình ảnh bằng các mô hình được hỗ trợ."
+    "Zoom": "Zoom"
   }
 }

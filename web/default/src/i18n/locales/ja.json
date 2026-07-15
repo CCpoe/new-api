@@ -1069,6 +1069,7 @@
     "Console Content": "コンソールコンテンツ",
     "Consume": "消費",
     "Consumed in the last 24 hours": "直近24時間の消費量",
+    "Contact Customer Service": "カスタマーサポートに連絡",
     "Container": "コンテナ",
     "Container name": "コンテナ名",
     "Containers": "コンテナ",
@@ -1172,6 +1173,7 @@
     "Create account": "アカウントを作成",
     "Create an account": "アカウントを作成",
     "Create an API key to unlock the real request": "実際のリクエストを使うには API キーを作成してください",
+    "Create and edit images with supported models.": "対応モデルを使用して画像を生成・編集します。",
     "Create and review invite or credit codes.": "招待コードまたはクレジットコードを作成および確認。",
     "Create API Key": "APIキーを作成",
     "Create cache": "キャッシュを作成",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "カスタムサイドバーセクション",
     "Custom Time Range": "カスタム時間範囲",
     "Custom Zoom": "カスタムズーム",
+    "Customer service WeChat QR code": "カスタマーサポートのWeChat QRコード",
     "Customize sidebar display content": "サイドバーの表示内容をカスタマイズ",
     "Daily": "毎日",
     "Daily Check-in": "毎日のチェックイン",
@@ -3151,6 +3154,7 @@
     "Open in chat": "チャットで開く",
     "Open in new tab": "新しいタブで開く",
     "Open in New Tab": "新しいタブで開く",
+    "Open in new window": "新しいウィンドウで開く",
     "Open menu": "メニューを開く",
     "Open payment page": "?????????",
     "Open release": "リリースを開く",
@@ -4026,6 +4030,7 @@
     "Saving...": "保存中...",
     "Scan QR Code": "QRコードをスキャン",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "公式アカウントのQRコードを読み取り、「验证码」と返信して認証コードを受け取ってください。",
+    "Scan the QR code with WeChat to add customer service.": "WeChatでQRコードをスキャンしてカスタマーサポートを追加してください。",
     "Scan the QR code with WeChat to bind your account": "WeChatでQRコードをスキャンしてアカウントをバインド",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "このQRコードを認証アプリ（Google Authenticator、Microsoft Authenticatorなど）でスキャンしてください。",
     "Scan to Pay": "?????????",
@@ -5251,8 +5256,6 @@
     "Zero retention": "データ保持なし",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V 4",
-    "Zoom": "ズーム",
-    "Open in new window": "新しいウィンドウで開く",
-    "Create and edit images with supported models.": "対応モデルを使用して画像を生成・編集します。"
+    "Zoom": "ズーム"
   }
 }

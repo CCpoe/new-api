@@ -1069,6 +1069,7 @@
     "Console Content": "Console Content",
     "Consume": "Consume",
     "Consumed in the last 24 hours": "Consumed in the last 24 hours",
+    "Contact Customer Service": "Contact Customer Service",
     "Container": "Container",
     "Container name": "Container name",
     "Containers": "Containers",
@@ -1172,6 +1173,7 @@
     "Create account": "Create account",
     "Create an account": "Create an account",
     "Create an API key to unlock the real request": "Create an API key to unlock the real request",
+    "Create and edit images with supported models.": "Create and edit images with supported models.",
     "Create and review invite or credit codes.": "Create and review invite or credit codes.",
     "Create API Key": "Create API Key",
     "Create cache": "Create cache",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "Custom sidebar section",
     "Custom Time Range": "Custom Time Range",
     "Custom Zoom": "Custom Zoom",
+    "Customer service WeChat QR code": "Customer service WeChat QR code",
     "Customize sidebar display content": "Customize sidebar display content",
     "Daily": "Daily",
     "Daily Check-in": "Daily Check-in",
@@ -3151,6 +3154,7 @@
     "Open in chat": "Open in chat",
     "Open in new tab": "Open in new tab",
     "Open in New Tab": "Open in New Tab",
+    "Open in new window": "Open in new window",
     "Open menu": "Open menu",
     "Open payment page": "Open payment page",
     "Open release": "Open release",
@@ -4026,6 +4030,7 @@
     "Saving...": "Saving...",
     "Scan QR Code": "Scan QR Code",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "Scan the QR code to follow the official account and send the message “验证码” to receive your verification code.",
+    "Scan the QR code with WeChat to add customer service.": "Scan the QR code with WeChat to add customer service.",
     "Scan the QR code with WeChat to bind your account": "Scan the QR code with WeChat to bind your account",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)",
     "Scan to Pay": "Scan to Pay",
@@ -5251,8 +5256,6 @@
     "Zero retention": "Zero retention",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom",
-    "Open in new window": "Open in new window",
-    "Create and edit images with supported models.": "Create and edit images with supported models."
+    "Zoom": "Zoom"
   }
 }

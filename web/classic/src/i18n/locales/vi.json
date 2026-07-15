@@ -4239,6 +4239,9 @@
     "邀请用户首充奖励额度": "Hạn mức thưởng giới thiệu khi nạp lần đầu",
     "生成图片": "Tạo hình ảnh",
     "使用支持的模型生成和编辑图片": "Tạo và chỉnh sửa hình ảnh bằng các mô hình được hỗ trợ",
-    "新窗口打开": "Mở trong cửa sổ mới"
+    "新窗口打开": "Mở trong cửa sổ mới",
+    "联系客服": "Liên hệ hỗ trợ",
+    "客服微信二维码": "Mã QR WeChat của bộ phận hỗ trợ",
+    "请使用微信扫描二维码添加客服。": "Quét mã QR bằng WeChat để thêm bộ phận hỗ trợ."
   }
 }

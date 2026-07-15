@@ -26,6 +26,7 @@ export function applyKkcodeSettings(
     baseUrl: KKCODE_PLACEHOLDER_BASE_URL,
     apiKey: KKCODE_PLACEHOLDER_API_KEY,
     model: requestedModel || savedProfile?.model || DEFAULT_KKCODE_IMAGE_MODEL,
+    group: savedProfile?.group || "auto",
   });
 
   const profiles = settings.profiles.some(

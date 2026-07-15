@@ -1069,6 +1069,7 @@
     "Console Content": "控制台內容",
     "Consume": "消耗",
     "Consumed in the last 24 hours": "近 24 小時消耗量",
+    "Contact Customer Service": "聯絡客服",
     "Container": "容器",
     "Container name": "容器名稱",
     "Containers": "容器",
@@ -1172,6 +1173,7 @@
     "Create account": "建立用戶",
     "Create an account": "建立一個用戶",
     "Create an API key to unlock the real request": "建立 API 金鑰以解鎖真實請求",
+    "Create and edit images with supported models.": "使用支援的模型生成和編輯圖片。",
     "Create and review invite or credit codes.": "建立和審查邀請或信用代碼。",
     "Create API Key": "建立 API 金鑰",
     "Create cache": "建立緩存",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "自訂側邊欄部分",
     "Custom Time Range": "自訂時間範圍",
     "Custom Zoom": "自訂縮放",
+    "Customer service WeChat QR code": "客服 WeChat QR Code",
     "Customize sidebar display content": "個人化設定左側邊欄的顯示內容",
     "Daily": "每天",
     "Daily Check-in": "每日簽到",
@@ -3151,6 +3154,7 @@
     "Open in chat": "在聊天中打開",
     "Open in new tab": "在新標籤頁中打開",
     "Open in New Tab": "在新標籤頁中打開",
+    "Open in new window": "在新視窗開啟",
     "Open menu": "打開選單",
     "Open payment page": "??????",
     "Open release": "打開版本",
@@ -4026,6 +4030,7 @@
     "Saving...": "正在儲存...",
     "Scan QR Code": "掃描二維碼",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "掃描二維碼關注官方賬號，回覆「驗證碼」以接收您的驗證碼。",
+    "Scan the QR code with WeChat to add customer service.": "請使用 WeChat 掃描 QR Code 新增客服。",
     "Scan the QR code with WeChat to bind your account": "使用微信掃描二維碼連結您的用戶",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "使用您的身份驗證器套用（Google Authenticator、Microsoft Authenticator 等）掃描此二維碼",
     "Scan to Pay": "????",
@@ -5251,8 +5256,6 @@
     "Zero retention": "零數據保留",
     "Zhipu": "智譜",
     "Zhipu V4": "智譜 V4",
-    "Zoom": "縮放",
-    "Open in new window": "在新視窗開啟",
-    "Create and edit images with supported models.": "使用支援的模型生成和編輯圖片。"
+    "Zoom": "縮放"
   }
 }

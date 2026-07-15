@@ -1069,6 +1069,7 @@
     "Console Content": "Содержимое консоли",
     "Consume": "Расход",
     "Consumed in the last 24 hours": "Потреблено за последние 24 часа",
+    "Contact Customer Service": "Связаться с поддержкой",
     "Container": "Контейнер",
     "Container name": "Имя контейнера",
     "Containers": "Контейнеры",
@@ -1172,6 +1173,7 @@
     "Create account": "Создать аккаунт",
     "Create an account": "Создать аккаунт",
     "Create an API key to unlock the real request": "Создайте API-ключ, чтобы открыть реальный запрос",
+    "Create and edit images with supported models.": "Создавайте и редактируйте изображения с помощью поддерживаемых моделей.",
     "Create and review invite or credit codes.": "Создать и просмотреть коды приглашений или кредитов.",
     "Create API Key": "Создать ключ API",
     "Create cache": "Создать кеш",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "Пользовательский раздел боковой панели",
     "Custom Time Range": "Пользовательский диапазон времени",
     "Custom Zoom": "Пользовательский зум",
+    "Customer service WeChat QR code": "QR-код службы поддержки в WeChat",
     "Customize sidebar display content": "Настроить содержимое боковой панели",
     "Daily": "Ежедневно",
     "Daily Check-in": "Ежедневный вход",
@@ -3151,6 +3154,7 @@
     "Open in chat": "Открыть в чате",
     "Open in new tab": "Открыть в новой вкладке",
     "Open in New Tab": "Открыть в новой вкладке",
+    "Open in new window": "Открыть в новом окне",
     "Open menu": "Открыть меню",
     "Open payment page": "??????? ???????? ??????",
     "Open release": "Открыть выпуск",
@@ -4026,6 +4030,7 @@
     "Saving...": "Сохранение...",
     "Scan QR Code": "Сканировать QR-код",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "Отсканируйте QR-код, откройте официальный аккаунт и ответьте «验证码», чтобы получить код подтверждения.",
+    "Scan the QR code with WeChat to add customer service.": "Отсканируйте QR-код в WeChat, чтобы добавить службу поддержки.",
     "Scan the QR code with WeChat to bind your account": "Отсканируйте QR-код с помощью WeChat, чтобы привязать свою учетную запись",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "Отсканируйте этот QR-код с помощью вашего приложения-аутентификатора (Google Authenticator, Microsoft Authenticator и т.д.)",
     "Scan to Pay": "?????????? ??? ??????",
@@ -5251,8 +5256,6 @@
     "Zero retention": "Без хранения данных",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom",
-    "Open in new window": "Открыть в новом окне",
-    "Create and edit images with supported models.": "Создавайте и редактируйте изображения с помощью поддерживаемых моделей."
+    "Zoom": "Zoom"
   }
 }

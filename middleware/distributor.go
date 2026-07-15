@@ -29,6 +29,42 @@ type ModelRequest struct {
 	Group string `json:"group,omitempty"`
 }
 
+const playgroundGroupHeader = "New-Api-Group"
+
+func resolvePlaygroundGroup(c *gin.Context, currentGroup, bodyGroup, requestPath string) (string, error) {
+	if !strings.HasPrefix(c.Request.URL.Path, "/pg/") {
+		return currentGroup, nil
+	}
+
+	requestedGroup := strings.TrimSpace(c.GetHeader(playgroundGroupHeader))
+	if requestedGroup == "" {
+		requestedGroup = strings.TrimSpace(bodyGroup)
+	}
+
+	userGroup := common.GetContextKeyString(c, constant.ContextKeyUserGroup)
+	if userGroup == "" {
+		userGroup = currentGroup
+	}
+	if requestedGroup == "" {
+		switch requestPath {
+		case "/v1/images/generations", "/v1/images/edits", "/v1/responses":
+			if service.AutoGroupAvailableForUser(userGroup) {
+				requestedGroup = "auto"
+			}
+		}
+	}
+	if requestedGroup == "auto" && !service.AutoGroupAvailableForUser(userGroup) {
+		requestedGroup = ""
+	}
+	if requestedGroup == "" || requestedGroup == userGroup {
+		return common.GetStringIfEmpty(requestedGroup, currentGroup), nil
+	}
+	if !service.GroupInUserUsableGroups(userGroup, requestedGroup) {
+		return "", errors.New("playground group access denied")
+	}
+	return requestedGroup, nil
+}
+
 func Distribute() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var channel *model.Channel
@@ -84,22 +120,15 @@ func Distribute() func(c *gin.Context) {
 				}
 				var selectGroup string
 				usingGroup := common.GetContextKeyString(c, constant.ContextKeyUsingGroup)
-				// check path is /pg/chat/completions
-				if strings.HasPrefix(c.Request.URL.Path, "/pg/chat/completions") {
-					playgroundRequest := &dto.PlayGroundRequest{}
-					err = common.UnmarshalBodyReusable(c, playgroundRequest)
-					if err != nil {
-						abortWithOpenAiMessage(c, http.StatusBadRequest, i18n.T(c, i18n.MsgDistributorInvalidPlayground, map[string]any{"Error": err.Error()}))
-						return
-					}
-					if playgroundRequest.Group != "" {
-						if !service.GroupInUserUsableGroups(usingGroup, playgroundRequest.Group) && playgroundRequest.Group != usingGroup {
-							abortWithOpenAiMessage(c, http.StatusForbidden, i18n.T(c, i18n.MsgDistributorGroupAccessDenied))
-							return
-						}
-						usingGroup = playgroundRequest.Group
-						common.SetContextKey(c, constant.ContextKeyUsingGroup, usingGroup)
-					}
+				usingGroup, err = resolvePlaygroundGroup(c, usingGroup, modelRequest.Group, requestPath)
+				if err != nil {
+					abortWithOpenAiMessage(c, http.StatusForbidden, i18n.T(c, i18n.MsgDistributorGroupAccessDenied))
+					return
+				}
+				if strings.HasPrefix(c.Request.URL.Path, "/pg/") {
+					common.SetContextKey(c, constant.ContextKeyUsingGroup, usingGroup)
+					common.SetContextKey(c, constant.ContextKeyTokenGroup, usingGroup)
+					c.Request.Header.Del(playgroundGroupHeader)
 				}
 
 				if preferredChannelID, found := service.GetPreferredChannelByAffinity(c, modelRequest.Model, usingGroup); found {
@@ -408,7 +437,6 @@ func getModelRequest(c *gin.Context) (*ModelRequest, bool, error) {
 		}
 		modelRequest.Model = req.Model
 		modelRequest.Group = req.Group
-		common.SetContextKey(c, constant.ContextKeyTokenGroup, modelRequest.Group)
 	}
 
 	if strings.HasPrefix(requestPath, "/v1/responses/compact") && modelRequest.Model != "" {

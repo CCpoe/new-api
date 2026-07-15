@@ -40,7 +40,11 @@ import {
   copyTextToClipboard,
   getClipboardFailureMessage,
 } from "../lib/clipboard";
-import { isKkcodeIntegration } from "../lib/kkcodeIntegration";
+import {
+  fetchKkcodeGroups,
+  isKkcodeIntegration,
+  type KkcodeGroupOption,
+} from "../lib/kkcodeIntegration";
 import {
   requestBrowserNotificationPermission,
   type BrowserNotificationPermissionResult,
@@ -497,6 +501,11 @@ export default function SettingsModal() {
     useState<ApiProfile | null>(null);
   const [copyImportUrlOptions, setCopyImportUrlOptions] =
     useState<CopyImportUrlOptions>(readCopyImportUrlOptions);
+  const [kkcodeGroups, setKkcodeGroups] = useState<KkcodeGroupOption[]>([]);
+  const [kkcodeGroupsLoading, setKkcodeGroupsLoading] = useState(false);
+  const [kkcodeGroupsError, setKkcodeGroupsError] = useState<string | null>(
+    null,
+  );
 
   const apiProxyConfig = readClientDevProxyConfig();
   const apiProxyAvailable = isApiProxyAvailable(apiProxyConfig);
@@ -566,6 +575,14 @@ export default function SettingsModal() {
       return validA - validB;
     }),
   ];
+
+  const selectedKkcodeGroup = activeProfile.group || "auto";
+  const kkcodeGroupOptions = kkcodeGroups.length
+    ? kkcodeGroups.map((group) => ({
+        label: `${group.desc} (${group.name}) · ${typeof group.ratio === "number" ? `倍率 ${group.ratio}x` : group.ratio}`,
+        value: group.name,
+      }))
+    : [{ label: selectedKkcodeGroup, value: selectedKkcodeGroup }];
 
   const getDefaultModelForMode = (apiMode: AppSettings["apiMode"]) =>
     apiMode === "responses" ? DEFAULT_RESPONSES_MODEL : DEFAULT_IMAGES_MODEL;
@@ -656,6 +673,52 @@ export default function SettingsModal() {
   useEffect(() => {
     if (showSettings && settingsTabRequest) setActiveTab(settingsTabRequest);
   }, [settingsTabRequest, showSettings]);
+
+  useEffect(() => {
+    if (!showSettings || !kkcodeIntegration) return;
+
+    let cancelled = false;
+    setKkcodeGroupsLoading(true);
+    setKkcodeGroupsError(null);
+    fetchKkcodeGroups()
+      .then((groups) => {
+        if (cancelled) return;
+        setKkcodeGroups(groups);
+
+        const currentSettings = normalizeSettings(useStore.getState().settings);
+        const currentProfile = getActiveApiProfile(currentSettings);
+        const currentGroup = currentProfile.group || "auto";
+        const nextGroup = groups.some((group) => group.name === currentGroup)
+          ? currentGroup
+          : (groups.find((group) => group.name === "auto")?.name ??
+            groups[0]?.name);
+        if (!nextGroup || nextGroup === currentGroup) return;
+
+        const nextSettings = normalizeSettings({
+          ...currentSettings,
+          profiles: currentSettings.profiles.map((profile) =>
+            profile.id === currentProfile.id
+              ? { ...profile, group: nextGroup }
+              : profile,
+          ),
+        });
+        setDraft(nextSettings);
+        setSettings(nextSettings);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setKkcodeGroupsError(
+          error instanceof Error ? error.message : "无法加载可用分组",
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setKkcodeGroupsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [kkcodeIntegration, setSettings, showSettings]);
 
   const updateProfileMenuMaxHeight = useCallback(() => {
     if (!profileMenuTriggerRef.current) return;
@@ -1835,6 +1898,34 @@ export default function SettingsModal() {
                   {kkcodeIntegration && (
                     <div className="rounded-xl border border-blue-200/70 bg-blue-50/70 px-3 py-2.5 text-sm text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-300">
                       已连接当前 KKCode 登录账号，接口地址和凭证由系统统一管理。
+                    </div>
+                  )}
+                  {kkcodeIntegration && (
+                    <div className="block">
+                      <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
+                        分组
+                      </span>
+                      <Select
+                        value={selectedKkcodeGroup}
+                        onChange={(value) =>
+                          updateActiveProfile({ group: String(value) }, true)
+                        }
+                        options={kkcodeGroupOptions}
+                        disabled={
+                          kkcodeGroupsLoading || kkcodeGroups.length === 0
+                        }
+                        className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
+                      />
+                      <div
+                        data-selectable-text
+                        className={`mt-1.5 text-xs ${kkcodeGroupsError ? "text-red-500" : "text-gray-500 dark:text-gray-500"}`}
+                      >
+                        {kkcodeGroupsLoading
+                          ? "正在加载平台分组..."
+                          : kkcodeGroupsError
+                            ? kkcodeGroupsError
+                            : "默认使用 auto 自动路由；实际扣费、倍率和使用日志均按平台最终选中的分组计算。"}
+                      </div>
                     </div>
                   )}
                   <div>

@@ -77,6 +77,7 @@ export interface ApiProfile {
   baseUrl: string;
   apiKey: string;
   model: string;
+  group?: string;
   timeout: number;
   apiMode: ApiMode;
   codexCli: boolean;

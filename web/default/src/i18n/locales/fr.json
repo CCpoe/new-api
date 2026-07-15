@@ -1069,6 +1069,7 @@
     "Console Content": "Contenu de la console",
     "Consume": "Consommation",
     "Consumed in the last 24 hours": "Consommé dans les dernières 24 heures",
+    "Contact Customer Service": "Contacter le service client",
     "Container": "Conteneur",
     "Container name": "Nom du conteneur",
     "Containers": "Conteneurs",
@@ -1172,6 +1173,7 @@
     "Create account": "Créer un compte",
     "Create an account": "Créer un compte",
     "Create an API key to unlock the real request": "Créez une clé API pour débloquer la requête réelle",
+    "Create and edit images with supported models.": "Créez et modifiez des images avec les modèles pris en charge.",
     "Create and review invite or credit codes.": "Créer et examiner les codes d'invitation ou de crédit.",
     "Create API Key": "Créer une clé API",
     "Create cache": "Créer le cache",
@@ -1266,6 +1268,7 @@
     "Custom sidebar section": "Section de barre latérale personnalisée",
     "Custom Time Range": "Plage horaire personnalisée",
     "Custom Zoom": "Zoom personnalisé",
+    "Customer service WeChat QR code": "Code QR WeChat du service client",
     "Customize sidebar display content": "Personnaliser le contenu affiché dans la barre latérale",
     "Daily": "Quotidien",
     "Daily Check-in": "Connexion quotidienne",
@@ -3151,6 +3154,7 @@
     "Open in chat": "Ouvrir dans le chat",
     "Open in new tab": "Ouvrir dans un nouvel onglet",
     "Open in New Tab": "Ouvrir dans un nouvel onglet",
+    "Open in new window": "Ouvrir dans une nouvelle fenêtre",
     "Open menu": "Ouvrir le menu",
     "Open payment page": "Ouvrir la page de paiement",
     "Open release": "Ouvrir la version",
@@ -4026,6 +4030,7 @@
     "Saving...": "Enregistrement en cours...",
     "Scan QR Code": "Scanner le code QR",
     "Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.": "Scannez le code QR pour suivre le compte officiel et répondez par « 验证码 » pour recevoir votre code de vérification.",
+    "Scan the QR code with WeChat to add customer service.": "Scannez le code QR avec WeChat pour ajouter le service client.",
     "Scan the QR code with WeChat to bind your account": "Scannez le code QR avec WeChat pour lier votre compte",
     "Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)": "Scannez ce code QR avec votre application d'authentification (Google Authenticator, Microsoft Authenticator, etc.)",
     "Scan to Pay": "Scanner pour payer",
@@ -5251,8 +5256,6 @@
     "Zero retention": "Aucune rétention",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom",
-    "Open in new window": "Ouvrir dans une nouvelle fenêtre",
-    "Create and edit images with supported models.": "Créez et modifiez des images avec les modèles pris en charge."
+    "Zoom": "Zoom"
   }
 }

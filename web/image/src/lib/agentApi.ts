@@ -117,7 +117,11 @@ const AGENT_TITLE_INSTRUCTIONS = [
 const AGENT_TITLE_MAX_LENGTH = 28;
 
 function createHeaders(profile: ApiProfile): Record<string, string> {
-  const kkcodeHeaders = getKkcodeRequestHeaders();
+  const kkcodeHeaders = getKkcodeRequestHeaders(
+    undefined,
+    undefined,
+    profile.group,
+  );
   return {
     ...(kkcodeHeaders ?? { Authorization: `Bearer ${profile.apiKey}` }),
     "Content-Type": "application/json",
