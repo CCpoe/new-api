@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_FAL_BASE_URL,
   DEFAULT_FAL_MODEL,
+  DEFAULT_GEMINI_BASE_URL,
+  DEFAULT_GEMINI_MODEL,
   DEFAULT_IMAGES_MODEL,
   DEFAULT_OPENAI_PROFILE_ID,
   DEFAULT_SETTINGS,
@@ -770,6 +772,7 @@ describe("custom providers", () => {
     expect(settings.providerOrder).toEqual([
       "fal",
       "openai",
+      "gemini",
       "custom-alpha",
       "custom-beta",
     ]);
@@ -819,6 +822,7 @@ describe("custom providers", () => {
     });
 
     const falProfile = switchApiProfileProvider(openaiProfile, "fal");
+    const geminiProfile = switchApiProfileProvider(openaiProfile, "gemini");
     const customProfile = switchApiProfileProvider(
       openaiProfile,
       provider.id,
@@ -830,9 +834,47 @@ describe("custom providers", () => {
       apiMode: "images",
       streamImages: false,
     });
+    expect(geminiProfile).toMatchObject({
+      provider: "gemini",
+      baseUrl: DEFAULT_GEMINI_BASE_URL,
+      model: DEFAULT_GEMINI_MODEL,
+      apiMode: "images",
+      streamImages: false,
+    });
     expect(customProfile).toMatchObject({
       provider: provider.id,
       apiMode: "images",
+      streamImages: false,
+    });
+  });
+
+  it("normalizes Gemini profiles to native image-only settings", () => {
+    const settings = normalizeSettings({
+      profiles: [
+        {
+          id: "gemini-profile",
+          name: "Gemini",
+          provider: "gemini",
+          baseUrl: "",
+          apiKey: "gemini-key",
+          model: "",
+          timeout: 30,
+          apiMode: "responses",
+          codexCli: true,
+          apiProxy: true,
+          streamImages: true,
+        },
+      ],
+      activeProfileId: "gemini-profile",
+    });
+
+    expect(settings.profiles[0]).toMatchObject({
+      provider: "gemini",
+      baseUrl: DEFAULT_GEMINI_BASE_URL,
+      model: DEFAULT_GEMINI_MODEL,
+      apiMode: "images",
+      codexCli: false,
+      apiProxy: false,
       streamImages: false,
     });
   });

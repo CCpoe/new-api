@@ -1,5 +1,4 @@
 import { readRuntimeEnv } from "./runtimeEnv";
-import { getKkcodeApiUrl } from "./kkcodeIntegration";
 
 export interface DevProxyConfig {
   enabled: boolean;
@@ -70,9 +69,6 @@ export function buildApiUrl(
   proxyConfig?: DevProxyConfig | null,
   useApiProxy = false,
 ): string {
-  const kkcodeUrl = getKkcodeApiUrl(path);
-  if (kkcodeUrl) return kkcodeUrl;
-
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const endpointPath = path.replace(/^\/+/, "");
 

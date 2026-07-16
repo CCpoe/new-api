@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_PARAMS } from "../types";
 import {
+  createDefaultGeminiProfile,
   createDefaultFalProfile,
   createDefaultOpenAIProfile,
   DEFAULT_SETTINGS,
@@ -78,5 +79,35 @@ describe("parameter compatibility", () => {
         { hasInputImages: true },
       ).size,
     ).toBe("auto");
+  });
+
+  it("removes unsupported Gemini parameters while preserving image controls", () => {
+    const geminiProfile = createDefaultGeminiProfile({ apiKey: "gemini-key" });
+    const settings = normalizeSettings({
+      ...DEFAULT_SETTINGS,
+      profiles: [geminiProfile],
+      activeProfileId: geminiProfile.id,
+    });
+
+    expect(
+      normalizeParamsForSettings(
+        {
+          ...DEFAULT_PARAMS,
+          size: "16:9",
+          quality: "high",
+          output_format: "webp",
+          output_compression: 80,
+          moderation: "low",
+          transparent_output: true,
+          n: 12,
+        },
+        settings,
+      ),
+    ).toEqual({
+      ...DEFAULT_PARAMS,
+      size: "16:9",
+      quality: "high",
+      n: 10,
+    });
   });
 });

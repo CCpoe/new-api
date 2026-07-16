@@ -21,7 +21,7 @@ import {
   readClientDevProxyConfig,
   shouldUseApiProxy,
 } from "./devProxy";
-import { getKkcodeRequestHeaders } from "./kkcodeIntegration";
+
 import {
   assertImageInputPayloadSize,
   assertMaskEditFileSize,
@@ -114,12 +114,6 @@ function normalizeImageApiPayload(value: unknown): ImageApiResponse {
 }
 
 function createRequestHeaders(profile: ApiProfile): Record<string, string> {
-  const kkcodeHeaders = getKkcodeRequestHeaders(
-    undefined,
-    undefined,
-    profile.group,
-  );
-  if (kkcodeHeaders) return kkcodeHeaders;
   return {
     Authorization: `Bearer ${profile.apiKey}`,
   };

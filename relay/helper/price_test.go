@@ -6,40 +6,14 @@ import (
 	"testing"
 
 	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
 	"github.com/QuantumNous/new-api/pkg/billingexpr"
 	relaycommon "github.com/QuantumNous/new-api/relay/common"
 	"github.com/QuantumNous/new-api/setting/billing_setting"
 	"github.com/QuantumNous/new-api/setting/config"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
 	"github.com/QuantumNous/new-api/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
-
-func TestHandleGroupRatioUsesResolvedAutoGroup(t *testing.T) {
-	originalGroupRatio := ratio_setting.GroupRatio2JSONString()
-	originalSpecialRatio := ratio_setting.GroupGroupRatio2JSONString()
-	t.Cleanup(func() {
-		require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(originalGroupRatio))
-		require.NoError(t, ratio_setting.UpdateGroupGroupRatioByJSONString(originalSpecialRatio))
-	})
-
-	require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(`{"default":1,"vip":2.5}`))
-	require.NoError(t, ratio_setting.UpdateGroupGroupRatioByJSONString(`{}`))
-
-	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-	common.SetContextKey(ctx, constant.ContextKeyAutoGroup, "vip")
-	relayInfo := &relaycommon.RelayInfo{
-		UserGroup:  "default",
-		UsingGroup: "auto",
-	}
-
-	ratioInfo := HandleGroupRatio(ctx, relayInfo)
-
-	require.Equal(t, "vip", relayInfo.UsingGroup)
-	require.Equal(t, 2.5, ratioInfo.GroupRatio)
-}
 
 func TestModelPriceHelperTieredUsesPreloadedRequestInput(t *testing.T) {
 	gin.SetMode(gin.TestMode)

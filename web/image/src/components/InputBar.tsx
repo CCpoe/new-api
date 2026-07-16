@@ -831,6 +831,7 @@ export default function InputBar() {
   ]);
 
   const maskDraft = useStore((s) => s.maskDraft);
+  const clearMaskDraft = useStore((s) => s.clearMaskDraft);
   const setMaskEditorImageId = useStore((s) => s.setMaskEditorImageId);
   const moveInputImage = useStore((s) => s.moveInputImage);
 
@@ -1031,16 +1032,18 @@ export default function InputBar() {
   }, [setPrompt]);
   const activeProvider = activeProfile.provider;
   const isFalProvider = activeProvider === "fal";
+  const isGeminiProvider = activeProvider === "gemini";
   const agentAutoImageCount = appMode === "agent";
-  const moderationDisabled = isFalProvider;
-  const transparentOutputAvailable = appMode === "gallery";
+  const moderationDisabled = isFalProvider || isGeminiProvider;
+  const transparentOutputAvailable = appMode === "gallery" && !isGeminiProvider;
   const showTransparentOutputControl =
     transparentOutputAvailable && params.output_format === "png";
   const transparentOutputEnabled =
     transparentOutputAvailable &&
     showTransparentOutputControl &&
     params.transparent_output;
-  const compressionDisabled = params.output_format === "png" || isFalProvider;
+  const compressionDisabled =
+    params.output_format === "png" || isFalProvider || isGeminiProvider;
   const outputImageLimit = getOutputImageLimitForSettings(effectiveSettings);
   const isFalTextToImage = isFalProvider && inputImages.length === 0;
   const nDraftValue = Number(nInput);
@@ -1052,9 +1055,11 @@ export default function InputBar() {
     effectiveNValue > 1;
   const nLimitHintText = agentAutoImageCount
     ? "Agent 模式下数量由模型根据提示词自动决定"
-    : isFalProvider
-      ? `fal.ai 最大请求数量为 ${outputImageLimit}`
-      : `OpenAI 最大请求数量为 ${outputImageLimit}`;
+    : isGeminiProvider
+      ? `Gemini 最大请求数量为 ${outputImageLimit}`
+      : isFalProvider
+        ? `fal.ai 最大请求数量为 ${outputImageLimit}`
+        : `OpenAI 最大请求数量为 ${outputImageLimit}`;
   const displaySize =
     isFalTextToImage && params.size === "auto"
       ? DEFAULT_FAL_IMAGE_SIZE
@@ -1276,6 +1281,11 @@ export default function InputBar() {
       setParams(patch);
     }
   }, [inputImages.length, params, effectiveSettings, setParams]);
+  useEffect(() => {
+    if (!isGeminiProvider || !maskDraft) return;
+    clearMaskDraft();
+    setMaskEditorImageId(null);
+  }, [clearMaskDraft, isGeminiProvider, maskDraft, setMaskEditorImageId]);
 
   useEffect(
     () => () => {
@@ -1529,6 +1539,11 @@ export default function InputBar() {
 
   const handleEditReferenceImage = useCallback(
     (img: (typeof inputImages)[number], idx: number, isMaskTarget: boolean) => {
+      if (isGeminiProvider) {
+        openReplaceReferenceFilePicker(idx, img.id);
+        return;
+      }
+
       if (isMaskTarget) {
         setMaskEditorImageId(img.id);
         return;
@@ -1572,6 +1587,7 @@ export default function InputBar() {
     [
       commitReferenceEditChoice,
       openReplaceReferenceFilePicker,
+      isGeminiProvider,
       setConfirmDialog,
       setMaskEditorImageId,
       settings.referenceImageEditAction,
@@ -2462,6 +2478,7 @@ export default function InputBar() {
       activeProfile={activeProfile}
       isFalProvider={isFalProvider}
       isFalTextToImage={isFalTextToImage}
+      isGeminiProvider={isGeminiProvider}
       displaySize={displaySize}
       qualityOptions={qualityOptions}
       selectClass={selectClass}
@@ -2761,7 +2778,7 @@ export default function InputBar() {
           <div className="mt-3">
             {/* 桌面端布局 */}
             <div className="hidden sm:flex items-end justify-between gap-3">
-              {renderParams("grid-cols-6")}
+              {renderParams(isGeminiProvider ? "grid-cols-3" : "grid-cols-6")}
 
               <div className="flex gap-2 flex-shrink-0 mb-0.5">
                 <div

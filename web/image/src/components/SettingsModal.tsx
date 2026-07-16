@@ -18,6 +18,8 @@ import {
   createDefaultOpenAIProfile,
   DEFAULT_FAL_BASE_URL,
   DEFAULT_FAL_MODEL,
+  DEFAULT_GEMINI_BASE_URL,
+  DEFAULT_GEMINI_MODEL,
   DEFAULT_IMAGES_MODEL,
   DEFAULT_OPENAI_PROFILE_ID,
   DEFAULT_RESPONSES_MODEL,
@@ -40,11 +42,8 @@ import {
   copyTextToClipboard,
   getClipboardFailureMessage,
 } from "../lib/clipboard";
-import {
-  fetchKkcodeGroups,
-  isKkcodeIntegration,
-  type KkcodeGroupOption,
-} from "../lib/kkcodeIntegration";
+import { isKkcodeIntegration } from "../lib/kkcodeIntegration";
+import { applyKkcodeProfileConstraints } from "../lib/kkcodeSettings";
 import {
   requestBrowserNotificationPermission,
   type BrowserNotificationPermissionResult,
@@ -501,12 +500,6 @@ export default function SettingsModal() {
     useState<ApiProfile | null>(null);
   const [copyImportUrlOptions, setCopyImportUrlOptions] =
     useState<CopyImportUrlOptions>(readCopyImportUrlOptions);
-  const [kkcodeGroups, setKkcodeGroups] = useState<KkcodeGroupOption[]>([]);
-  const [kkcodeGroupsLoading, setKkcodeGroupsLoading] = useState(false);
-  const [kkcodeGroupsError, setKkcodeGroupsError] = useState<string | null>(
-    null,
-  );
-
   const apiProxyConfig = readClientDevProxyConfig();
   const apiProxyAvailable = isApiProxyAvailable(apiProxyConfig);
   const apiProxyLocked = isApiProxyLocked(apiProxyConfig);
@@ -521,7 +514,9 @@ export default function SettingsModal() {
     activeProfile.provider,
   );
   const activeProviderUsesApiUrl =
-    activeProviderIsOpenAICompatible || activeProfile.provider === "fal";
+    activeProviderIsOpenAICompatible ||
+    activeProfile.provider === "gemini" ||
+    activeProfile.provider === "fal";
   const activeCustomProvider = draft.customProviders.find(
     (provider) => provider.id === activeProfile.provider,
   );
@@ -536,6 +531,7 @@ export default function SettingsModal() {
     apiProxyAvailable && activeProfileApiProxyEligible && apiProxyChecked;
   const defaultProviderOrder = [
     "openai",
+    "gemini",
     "fal",
     ...draft.customProviders.map((p) => p.id),
   ];
@@ -543,6 +539,7 @@ export default function SettingsModal() {
 
   const unorderedProviderOptions = [
     { label: "OpenAI 兼容接口", value: "openai", draggable: true },
+    { label: "Gemini 原生接口", value: "gemini", draggable: true },
     { label: "fal.ai", value: "fal", draggable: true },
     ...draft.customProviders.map((provider) => ({
       label: provider.name,
@@ -576,13 +573,12 @@ export default function SettingsModal() {
     }),
   ];
 
-  const selectedKkcodeGroup = activeProfile.group || "auto";
-  const kkcodeGroupOptions = kkcodeGroups.length
-    ? kkcodeGroups.map((group) => ({
-        label: `${group.desc} (${group.name}) · ${typeof group.ratio === "number" ? `倍率 ${group.ratio}x` : group.ratio}`,
-        value: group.name,
-      }))
-    : [{ label: selectedKkcodeGroup, value: selectedKkcodeGroup }];
+  const visibleProviderOptions = kkcodeIntegration
+    ? [
+        { label: "OpenAI 兼容接口", value: "openai" },
+        { label: "Gemini 原生接口", value: "gemini" },
+      ]
+    : providerOptions;
 
   const getDefaultModelForMode = (apiMode: AppSettings["apiMode"]) =>
     apiMode === "responses" ? DEFAULT_RESPONSES_MODEL : DEFAULT_IMAGES_MODEL;
@@ -609,18 +605,25 @@ export default function SettingsModal() {
       ? activeProfile
       : agentTextProfiles[0]) ??
     null;
+  const availableAgentImageProfiles = availableAgentProfiles.filter(
+    (profile) => profile.provider !== "gemini",
+  );
   const selectedAgentImageProfile =
-    availableAgentProfiles.find(
+    availableAgentImageProfiles.find(
       (profile) => profile.id === draft.agentImageProfileId,
-    ) ?? activeProfile;
+    ) ??
+    availableAgentImageProfiles[0] ??
+    null;
   const agentTextProfileOptions = agentTextProfiles.map((profile) => ({
     label: `${profile.name} · ${profile.model || DEFAULT_RESPONSES_MODEL}`,
     value: profile.id,
   }));
-  const agentImageProfileOptions = availableAgentProfiles.map((profile) => ({
-    label: `${profile.name} · ${getApiProviderLabel(draft, profile.provider)} · ${profile.model}`,
-    value: profile.id,
-  }));
+  const agentImageProfileOptions = availableAgentImageProfiles.map(
+    (profile) => ({
+      label: `${profile.name} · ${getApiProviderLabel(draft, profile.provider)} · ${profile.model}`,
+      value: profile.id,
+    }),
+  );
 
   const wasSettingsOpenRef = useRef(false);
 
@@ -673,52 +676,6 @@ export default function SettingsModal() {
   useEffect(() => {
     if (showSettings && settingsTabRequest) setActiveTab(settingsTabRequest);
   }, [settingsTabRequest, showSettings]);
-
-  useEffect(() => {
-    if (!showSettings || !kkcodeIntegration) return;
-
-    let cancelled = false;
-    setKkcodeGroupsLoading(true);
-    setKkcodeGroupsError(null);
-    fetchKkcodeGroups()
-      .then((groups) => {
-        if (cancelled) return;
-        setKkcodeGroups(groups);
-
-        const currentSettings = normalizeSettings(useStore.getState().settings);
-        const currentProfile = getActiveApiProfile(currentSettings);
-        const currentGroup = currentProfile.group || "auto";
-        const nextGroup = groups.some((group) => group.name === currentGroup)
-          ? currentGroup
-          : (groups.find((group) => group.name === "auto")?.name ??
-            groups[0]?.name);
-        if (!nextGroup || nextGroup === currentGroup) return;
-
-        const nextSettings = normalizeSettings({
-          ...currentSettings,
-          profiles: currentSettings.profiles.map((profile) =>
-            profile.id === currentProfile.id
-              ? { ...profile, group: nextGroup }
-              : profile,
-          ),
-        });
-        setDraft(nextSettings);
-        setSettings(nextSettings);
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return;
-        setKkcodeGroupsError(
-          error instanceof Error ? error.message : "无法加载可用分组",
-        );
-      })
-      .finally(() => {
-        if (!cancelled) setKkcodeGroupsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [kkcodeIntegration, setSettings, showSettings]);
 
   const updateProfileMenuMaxHeight = useCallback(() => {
     if (!profileMenuTriggerRef.current) return;
@@ -818,20 +775,28 @@ export default function SettingsModal() {
           ? apiProxyLocked || profile.apiProxy
           : false;
       const shouldKeepEmptyBaseUrl =
-        profile.provider !== "fal" && nextApiProxy && !profile.baseUrl.trim();
+        profile.provider !== "fal" &&
+        profile.provider !== "gemini" &&
+        nextApiProxy &&
+        !profile.baseUrl.trim();
       const normalizedBaseUrl =
-        profile.provider === "fal"
-          ? profile.baseUrl.trim().replace(/\/+$/, "") || DEFAULT_FAL_BASE_URL
-          : shouldKeepEmptyBaseUrl
-            ? ""
-            : normalizeBaseUrl(
-                profile.baseUrl.trim() || DEFAULT_SETTINGS.baseUrl,
-              );
+        profile.provider === "gemini"
+          ? profile.baseUrl.trim().replace(/\/+$/, "") ||
+            DEFAULT_GEMINI_BASE_URL
+          : profile.provider === "fal"
+            ? profile.baseUrl.trim().replace(/\/+$/, "") || DEFAULT_FAL_BASE_URL
+            : shouldKeepEmptyBaseUrl
+              ? ""
+              : normalizeBaseUrl(
+                  profile.baseUrl.trim() || DEFAULT_SETTINGS.baseUrl,
+                );
       const defaultModel =
-        profile.provider === "fal"
-          ? DEFAULT_FAL_MODEL
-          : getDefaultModelForMode(profile.apiMode);
-      return {
+        profile.provider === "gemini"
+          ? DEFAULT_GEMINI_MODEL
+          : profile.provider === "fal"
+            ? DEFAULT_FAL_MODEL
+            : getDefaultModelForMode(profile.apiMode);
+      const normalizedProfile: ApiProfile = {
         ...profile,
         name:
           profile.name.trim() ||
@@ -848,6 +813,9 @@ export default function SettingsModal() {
             ? normalizeStreamPartialImages(profile.streamPartialImages)
             : DEFAULT_STREAM_PARTIAL_IMAGES,
       };
+      return kkcodeIntegration
+        ? applyKkcodeProfileConstraints(normalizedProfile)
+        : normalizedProfile;
     });
     const fallbackProfile = createDefaultOpenAIProfile({ id: newId("openai") });
     const normalizedDraft = normalizeSettings({
@@ -1476,7 +1444,7 @@ export default function SettingsModal() {
   };
 
   const handleProviderTypeChange = (value: string | number) => {
-    if (defaultConfigOnly) return;
+    if (defaultConfigOnly && !kkcodeIntegration) return;
     if (value === ADD_CUSTOM_PROVIDER_VALUE) {
       setEditingCustomProviderId(null);
       setCustomProviderForm(createDefaultCustomProviderForm());
@@ -1486,11 +1454,21 @@ export default function SettingsModal() {
     }
 
     const provider = String(value) as ApiProfile["provider"];
+    if (kkcodeIntegration && provider !== "openai" && provider !== "gemini") {
+      return;
+    }
     const customProvider = draft.customProviders.find(
       (item) => item.id === provider,
     );
+    const switchedProfile = switchApiProfileProvider(
+      activeProfile,
+      provider,
+      customProvider,
+    );
     updateActiveProfile(
-      switchApiProfileProvider(activeProfile, provider, customProvider),
+      kkcodeIntegration
+        ? applyKkcodeProfileConstraints(switchedProfile)
+        : switchedProfile,
       true,
     );
   };
@@ -1897,35 +1875,7 @@ export default function SettingsModal() {
                 <div className="space-y-4">
                   {kkcodeIntegration && (
                     <div className="rounded-xl border border-blue-200/70 bg-blue-50/70 px-3 py-2.5 text-sm text-blue-700 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-300">
-                      已连接当前 KKCode 登录账号，接口地址和凭证由系统统一管理。
-                    </div>
-                  )}
-                  {kkcodeIntegration && (
-                    <div className="block">
-                      <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
-                        分组
-                      </span>
-                      <Select
-                        value={selectedKkcodeGroup}
-                        onChange={(value) =>
-                          updateActiveProfile({ group: String(value) }, true)
-                        }
-                        options={kkcodeGroupOptions}
-                        disabled={
-                          kkcodeGroupsLoading || kkcodeGroups.length === 0
-                        }
-                        className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
-                      />
-                      <div
-                        data-selectable-text
-                        className={`mt-1.5 text-xs ${kkcodeGroupsError ? "text-red-500" : "text-gray-500 dark:text-gray-500"}`}
-                      >
-                        {kkcodeGroupsLoading
-                          ? "正在加载平台分组..."
-                          : kkcodeGroupsError
-                            ? kkcodeGroupsError
-                            : "默认使用 auto 自动路由；实际扣费、倍率和使用日志均按平台最终选中的分组计算。"}
-                      </div>
+                      API Key 仅保存在当前浏览器；接口地址自动使用当前站点。
                     </div>
                   )}
                   <div>
@@ -2196,24 +2146,24 @@ export default function SettingsModal() {
                   </label>
 
                   {/* 2. 服务商类型 */}
-                  {!kkcodeIntegration && (
-                    <div className="block">
-                      <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
-                        服务商类型
-                      </span>
-                      <Select
-                        value={activeProfile.provider}
-                        onChange={handleProviderTypeChange}
-                        onReorder={handleProviderReorder}
-                        options={providerOptions}
-                        disabled={defaultConfigOnly}
-                        className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
-                      />
-                    </div>
-                  )}
+                  <div className="block">
+                    <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
+                      服务商类型
+                    </span>
+                    <Select
+                      value={activeProfile.provider}
+                      onChange={handleProviderTypeChange}
+                      onReorder={
+                        kkcodeIntegration ? undefined : handleProviderReorder
+                      }
+                      options={visibleProviderOptions}
+                      disabled={defaultConfigOnly && !kkcodeIntegration}
+                      className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
+                    />
+                  </div>
 
                   {/* 3. API URL */}
-                  {!kkcodeIntegration && activeProviderUsesApiUrl && (
+                  {activeProviderUsesApiUrl && (
                     <label className="block">
                       <div className="mb-1.5 flex items-center justify-between">
                         <span className="block text-sm text-gray-600 dark:text-gray-300">
@@ -2230,10 +2180,13 @@ export default function SettingsModal() {
                         }
                         type="text"
                         disabled={apiProxyEnabled}
+                        readOnly={kkcodeIntegration}
                         placeholder={
-                          activeProfile.provider === "fal"
-                            ? DEFAULT_FAL_BASE_URL
-                            : DEFAULT_SETTINGS.baseUrl
+                          activeProfile.provider === "gemini"
+                            ? DEFAULT_GEMINI_BASE_URL
+                            : activeProfile.provider === "fal"
+                              ? DEFAULT_FAL_BASE_URL
+                              : DEFAULT_SETTINGS.baseUrl
                         }
                         className={`w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50 ${apiProxyEnabled ? "opacity-50 cursor-not-allowed" : ""}`}
                       />
@@ -2241,7 +2194,9 @@ export default function SettingsModal() {
                         data-selectable-text
                         className="mt-1.5 min-h-[22px] flex items-center text-xs text-gray-500 dark:text-gray-500"
                       >
-                        {apiProxyEnabled ? (
+                        {kkcodeIntegration ? (
+                          <span>自动使用当前站点地址，无需手动修改。</span>
+                        ) : apiProxyEnabled ? (
                           <span className="text-yellow-600 dark:text-yellow-500">
                             已开启代理，实际请求目标由部署端决定，此处设置被忽略。
                           </span>
@@ -2307,76 +2262,80 @@ export default function SettingsModal() {
                     )}
 
                   {/* 5. API Key */}
-                  {!kkcodeIntegration && (
-                    <div className="block">
-                      <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
-                        API Key
-                      </span>
-                      <div className="relative">
-                        <input
-                          value={activeProfile.apiKey}
-                          onChange={(e) =>
-                            updateActiveProfile({ apiKey: e.target.value })
-                          }
-                          onBlur={(e) =>
-                            commitActiveProfilePatch({ apiKey: e.target.value })
-                          }
-                          type={showApiKey ? "text" : "password"}
-                          placeholder={
-                            activeProfile.provider === "fal"
-                              ? "FAL_KEY"
-                              : "sk-..."
-                          }
-                          className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 pr-10 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowApiKey((v) => !v)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                          tabIndex={-1}
-                        >
-                          {showApiKey ? (
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                              <circle cx="12" cy="12" r="3" />
-                            </svg>
-                          ) : (
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                              <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
-                              <line x1="1" y1="1" x2="23" y2="23" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
-                      <div
-                        data-selectable-text
-                        className="mt-1.5 text-xs text-gray-500 dark:text-gray-500"
+                  <div className="block">
+                    <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
+                      API Key
+                    </span>
+                    <div className="relative">
+                      <input
+                        value={activeProfile.apiKey}
+                        onChange={(e) =>
+                          updateActiveProfile({ apiKey: e.target.value })
+                        }
+                        onBlur={(e) =>
+                          commitActiveProfilePatch({ apiKey: e.target.value })
+                        }
+                        type={showApiKey ? "text" : "password"}
+                        placeholder={
+                          activeProfile.provider === "fal"
+                            ? "FAL_KEY"
+                            : "sk-..."
+                        }
+                        className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 pr-10 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowApiKey((v) => !v)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        tabIndex={-1}
                       >
-                        支持通过查询参数覆盖：
-                        <code className="bg-gray-100 dark:bg-white/[0.06] px-1 py-0.5 rounded">
-                          ?apiKey=
-                        </code>
-                      </div>
+                        {showApiKey ? (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                          </svg>
+                        )}
+                      </button>
                     </div>
-                  )}
+                    <div
+                      data-selectable-text
+                      className="mt-1.5 text-xs text-gray-500 dark:text-gray-500"
+                    >
+                      {kkcodeIntegration ? (
+                        "仅保存在当前浏览器中，请使用本站创建的 API Key。"
+                      ) : (
+                        <>
+                          支持通过查询参数覆盖：
+                          <code className="bg-gray-100 dark:bg-white/[0.06] px-1 py-0.5 rounded">
+                            ?apiKey=
+                          </code>
+                        </>
+                      )}
+                    </div>
+                  </div>
 
                   {/* 6. API 接口（Images/Responses） */}
                   {activeProfile.provider === "openai" && (
@@ -2441,11 +2400,14 @@ export default function SettingsModal() {
                       }
                       type="text"
                       placeholder={
-                        activeProfile.provider === "fal"
-                          ? DEFAULT_FAL_MODEL
-                          : getDefaultModelForMode(
-                              activeProfile.apiMode ?? DEFAULT_SETTINGS.apiMode,
-                            )
+                        activeProfile.provider === "gemini"
+                          ? DEFAULT_GEMINI_MODEL
+                          : activeProfile.provider === "fal"
+                            ? DEFAULT_FAL_MODEL
+                            : getDefaultModelForMode(
+                                activeProfile.apiMode ??
+                                  DEFAULT_SETTINGS.apiMode,
+                              )
                       }
                       className="w-full rounded-xl border border-gray-200/70 bg-white/60 px-3 py-2.5 text-sm text-gray-700 outline-none transition focus:border-blue-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-200 dark:focus:border-blue-500/50"
                     />
@@ -2453,7 +2415,15 @@ export default function SettingsModal() {
                       data-selectable-text
                       className="mt-1.5 text-xs text-gray-500 dark:text-gray-500"
                     >
-                      {activeProfile.provider === "fal" ? (
+                      {activeProfile.provider === "gemini" ? (
+                        <>
+                          Gemini 原生 generateContent 生图，例如{" "}
+                          <code className="rounded bg-gray-100 px-1 py-0.5 dark:bg-white/[0.06]">
+                            {DEFAULT_GEMINI_MODEL}
+                          </code>
+                          。
+                        </>
+                      ) : activeProfile.provider === "fal" ? (
                         <>
                           当前适配{" "}
                           <code className="rounded bg-gray-100 px-1 py-0.5 dark:bg-white/[0.06]">

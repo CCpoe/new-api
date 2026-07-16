@@ -140,7 +140,7 @@ export default function AgentSettingsTab({
                 data-selectable-text
                 className="text-xs text-gray-500 dark:text-gray-500"
               >
-                用于生成图像，支持所有类型的 API 配置。
+                用于生成图像；Gemini 原生接口暂不支持 Agent 模式。
               </div>
             </div>
           )}

@@ -3,6 +3,7 @@ import {
   getCustomProviderDefinition,
 } from "./apiProfiles";
 import { callFalAiImageApi } from "./falAiImageApi";
+import { callGeminiImageApi } from "./geminiImageApi";
 import { callOpenAICompatibleImageApi } from "./openaiCompatibleImageApi";
 import type { CallApiOptions, CallApiResult } from "./imageApiShared";
 
@@ -14,6 +15,7 @@ export async function callImageApi(
 ): Promise<CallApiResult> {
   const profile = getActiveApiProfile(opts.settings);
   if (profile.provider === "fal") return callFalAiImageApi(opts, profile);
+  if (profile.provider === "gemini") return callGeminiImageApi(opts, profile);
 
   return callOpenAICompatibleImageApi(
     opts,

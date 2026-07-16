@@ -36,6 +36,12 @@ export function normalizeParamsForSettings(
     nextParams.moderation = DEFAULT_PARAMS.moderation;
     nextParams.output_compression = DEFAULT_PARAMS.output_compression;
   }
+  if (activeProfile.provider === "gemini") {
+    nextParams.output_format = DEFAULT_PARAMS.output_format;
+    nextParams.output_compression = DEFAULT_PARAMS.output_compression;
+    nextParams.moderation = DEFAULT_PARAMS.moderation;
+    nextParams.transparent_output = DEFAULT_PARAMS.transparent_output;
+  }
 
   if (nextParams.output_format === "png") {
     nextParams.output_compression = DEFAULT_PARAMS.output_compression;

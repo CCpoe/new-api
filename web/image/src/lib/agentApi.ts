@@ -12,7 +12,7 @@ import {
   readClientDevProxyConfig,
   shouldUseApiProxy,
 } from "./devProxy";
-import { getKkcodeRequestHeaders } from "./kkcodeIntegration";
+
 import {
   appendStreamingFormatHint,
   maybeAppendStreamingHint,
@@ -117,13 +117,8 @@ const AGENT_TITLE_INSTRUCTIONS = [
 const AGENT_TITLE_MAX_LENGTH = 28;
 
 function createHeaders(profile: ApiProfile): Record<string, string> {
-  const kkcodeHeaders = getKkcodeRequestHeaders(
-    undefined,
-    undefined,
-    profile.group,
-  );
   return {
-    ...(kkcodeHeaders ?? { Authorization: `Bearer ${profile.apiKey}` }),
+    Authorization: `Bearer ${profile.apiKey}`,
     "Content-Type": "application/json",
   };
 }

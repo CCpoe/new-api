@@ -2576,6 +2576,12 @@ function getAgentProfileValidationError(
         message:
           "图像模型 API 配置不存在，请在 Agent 配置页选择可用的图像模型配置。",
       };
+    if (imageProfile.provider === "gemini")
+      return {
+        profile: imageProfile,
+        message:
+          "Gemini 原生生图暂不支持 Agent 模式，请选择其他图像模型 API 配置。",
+      };
     const imageProfileError = validateApiProfile(imageProfile);
     if (imageProfileError)
       return {

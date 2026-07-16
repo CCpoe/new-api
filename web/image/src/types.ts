@@ -17,7 +17,7 @@ export const DEFAULT_ZIP_DOWNLOAD_ROUTES: ZipDownloadRoute[] = [
   "task-selection",
   "favorite-collection-selection",
 ];
-export type BuiltInApiProvider = "openai" | "fal";
+export type BuiltInApiProvider = "openai" | "gemini" | "fal";
 export type ApiProvider = BuiltInApiProvider | string;
 export type CustomProviderTemplate = "http-image";
 export const DEFAULT_STREAM_PARTIAL_IMAGES = 1;
@@ -77,7 +77,6 @@ export interface ApiProfile {
   baseUrl: string;
   apiKey: string;
   model: string;
-  group?: string;
   timeout: number;
   apiMode: ApiMode;
   codexCli: boolean;
