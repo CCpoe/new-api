@@ -13,7 +13,7 @@ import {
   type KkcodeLocation,
 } from "./kkcodeIntegration";
 
-const KKCODE_PROFILE_ID = "kkcode-session";
+export const KKCODE_PROFILE_ID = "kkcode-session";
 const LEGACY_KKCODE_API_KEY = "kkcode-session";
 
 function getKkcodeProvider(profile?: ApiProfile): KkcodeApiProvider {

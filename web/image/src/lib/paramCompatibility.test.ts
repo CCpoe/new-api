@@ -105,7 +105,7 @@ describe("parameter compatibility", () => {
       ),
     ).toEqual({
       ...DEFAULT_PARAMS,
-      size: "16:9",
+      size: "1344x768",
       quality: "high",
       n: 10,
     });

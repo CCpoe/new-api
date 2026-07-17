@@ -8,6 +8,11 @@ import {
   normalizeBase64Image,
 } from "./imageApiShared";
 import { parseRatio } from "./size";
+import {
+  findClosestFixedImageSizePreset,
+  GEMINI_25_IMAGE_SIZE_PRESETS,
+  isGemini25ImageModel,
+} from "./imageSizeCapabilities";
 import { isKkcodeIntegration } from "./kkcodeIntegration";
 
 const MAX_GEMINI_OUTPUT_IMAGES = 10;
@@ -75,8 +80,14 @@ export function buildGeminiGenerateUrl(baseUrl: string, model: string): string {
   return `${normalizeGeminiBaseUrl(baseUrl)}/models/${encodeURIComponent(normalizedModel)}:generateContent`;
 }
 
-function getGeminiAspectRatio(size: string): string | undefined {
+function getGeminiAspectRatio(size: string, model: string): string | undefined {
   if (!size.trim() || size === "auto") return undefined;
+
+  if (isGemini25ImageModel(model)) {
+    return findClosestFixedImageSizePreset(size, GEMINI_25_IMAGE_SIZE_PRESETS)
+      ?.ratio;
+  }
+
   const parsed = parseRatio(size);
   if (!parsed) return undefined;
 
@@ -90,6 +101,17 @@ function getGeminiAspectRatio(size: string): string | undefined {
         : Number.POSITIVE_INFINITY,
     };
   }).sort((a, b) => a.distance - b.distance)[0]?.value;
+}
+
+function getGeminiExpectedOutputSize(
+  size: string,
+  model: string,
+): string | undefined {
+  if (!size.trim() || size === "auto" || !isGemini25ImageModel(model)) {
+    return undefined;
+  }
+  return findClosestFixedImageSizePreset(size, GEMINI_25_IMAGE_SIZE_PRESETS)
+    ?.size;
 }
 
 function getGeminiImageSize(
@@ -126,11 +148,14 @@ function getOutputFormat(
 function parseGeminiResponse(
   payload: GeminiResponse,
   params: TaskParams,
+  model: string,
 ): CallApiResult {
   const images: string[] = [];
   const revisedPrompts: Array<string | undefined> = [];
   const actualParamsList: Array<Partial<TaskParams> | undefined> = [];
-  const aspectRatio = getGeminiAspectRatio(params.size);
+  const aspectRatio = getGeminiAspectRatio(params.size, model);
+  const reportedSize =
+    getGeminiExpectedOutputSize(params.size, model) ?? aspectRatio;
   const candidates = Array.isArray(payload.candidates)
     ? payload.candidates
     : [];
@@ -158,7 +183,7 @@ function parseGeminiResponse(
       revisedPrompts.push(responseText);
       actualParamsList.push(
         mergeActualParams(
-          aspectRatio ? { size: aspectRatio } : undefined,
+          reportedSize ? { size: reportedSize } : undefined,
           getOutputFormat(mimeType)
             ? { output_format: getOutputFormat(mimeType) }
             : undefined,
@@ -189,7 +214,7 @@ function parseGeminiResponse(
   return {
     images,
     actualParams: mergeActualParams(
-      aspectRatio ? { size: aspectRatio } : undefined,
+      reportedSize ? { size: reportedSize } : undefined,
       { n: images.length },
     ),
     actualParamsList,
@@ -212,7 +237,7 @@ async function callGeminiImageApiSingle(
     ),
   );
 
-  const aspectRatio = getGeminiAspectRatio(opts.params.size);
+  const aspectRatio = getGeminiAspectRatio(opts.params.size, profile.model);
   const imageSize = getGeminiImageSize(profile.model, opts.params.quality);
   const imageConfig = {
     ...(aspectRatio ? { aspectRatio } : {}),
@@ -263,6 +288,7 @@ async function callGeminiImageApiSingle(
     return parseGeminiResponse(
       (await response.json()) as GeminiResponse,
       opts.params,
+      profile.model,
     );
   } finally {
     clearTimeout(timeoutId);

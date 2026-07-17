@@ -51,6 +51,7 @@ import {
   stripImageMentionMarkers,
 } from "../lib/promptImageMentions";
 import { normalizeImageSize } from "../lib/size";
+import { getFixedImageSizePresets } from "../lib/imageSizeCapabilities";
 import { createMaskPreviewDataUrl } from "../lib/canvasImage";
 import { getSafeBoundingClientRect } from "../lib/domRect";
 import { collectAgentRoundOutputImageSlots } from "../lib/agentImageReferences";
@@ -1064,6 +1065,7 @@ export default function InputBar() {
     isFalTextToImage && params.size === "auto"
       ? DEFAULT_FAL_IMAGE_SIZE
       : normalizeImageSize(params.size) || DEFAULT_PARAMS.size;
+  const fixedSizePresets = getFixedImageSizePresets(activeProfile);
 
   const qualityOptions = isFalProvider
     ? [
@@ -2538,6 +2540,7 @@ export default function InputBar() {
           onSelect={(size) => setParams({ size })}
           onClose={() => setShowSizePicker(false)}
           allowAuto={!isFalTextToImage}
+          fixedPresets={fixedSizePresets ?? undefined}
         />
       )}
 

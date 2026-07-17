@@ -110,10 +110,56 @@ describe("Gemini image API", () => {
     expect(result).toMatchObject({
       images: ["data:image/png;base64,AQID"],
       revisedPrompts: ["调整后的描述"],
-      actualParams: { size: "3:2", n: 1 },
-      actualParamsList: [{ size: "3:2", output_format: "png" }],
+      actualParams: { size: "1248x832", n: 1 },
+      actualParamsList: [{ size: "1248x832", output_format: "png" }],
     });
   });
+  it("maps a Gemini 2.5 portrait 4K request to its fixed 9:16 output", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: "image/png",
+                    data: "AQID",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("window", { location: { search: "?integration=kkcode" } });
+    const { profile, opts } = createFixture(
+      { model: "gemini-2.5-flash-image" },
+      {
+        params: {
+          ...DEFAULT_PARAMS,
+          size: "2160x3840",
+          quality: "high",
+        },
+      },
+    );
+
+    const result = await callGeminiImageApi(opts, profile);
+
+    const body = JSON.parse(
+      String((fetchMock.mock.calls[0]?.[1] as RequestInit).body),
+    );
+    expect(body.generationConfig.imageConfig).toEqual({
+      aspectRatio: "9:16",
+    });
+    expect(result.actualParams).toEqual({ size: "768x1344", n: 1 });
+    expect(result.actualParamsList).toEqual([
+      { size: "768x1344", output_format: "png" },
+    ]);
+  });
+
   it("uses x-goog-api-key outside KKCode integration", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({

@@ -5,6 +5,10 @@ import {
   parseRatio,
   type SizeTier,
 } from "../lib/size";
+import {
+  findClosestFixedImageSizePreset,
+  type FixedImageSizePreset,
+} from "../lib/imageSizeCapabilities";
 import { usePreventBackgroundScroll } from "../hooks/usePreventBackgroundScroll";
 import ViewportTooltip from "./ViewportTooltip";
 
@@ -27,6 +31,7 @@ interface Props {
   onSelect: (size: string) => void;
   onClose: () => void;
   allowAuto?: boolean;
+  fixedPresets?: readonly FixedImageSizePreset[];
 }
 
 type Mode = "auto" | "ratio" | "resolution";
@@ -54,6 +59,7 @@ export default function SizePickerModal({
   onSelect,
   onClose,
   allowAuto = true,
+  fixedPresets,
 }: Props) {
   usePreventBackgroundScroll(true);
 
@@ -82,14 +88,20 @@ export default function SizePickerModal({
 
   const currentPreset = findPresetForSize(currentSize);
   const currentParsedSize = parseSize(currentSize);
+  const currentFixedPreset = fixedPresets?.length
+    ? findClosestFixedImageSizePreset(currentSize, fixedPresets)
+    : undefined;
   const [mode, setMode] = useState<Mode>(() => {
     if (!currentSize || currentSize === "auto")
       return allowAuto ? "auto" : "ratio";
-    if (currentPreset) return "ratio";
+    if (fixedPresets?.length || currentPreset) return "ratio";
     return "resolution";
   });
 
   // Ratio mode state
+  const [fixedSize, setFixedSize] = useState(
+    currentFixedPreset?.size ?? fixedPresets?.[0]?.size ?? "",
+  );
   const [tier, setTier] = useState<SizeTier>(currentPreset?.tier ?? "1K");
   const [ratio, setRatio] = useState(
     currentPreset?.ratio ?? (allowAuto ? "1:1" : "4:3"),
@@ -126,6 +138,7 @@ export default function SizePickerModal({
     if (mode === "auto") return "auto";
 
     if (mode === "ratio") {
+      if (fixedPresets?.length) return fixedSize;
       const size = calculateImageSize(tier, activeRatio);
       return size ? normalizeImageSize(size) : "";
     }
@@ -140,10 +153,11 @@ export default function SizePickerModal({
     }
 
     return "";
-  }, [mode, tier, activeRatio, customW, customH]);
+  }, [mode, fixedPresets, fixedSize, tier, activeRatio, customW, customH]);
 
   const isClamped = useMemo(() => {
-    if (!previewSize || previewSize === "auto") return false;
+    if (fixedPresets?.length || !previewSize || previewSize === "auto")
+      return false;
     if (mode === "ratio" && ratio === "custom") return customRatioClamped;
     if (mode === "resolution") {
       const w = parseInt(customW, 10);
@@ -153,7 +167,15 @@ export default function SizePickerModal({
       }
     }
     return false;
-  }, [mode, ratio, customRatioClamped, customW, customH, previewSize]);
+  }, [
+    mode,
+    fixedPresets,
+    ratio,
+    customRatioClamped,
+    customW,
+    customH,
+    previewSize,
+  ]);
 
   const showHint = () => setHintVisible(true);
   const hideHint = () => {
@@ -245,12 +267,14 @@ export default function SizePickerModal({
             >
               按比例
             </button>
-            <button
-              onClick={() => setMode("resolution")}
-              className={`flex-1 rounded-lg py-1.5 text-sm font-medium transition ${mode === "resolution" ? "bg-white text-gray-800 shadow-sm dark:bg-gray-700 dark:text-gray-100" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
-            >
-              自定义宽高
-            </button>
+            {!fixedPresets?.length && (
+              <button
+                onClick={() => setMode("resolution")}
+                className={`flex-1 rounded-lg py-1.5 text-sm font-medium transition ${mode === "resolution" ? "bg-white text-gray-800 shadow-sm dark:bg-gray-700 dark:text-gray-100" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
+              >
+                自定义宽高
+              </button>
+            )}
           </div>
 
           <div className="h-[380px] max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-white/10 pr-1 -mr-1 pb-2">
@@ -286,67 +310,94 @@ export default function SizePickerModal({
 
             {mode === "ratio" && (
               <div className="space-y-5 animate-fade-in">
-                <section>
-                  <div className="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
-                    基准分辨率
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {TIERS.map((item) => (
-                      <button
-                        key={item}
-                        className={buttonClass(tier === item)}
-                        onClick={() => setTier(item)}
-                      >
-                        {item}
-                      </button>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <div className="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
-                    图像比例
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {RATIOS.map((item) => {
-                      const [w, h] = item.value.split(":").map(Number);
-                      const isHorizontal = w > h;
-                      const isSquare = w === h;
-                      return (
+                {!fixedPresets?.length && (
+                  <section>
+                    <div className="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
+                      基准分辨率
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {TIERS.map((item) => (
                         <button
-                          key={item.value}
-                          className={`${buttonClass(ratio === item.value)} flex flex-col items-center justify-center gap-1.5 !py-2.5`}
-                          onClick={() => setRatio(item.value)}
+                          key={item}
+                          className={buttonClass(tier === item)}
+                          onClick={() => setTier(item)}
                         >
-                          <div className="flex h-5 w-5 items-center justify-center">
-                            <div
-                              className="border-[1.5px] border-current rounded-[3px] opacity-60"
-                              style={{
-                                width:
-                                  isHorizontal || isSquare
-                                    ? "100%"
-                                    : `${(w / h) * 100}%`,
-                                height:
-                                  !isHorizontal || isSquare
-                                    ? "100%"
-                                    : `${(h / w) * 100}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs">{item.label}</span>
+                          {item}
                         </button>
-                      );
-                    })}
-                    <button
-                      className={`${buttonClass(ratio === "custom")} col-span-4`}
-                      onClick={() => setRatio("custom")}
-                    >
-                      自定义比例
-                    </button>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                <section>
+                  <div className="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
+                    {fixedPresets?.length ? "可用尺寸" : "图像比例"}
+                  </div>
+                  <div
+                    className={
+                      fixedPresets?.length
+                        ? "grid grid-cols-2 gap-2 sm:grid-cols-3"
+                        : "grid grid-cols-4 gap-2"
+                    }
+                  >
+                    {fixedPresets?.length ? (
+                      fixedPresets.map((item) => (
+                        <button
+                          key={item.size}
+                          className={`${buttonClass(fixedSize === item.size)} flex flex-col items-center justify-center gap-1 !py-2.5`}
+                          onClick={() => setFixedSize(item.size)}
+                        >
+                          <span className="text-xs font-medium">
+                            {item.ratio}
+                          </span>
+                          <span className="font-mono text-[10px] opacity-70">
+                            {item.size}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <>
+                        {RATIOS.map((item) => {
+                          const [w, h] = item.value.split(":").map(Number);
+                          const isHorizontal = w > h;
+                          const isSquare = w === h;
+                          return (
+                            <button
+                              key={item.value}
+                              className={`${buttonClass(ratio === item.value)} flex flex-col items-center justify-center gap-1.5 !py-2.5`}
+                              onClick={() => setRatio(item.value)}
+                            >
+                              <div className="flex h-5 w-5 items-center justify-center">
+                                <div
+                                  className="border-[1.5px] border-current rounded-[3px] opacity-60"
+                                  style={{
+                                    width:
+                                      isHorizontal || isSquare
+                                        ? "100%"
+                                        : `${(w / h) * 100}%`,
+                                    height:
+                                      !isHorizontal || isSquare
+                                        ? "100%"
+                                        : `${(h / w) * 100}%`,
+                                  }}
+                                />
+                              </div>
+                              <span className="text-xs">{item.label}</span>
+                            </button>
+                          );
+                        })}
+                        <button
+                          className={`${buttonClass(ratio === "custom")} col-span-4`}
+                          onClick={() => setRatio("custom")}
+                        >
+                          自定义比例
+                        </button>
+                      </>
+                    )}
                   </div>
                 </section>
 
-                {ratio === "custom" && (
+                {!fixedPresets?.length && ratio === "custom" && (
                   <label className="block animate-fade-in">
                     <span className="mb-2 block text-xs font-medium text-gray-400 dark:text-gray-500">
                       输入自定义比例

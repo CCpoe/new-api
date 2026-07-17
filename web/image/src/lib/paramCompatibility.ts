@@ -1,6 +1,6 @@
 import { DEFAULT_PARAMS, type AppSettings, type TaskParams } from "../types";
 import { getActiveApiProfile } from "./apiProfiles";
-import { normalizeImageSize } from "./size";
+import { normalizeImageSizeForProfile } from "./imageSizeCapabilities";
 
 export const DEFAULT_FAL_IMAGE_SIZE = "1360x1024";
 export const MAX_FAL_OUTPUT_IMAGES = 4;
@@ -21,7 +21,9 @@ export function normalizeParamsForSettings(
   const outputImageLimit = getOutputImageLimitForSettings(settings);
   const nextParams: TaskParams = {
     ...params,
-    size: normalizeImageSize(params.size) || DEFAULT_PARAMS.size,
+    size:
+      normalizeImageSizeForProfile(params.size, activeProfile) ||
+      DEFAULT_PARAMS.size,
     n: Math.min(outputImageLimit, Math.max(1, params.n || DEFAULT_PARAMS.n)),
   };
 
