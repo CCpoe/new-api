@@ -752,7 +752,7 @@ describe("custom providers", () => {
     });
   });
 
-  it("keeps provider order usable when custom providers are added after manual sorting", () => {
+  it("drops removed providers while keeping custom provider order usable", () => {
     const settings = normalizeSettings({
       providerOrder: ["fal", "openai"],
       customProviders: [
@@ -770,7 +770,6 @@ describe("custom providers", () => {
     });
 
     expect(settings.providerOrder).toEqual([
-      "fal",
       "openai",
       "gemini",
       "custom-alpha",

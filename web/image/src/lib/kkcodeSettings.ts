@@ -16,6 +16,13 @@ import {
 export const KKCODE_PROFILE_ID = "kkcode-session";
 const LEGACY_KKCODE_API_KEY = "kkcode-session";
 
+function isKkcodeProfile(profile: ApiProfile) {
+  return (
+    profile.id === KKCODE_PROFILE_ID ||
+    profile.name.trim().toLowerCase() === "kkcode"
+  );
+}
+
 function getKkcodeProvider(profile?: ApiProfile): KkcodeApiProvider {
   return profile && isKkcodeApiProvider(profile.provider)
     ? profile.provider
@@ -24,6 +31,49 @@ function getKkcodeProvider(profile?: ApiProfile): KkcodeApiProvider {
 
 function getKkcodeDefaultModel(provider: KkcodeApiProvider): string {
   return provider === "gemini" ? DEFAULT_GEMINI_MODEL : DEFAULT_IMAGES_MODEL;
+}
+
+export function removeFalProviderSettings(
+  input: Partial<AppSettings> | unknown,
+): AppSettings {
+  const settings = normalizeSettings(input);
+  const canonicalKkcodeProfile =
+    settings.profiles.find((profile) => profile.id === KKCODE_PROFILE_ID) ??
+    settings.profiles.find(isKkcodeProfile);
+  const profiles = settings.profiles
+    .filter((profile) => profile.provider !== "fal")
+    .filter(
+      (profile) =>
+        !isKkcodeProfile(profile) || profile === canonicalKkcodeProfile,
+    )
+    .map((profile) => {
+      if (!profile.providerDrafts?.fal) return profile;
+      const providerDrafts = Object.fromEntries(
+        Object.entries(profile.providerDrafts).filter(
+          ([provider]) => provider !== "fal",
+        ),
+      );
+      return {
+        ...profile,
+        providerDrafts: Object.keys(providerDrafts).length
+          ? providerDrafts
+          : undefined,
+      };
+    });
+  const nextProfiles = profiles.length
+    ? profiles
+    : [createDefaultOpenAIProfile()];
+  const activeProfileId = nextProfiles.some(
+    (profile) => profile.id === settings.activeProfileId,
+  )
+    ? settings.activeProfileId
+    : nextProfiles[0].id;
+
+  return normalizeSettings({
+    ...settings,
+    profiles: nextProfiles,
+    activeProfileId,
+  });
 }
 
 export function applyKkcodeProfileConstraints(
@@ -55,12 +105,12 @@ export function applyKkcodeSettings(
   searchParams: URLSearchParams,
   location?: KkcodeLocation | null,
 ): AppSettings {
-  const settings = normalizeSettings(input);
+  const settings = removeFalProviderSettings(input);
   if (!isKkcodeIntegration(searchParams)) return settings;
 
-  const savedProfile = settings.profiles.find(
-    (profile) => profile.id === KKCODE_PROFILE_ID,
-  );
+  const savedProfile =
+    settings.profiles.find((profile) => profile.id === KKCODE_PROFILE_ID) ??
+    settings.profiles.find(isKkcodeProfile);
   const provider = getKkcodeProvider(savedProfile);
   const requestedModel = searchParams.get("kkcodeModel")?.trim();
   const profile = applyKkcodeProfileConstraints(
@@ -82,13 +132,10 @@ export function applyKkcodeSettings(
     location,
   );
 
-  const profiles = settings.profiles.some(
-    (item) => item.id === KKCODE_PROFILE_ID,
-  )
-    ? settings.profiles.map((item) =>
-        item.id === KKCODE_PROFILE_ID ? profile : item,
-      )
-    : [...settings.profiles, profile];
+  const profiles = [
+    ...settings.profiles.filter((item) => !isKkcodeProfile(item)),
+    profile,
+  ];
 
   return normalizeSettings({
     ...settings,

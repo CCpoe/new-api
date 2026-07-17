@@ -137,7 +137,6 @@ function normalizeProviderOrder(
   const providerIds = [
     "openai",
     "gemini",
-    "fal",
     ...customProviders.map((provider) => provider.id),
   ];
   const knownIds = new Set(providerIds);
@@ -908,12 +907,13 @@ export function normalizeSettings(
       record.streamPartialImages,
     ),
   });
-  const profiles =
+  const normalizedProfiles =
     Array.isArray(record.profiles) && record.profiles.length
       ? record.profiles.map((profile) =>
           normalizeApiProfile(profile, undefined, customProviderIds),
         )
       : [legacyProfile];
+  const profiles = dedupeApiProfilesById(normalizedProfiles);
   const activeProfileId =
     typeof record.activeProfileId === "string" &&
     profiles.some((p) => p.id === record.activeProfileId)
@@ -1277,6 +1277,15 @@ function dedupeApiProfiles(profiles: ApiProfile[]): ApiProfile[] {
     const key = getApiProfileDedupKey(profile);
     if (seen.has(key)) return false;
     seen.add(key);
+    return true;
+  });
+}
+
+function dedupeApiProfilesById(profiles: ApiProfile[]): ApiProfile[] {
+  const seenIds = new Set<string>();
+  return profiles.filter((profile) => {
+    if (seenIds.has(profile.id)) return false;
+    seenIds.add(profile.id);
     return true;
   });
 }

@@ -532,7 +532,6 @@ export default function SettingsModal() {
   const defaultProviderOrder = [
     "openai",
     "gemini",
-    "fal",
     ...draft.customProviders.map((p) => p.id),
   ];
   const providerOrder = draft.providerOrder || defaultProviderOrder;
@@ -540,7 +539,6 @@ export default function SettingsModal() {
   const unorderedProviderOptions = [
     { label: "OpenAI 兼容接口", value: "openai", draggable: true },
     { label: "Gemini 原生接口", value: "gemini", draggable: true },
-    { label: "fal.ai", value: "fal", draggable: true },
     ...draft.customProviders.map((provider) => ({
       label: provider.name,
       value: provider.id,
@@ -1423,7 +1421,7 @@ export default function SettingsModal() {
   ) => {
     const currentOrder = draft.providerOrder || [
       "openai",
-      "fal",
+      "gemini",
       ...draft.customProviders.map((p) => p.id),
     ];
     const sourceIndex = currentOrder.indexOf(String(sourceValue));
